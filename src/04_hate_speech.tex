@@ -34,7 +34,7 @@ En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un des
 \newcommand{\semeval}[0]{SemEval-2019}
 \newcommand{\fasttext}[0]{\emph{fastText}}
 
-El preprocesamiento es crucial en las aplicaciones de PNL, especialmente cuando se trabaja con datos ruidosos generados por el usuario. Aquí, seguimos \citet {atalaya_tass2018}, definiendo dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos. Usamos uno u otro, dependiendo de la configuración.
+El preprocesamiento es crucial en las aplicaciones de PNL, especialmente cuando se trabaja con datos ruidosos generados por el usuario. Aquí, seguimos \citet{atalaya_tass2018}, definiendo dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos. Usamos uno u otro, dependiendo de la configuración.
 
 El preprocesamiento básico de tweets incluye tokenización, reemplazo de identificadores, URL y correos electrónicos, y acortamiento de letras repetidas.
 
@@ -67,7 +67,7 @@ Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 
 
 \subsection{Incorporaciones dependientes del contexto}
-\label {subsec: elmo}
+\label{subsec:elmo}
 
 Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet {mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
 
@@ -82,4 +82,4 @@ Para obtener un vector final para cada token, los autores sugieren colapsar las 
 % \end {ecuación}
 
 En este trabajo, usamos la implementación y los modelos entrenados previamente de \citet{che-EtAl:2018:K18-2}.
-El modelo español se entrenó con $ L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
+El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
