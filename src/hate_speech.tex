@@ -1,0 +1,85 @@
+\section{Descripción general del problema}
+
+Loa Discursos de odio contra mujeres, inmigrantes y muchos otros grupos es un fenómeno generalizado en la Internet. En los primeros días de la World Wide Web, algunos académicos se aventuraron a decir a que los prejuicios y el odio sería eliminado en este espacio por la disolución de identidades \cite{levy2001cyberculture, rheingold1993virtual}. Veinte años después de esta hipótesis, podemos
+decir que no ha sido el caso. La prevalencia del racismo en la ``World White Web'' se ha estudiado en una serie de trabajos \cite{adams2005white, kettrey2014staking}, como así también la misoginia en el mundo virtual \cite{filipovic2007blogging, mantilla2013gendertrolling}.
+
+El discurso racista y sexista es una constante en las redes sociales, pero los picos se documentan después de eventos ``detonantes'', como asesinatos con motivos religiosos o políticos \cite{burnap2015cyber}. Las empresas de redes sociales están preocupadas por esto y toman acciones en su contra; sin embargo, la mayoría de los esfuerzos todavía necesitan la intervención humana, lo que hace que esta tarea sea muy costosa. Reducir la intervención humana es vital para tener herramientas efectivas para evitar la escalada del discurso de odio.
+
+\section{Trabajo previo}
+
+La detección del discurso del odio es una tarea de clasificación de oraciones bastante relacionada con el análisis de sentimientos y ha sido estudiada para varias redes sociales \cite{thelwall2008social, pak2010twitter, saleem2017web}. Con respecto a la detección de contenido que incita al odio, \citet{greevy2004classifying} usó bolsas de palabras y SVM para detectar contenido racista en páginas web. Siguiendo un enfoque similar, \citet{warner2012detecting} usó unigrams y clusters Brown con SVM para detectar mensajes antisemitas en Twitter.
+
+\citet{waseem2016hateful} anotó un corpus y usó n-gramas de caracteres para detectar comentarios de odio, y \citet{badjatiya2017deep} usó el mismo conjunto de datos para entrenar modelos de aprendizaje profundo e incrustaciones ajustadas junto con Gradient Boosted Trees. \citet {zhang2018detecting} entrenó una red neuronal profunda que combina CNN con unidades recurrentes cerradas \cite{cho2014learning}, superando a los sistemas anteriores en varios conjuntos de datos.
+
+\citet{anzovino2018automatic} recopiló un corpus de tweets misóginos y propuso una taxonomía para distinguirlos en diferentes categorías. Los autores propusieron una serie de técnicas diferentes para clasificarlos, mostrando que enfoques simples (como el uso de modelos lineales junto con n-gramas de token) logran un rendimiento competitivo en conjuntos de datos de pequeño tamaño.
+
+En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un desafío en la detección de misoginia en Twitter, tanto en español como en inglés, mientras que \citet{fersini2018evalitaoverview} planteó un desafío similar pero en italiano e inglés. \citet{bosco2018overview} propuso un concurso de detección automática sobre publicaciones de Twitter y comentarios de Facebook, que incluía discursos de odio en general.
+
+\section{Datasets}
+
+\subsection{hatEval}
+
+\section{Método}
+
+\subsection {Preprocesamiento}
+
+
+\newcommand{\elmo}[0]{ELMo}
+\newcommand{\elmomodel}[0]{\emph{LSTM-\elmo{}}}
+\newcommand{\bow}[0]{BoW}
+\newcommand{\boc}[0]{BoC}
+\newcommand{\elmobowmodel}[0]{\emph{LSTM-\elmo{}+\bow{}}}
+\newcommand{\svmmodel}[0]{$\mathrm{SVM}_0$}
+\newcommand{\hateval}[0]{HatEval}
+\newcommand{\semeval}[0]{SemEval-2019}
+\newcommand{\fasttext}[0]{\emph{fastText}}
+
+El preprocesamiento es crucial en las aplicaciones de PNL, especialmente cuando se trabaja con datos ruidosos generados por el usuario. Aquí, seguimos \citet {atalaya_tass2018}, definiendo dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos. Usamos uno u otro, dependiendo de la configuración.
+
+El preprocesamiento básico de tweets incluye tokenización, reemplazo de identificadores, URL y correos electrónicos, y acortamiento de letras repetidas.
+
+El preprocesamiento orientado a sentimientos incluye minúsculas, eliminación de puntuación, palabras vacías y números, lematización (usando TreeTagger \cite{schmid95}) y manejo de negación.
+Para el manejo de la negación, seguimos un enfoque simple:
+% \cite {das01, pang02}:
+Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra.
+
+\section{Técnicas de clasificación}
+
+Para capturar esta información, consideramos una representación de bolsa de caracteres que codifica recuentos de caracteres $n$ -gramas para algunos valores de $ n $. Estos vectores se calculan a partir de textos originales de tweets, sin ningún procesamiento previo. \boc {} s tienen las mismas variantes y parámetros que \bow {} s.
+
+
+\subsection {Incrustaciones de Word}
+
+Usamos \fasttext {}, una biblioteca de incrustaciones consciente de subpalabras \cite {bojanowski16} para obtener representaciones de palabras independientes del contexto.
+En lugar de usar vectores previamente entrenados disponibles públicamente, entrenamos nuestras propias incrustaciones en un conjunto de datos de $ \sim90 $ millones de tweets de varios países de habla hispana.
+Preparamos dos versiones de los datos: una usando solo preprocesamiento básico y la otra usando preprocesamiento orientado a sentimientos (con la excepción de la lematización). Para estos dos conjuntos de datos, las incrustaciones de omisión de gramática se entrenaron utilizando diferentes configuraciones de parámetros, incluyendo una serie de dimensiones, tamaño de n-gramas de palabras y subpalabras, y tamaño de la ventana de contexto.
+
+\subsection {Tweet Embeddings}
+\label {sec: sif}
+
+% Hay varias formas de usar incrustaciones de palabras para el análisis de sentimientos en tweets: los enfoques van desde el simple promedio de vectores para cada palabra en el tweet hasta el uso de arquitecturas más complejas como CNN o RNN. En este trabajo,
+Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
+Seguimos dos enfoques simples: promedio simple y promedio ponderado. En el segundo caso, utilizamos un esquema que se asemeja a la frecuencia inversa suave (SIF) \cite {arora17}, inspirado en la reponderación de TF-IDF.
+Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado.
+Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
+
+% También consideramos dos opciones que afectan las incrustaciones de tweets: binarización, que ignora las repeticiones de tokens en los tweets; y normalización, que escalas dando como resultado que los vectores de tweets tengan una norma unitaria.
+
+
+\subsection{Incorporaciones dependientes del contexto}
+\label {subsec: elmo}
+
+Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet {mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
+
+\elmo {} \cite {peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
+% Estas representaciones se consideran profundas ya que utilizan la salida de cada capa LSTM.
+Para obtener un vector final para cada token, los autores sugieren colapsar las capas en vectores mediante una combinación lineal.
+
+% Sea $ t_1, \ldots, t_n $ una secuencia de tokens, y sea $ h_ {k, j} $ el vector que representa la salida de la capa $ j $ cuando se consume el token $ t_k $. Entonces, el vector contextualizado para el token $ k $ es:
+%
+% \begin {ecuación}
+% ELMo_k ^ {tarea} = \gamma ^ {tarea} \sum_ {j = 0} ^ {L} s_j h_ {k, j} \label {eq: elmo}
+% \end {ecuación}
+
+En este trabajo, usamos la implementación y los modelos entrenados previamente de \citet{che-EtAl:2018:K18-2}.
+El modelo español se entrenó con $ L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
