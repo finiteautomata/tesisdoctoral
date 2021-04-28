@@ -1,12 +1,16 @@
 En este capítulo contaremos el diseño del proceso de recolección, selección y anotación de datos. Por lo marcado en anteriores secciones, consideramos interesante el problema de hacer una detección de lenguaje discriminatorio bajo un contexto. Es decir, no es lo mismo considerar el mensaje ``sos un hombre'' en solitario que si ese mismo mensaje está dirigido hacia una mujer trans.
 
-Nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta. Un ejemplo puede verse . 
+Nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta. Un ejemplo puede verse .
 
 Muchos sitios de noticias disponen de sistemas embebidos de comentarios, pero vista la dificultad para la recolección a la vez que los limitados datos provistos por estos sitios nos llevaron a buscar otro medio: Twitter. Twitter provee una sencilla API para descargar datos, a la vez
 
 Algo a tener en cuenta es que este tipo de datos tiene una naturaleza particular, ya que las agresiones discriminatorias son usualmente a personajes públicos o colectivos de personas, y se dan de manera indirecta (a través del comentario en la noticia) y no directa (es decir, como respuesta al usuario de Twitter ofendido)
 
+\section{Trabajos previos}
 
+
+
+Pocos trabajo han explorado la utilización de contexto para la detección de lenguaje de odio, o algunas otras tareas similares como la detección de lenguaje ofensivo. Uno de los primeros en utilizar el contexto para esta tarea es \citet{gao2018detecting}. En ese trabajo, fueron anotados 1528 comentarios provenientes de 10 hilos de Fox News. Usando las
 
 \section{Recolección de noticias y comentarios}
 
@@ -46,9 +50,9 @@ Para esta tarea, elegimos 5 diarios:
     \item Crónica
 \end{itemize}
 
-Estos diarios son los mayores generadores de contenido. Consideramos otros medios, pero nos atuvimos a medios formales tradicionales y con soporte escrito. 
+Estos diarios son los mayores generadores de contenido. Consideramos otros medios, pero nos atuvimos a medios formales tradicionales y con soporte escrito.
 
-En un principio consideramos la posibilidad de anotar tweets de digiarios de otros países, pero teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios. A su vez, observamos que la mayoría de los comentarios son de la variedad dialectal rioplatense 
+En un principio consideramos la posibilidad de anotar tweets de digiarios de otros países, pero teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios. A su vez, observamos que la mayoría de los comentarios son de la variedad dialectal rioplatense
 
 
 \subsection{Datos recolectados}
@@ -63,7 +67,7 @@ En un principio consideramos la posibilidad de anotar tweets de digiarios de otr
     @perfilcom &  8764    &  61203  \\
     @LANACION  &  16040   &  506091 \\
     @cronica   &  17250   &  70872 \\
-    \hline 
+    \hline
     Total      & 116756  & 2133029 \\
     \end{tabular}
     \caption{Artículos recoletados por medio}
@@ -73,7 +77,7 @@ En un principio consideramos la posibilidad de anotar tweets de digiarios de otr
 
 En la tabla \ref{tab:articulos_recoletados_por_medio} damos los números de los artículos recolectados por cada medio, luego de aplicado . Si bien recolectamos más artículos de otros medios, no son enumerados. Infobae es el medio que más producción de artículos genera, y también será finalmente sobre el que más comentarios etiquetemos.
 
-La figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando el filtro de palabras listado en la tabla \ref{tab:article_words}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a la caída de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país. 
+La figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando el filtro de palabras listado en la tabla \ref{tab:article_words}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a la caída de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país.
 
 Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas notas contienen links a otras con sus títulos y eso puede interferir en estas estimaciones. Así y todo, decidimos mantener este método ya que consideramos que mayormente las notas en el período referido tienen relación con la pandemia.
 
@@ -98,10 +102,10 @@ Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas no
 \section{Selección de datos a anotar}
 
 
-Un problema que se nos presenta antes de comenzar el etiquetado es el de seleccionar los artículos que vamos a etiquetar. Una primera posibilidad para hacer esto es realizar una selección aleatoria de artículos y comentarios; sin embargo, los comentarios discriminatorios no se distribuyen de manera uniforme entre los artículos, sino que se concentra en algunos temas. Es mucho más probable encontrar comentarios de índole discriminatoria en notas que tengan temas cercanos a alguna de las características protegidas; por ejemplo, es esperable que encontremos contenido odioso en notas sobre China y el Coronavirus o sobre una chica transgénero antes que en un artículo de fútbol o economía. 
+Un problema que se nos presenta antes de comenzar el etiquetado es el de seleccionar los artículos que vamos a etiquetar. Una primera posibilidad para hacer esto es realizar una selección aleatoria de artículos y comentarios; sin embargo, los comentarios discriminatorios no se distribuyen de manera uniforme entre los artículos, sino que se concentra en algunos temas. Es mucho más probable encontrar comentarios de índole discriminatoria en notas que tengan temas cercanos a alguna de las características protegidas; por ejemplo, es esperable que encontremos contenido odioso en notas sobre China y el Coronavirus o sobre una chica transgénero antes que en un artículo de fútbol o economía.
 
 
-Teniendo esto en cuenta, evaluamos varias alternativas. La primera es observar los artículos e intentar seleccionar aquellos que consideremos que puedan tener contenido potencialmente discriminatorio. 
+Teniendo esto en cuenta, evaluamos varias alternativas. La primera es observar los artículos e intentar seleccionar aquellos que consideremos que puedan tener contenido potencialmente discriminatorio.
 
 Una posibilidad para esto sería usar algunas palabras ``semilla'' para seleccionar artículos interesantes. Otra sería buscar directamente comentarios que contengan algunos insultos comunes o expresiones peyorativas hacia nuestros grupos protegidos. Después de algunos experimentos, decidimos utilizar el muestreo basado en comentarios.
 
@@ -111,21 +115,21 @@ En primer lugar, consideramos la posibilidad de hacer una selección en base al 
 
 Para ello, indexamos todos nuestros artículos en MongoDB \footnote{\url{https://www.mongodb.com/}}, una base de datos no relacional y desestructurada. MongoDB permite la utilización de índices en base a texto, y realizar búsquedas en base a textos, palabras, e inflexiones. Cada artículo fue indexado en base al contenido de su cuerpo (es decir, el texto en sí del artículo).
 
-La tabla \ref{tab:palabras_articulos} muestra el conjunto utilizado para recolectar artículos. Como vemos, hay diversas palabras que recogen distintas temáticas de posibles tópicos ``calientes'', algunos muy locales respecto a eventos concretos durante la pandemia. 
+La tabla \ref{tab:palabras_articulos} muestra el conjunto utilizado para recolectar artículos. Como vemos, hay diversas palabras que recogen distintas temáticas de posibles tópicos ``calientes'', algunos muy locales respecto a eventos concretos durante la pandemia.
 
 \begin{table}[]
     \centering
     \begin{tabular}{l | l | l | l}
-    China        &  piqueteros              &  mamá                & empleadas domésticas  \\ 
-    Cuba         &  villas                  &  de género           & la modelo             \\               
-    cubano       &  la villa                &  aborto              & la periodista         \\            
-    bolivia      &  movimientos sociales    &  actriz              & la cantante           \\               
-    paraguayo    &  organizaciones sociales &  actrices            & travesti              \\               
-    judío        &  tomas de tierras        &  feminista           & trans                 \\                 
-    camionero    &  toma de tierras         &  femicidio           & gay                   \\               
-    ladrón       &  sindicatos              &  enfermera           & homosexual            \\                 
-    represión    &  Guernica                &  madre               & de la V               \\           
-    criminal     &  mapuches                &  personal doméstico  & Ofelia                \\                      
+    China        &  piqueteros              &  mamá                & empleadas domésticas  \\
+    Cuba         &  villas                  &  de género           & la modelo             \\
+    cubano       &  la villa                &  aborto              & la periodista         \\
+    bolivia      &  movimientos sociales    &  actriz              & la cantante           \\
+    paraguayo    &  organizaciones sociales &  actrices            & travesti              \\
+    judío        &  tomas de tierras        &  feminista           & trans                 \\
+    camionero    &  toma de tierras         &  femicidio           & gay                   \\
+    ladrón       &  sindicatos              &  enfermera           & homosexual            \\
+    represión    &  Guernica                &  madre               & de la V               \\
+    criminal     &  mapuches                &  personal doméstico  & Ofelia                \\
     \end{tabular}
     \caption{Palabras utilizad}
     \label{tab:palabras_articulos}
@@ -133,13 +137,13 @@ La tabla \ref{tab:palabras_articulos} muestra el conjunto utilizado para recolec
 
 \subsection{Selección en base a comentarios}
 
-Otra posibilidad es mirar los comentarios de los artículos en lugar del contenido del artículo, y seleccionar posibles temas en base a esto. En este punto, la idea es únicamente seleccionar los artículos y no los comentarios; estos últimos son sólo usados como indicios para ver comentarios con posible contenido discriminatorio, y como tal identificar a ese artículo como un posible generador de este tipo de contenido. 
+Otra posibilidad es mirar los comentarios de los artículos en lugar del contenido del artículo, y seleccionar posibles temas en base a esto. En este punto, la idea es únicamente seleccionar los artículos y no los comentarios; estos últimos son sólo usados como indicios para ver comentarios con posible contenido discriminatorio, y como tal identificar a ese artículo como un posible generador de este tipo de contenido.
 
-La idea es similar a la de la selección con artículos, sólo que aplicada a comentarios: buscamos comentarios que contengan alguna de las palabras semilla listadas en la Tabla \ref{tab:palabras_comentarios}. Estas palabras fueron recolectadas a base de experimentación y observación de los datos, y tratan de contener 
+La idea es similar a la de la selección con artículos, sólo que aplicada a comentarios: buscamos comentarios que contengan alguna de las palabras semilla listadas en la Tabla \ref{tab:palabras_comentarios}. Estas palabras fueron recolectadas a base de experimentación y observación de los datos, y tratan de contener
 
 Una idea también considerada fue la de utilizar un clasificador entrenado sobre otro dataset (por ejemplo, el de \citet{hateval2019semeval}) y con eso marcar comentarios posiblemente discriminatorios. Sin embargo, muy probablemente detectaríamos sólo comentarios para las categorías/características etiquetadas en esos datasets e ignorarían las que agregamos en nuestro trabajo; por ejemplo, la mayoría de los datasets no contienen comentarios anotados contra la comunidad LGBTI.
 
-El procedimiento de selección consta de, dado un artículo, marcar sus comentarios que contengan una o más de las expresiones listadas. Si el artículo tiene tres o más comentarios marcados, entonces seleccionamos el artículo; caso contrario, es descartado. 
+El procedimiento de selección consta de, dado un artículo, marcar sus comentarios que contengan una o más de las expresiones listadas. Si el artículo tiene tres o más comentarios marcados, entonces seleccionamos el artículo; caso contrario, es descartado.
 
 Vale remarcar que este proceso de selección es para los \emph{artículos}, no para los comentarios.
 
@@ -161,12 +165,12 @@ Vale remarcar que este proceso de selección es para los \emph{artículos}, no p
 
 
 
-Luego de algunos análisis experimentales y observacionales de las dos posibles metodologías, decidimos utilizar el muestreo de artículos en base a comentarios. Por lo que pudimos observar, los artículos seleccionados parecían tener mayor incidencia de mensajes odiosos y eso nos decantó hacia esa opción. 
+Luego de algunos análisis experimentales y observacionales de las dos posibles metodologías, decidimos utilizar el muestreo de artículos en base a comentarios. Por lo que pudimos observar, los artículos seleccionados parecían tener mayor incidencia de mensajes odiosos y eso nos decantó hacia esa opción.
 
 \section{Criterios de anotación}
 \label{sec:criterios}
 
-La definición de lenguaje discriminatorio utilizada en este trabajo está basada en trabajos de la Comisión Interamericana de Derechos Humanos (CIDH)\cite{CIDH2015}, del Centro de Estudios de Libertad de Expresión (CELE) \cite{cele2019} y en el Article 19 Hate Speech Toolkit \cite{article192015}. 
+La definición de lenguaje discriminatorio utilizada en este trabajo está basada en trabajos de la Comisión Interamericana de Derechos Humanos (CIDH)\cite{CIDH2015}, del Centro de Estudios de Libertad de Expresión (CELE) \cite{cele2019} y en el Article 19 Hate Speech Toolkit \cite{article192015}.
 
 Teniendo estos insumos en cuenta, entendemos que hay discurso discriminatorio en un texto social si contiene declaraciones de carácter intenso y posiblemente irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida.
 
@@ -188,18 +192,19 @@ Si bien algunas de estas características no son consideradas en algunos tratado
 
 \section{Modelo de etiquetado}
 
-Un modelo de anotación es, según \citet{pustejovsky2012natural}, una representación práctica del objetivo de anotación. En nuestro caso, queremos marcar comentarios discriminatorios, marcar a qué grupos y/o características se está ofendiendo, y también identificar llamados a tomar alguna acción contra los objetos de esos discursos. Por lo pronto, haremos una definición que capture ese objetivo sin deternos demasiado en especificarlo formalmente (lo que llaman en ese libro ``especificación''). 
+Un modelo de anotación es, según \citet{pustejovsky2012natural}, una representación práctica del objetivo de anotación. En nuestro caso, queremos marcar comentarios discriminatorios, marcar a qué grupos y/o características se está ofendiendo, y también identificar llamados a tomar alguna acción contra los objetos de esos discursos. Por lo pronto, haremos una definición que capture ese objetivo sin deternos demasiado en especificarlo formalmente (lo que llaman en ese libro ``especificación'').
 
 \subsection{Modelo Jerárquico de Etiquetado}
-\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado en las competiciones OffensEval \cite{zampieri2019semeval2019} y hatEval \cite{hateval2019semeval}. La idea de la anotación jerárquica es realizar anotaciones adicionales sólo para algunos casos de anotaciones del nivel anterior. 
+\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado en las competiciones OffensEval \cite{zampieri2019semeval2019} y hatEval \cite{hateval2019semeval}. La idea de la anotación jerárquica es realizar anotaciones adicionales sólo para algunos casos de anotaciones del nivel anterior.
 
-En el caso de \emph{HatEval}, tenemos un primer nivel que consta de anotar si un tweet contiene o no lenguaje de odio (nivel 1). Si el tweet tiene lenguaje de odio, entonces anotamos si está dirigido a un individuo o a un grupo, y también anotamos si es agresivo o no (ambos nivel 2). En el caso de \emph{OffensEval}, primero anotamos si es ofensivo (nivel 1), luego si está dirigido o es un insulto no dirigido (nivel 2) y finalmente, si es dirigido y ofensivo, marcamos su objetivo (nivel 3). En la figura \ref{fig:modelos_offenseval_hateval} ilustramos ambos modelos. 
+En el caso de \emph{HatEval}, tenemos un primer nivel que consta de anotar si un tweet contiene o no lenguaje de odio (nivel 1). Si el tweet tiene lenguaje de odio, entonces anotamos si está dirigido a un individuo o a un grupo, y también anotamos si es agresivo o no (ambos nivel 2). En el caso de \emph{OffensEval}, primero anotamos si es ofensivo (nivel 1), luego si está dirigido o es un insulto no dirigido (nivel 2) y finalmente, si es dirigido y ofensivo, marcamos su objetivo (nivel 3). En la figura \ref{fig:modelos_offenseval_hateval} ilustramos ambos modelos.
 
 
 %
 %
 % Link: https://docs.google.com/drawings/d/1ZgTmvRwMWn0B-kokfw87jfSa7eY5-OSBHwltetnNT08/edit
 %
+
  \begin{figure}
      \centering
      \includegraphics[width=\textwidth]{img/modelosjerarquicos.png}
@@ -219,7 +224,7 @@ En el caso de \emph{HatEval}, tenemos un primer nivel que consta de anotar si un
 \end{figure}
 
 
-La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado. Seguimos un modelo jerárquico similar al propuesto por \citet{zampieri2019predicting}, aunque de sólo un nivel. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación  para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida 
+La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado. Seguimos un modelo jerárquico similar al propuesto por \citet{zampieri2019predicting}, aunque de sólo un nivel. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación  para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida
 
 
 
@@ -259,6 +264,9 @@ Luego de una breve entrevista donde les contamos el proyecto y corroboramos que 
 \section{Proceso de etiquetado}
 
 \subsection{Preprocesado de los datos}
+
+El preprocesado de los datos es muy básico, y sólo
+
 
 \subsection{Entrenamiento de etiquetadores}
 \subsection{Esquema de anotación}
