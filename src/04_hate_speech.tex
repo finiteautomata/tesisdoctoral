@@ -15,6 +15,7 @@ La detección del discurso del odio es una tarea de clasificación de oraciones 
 
 En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un desafío en la detección de misoginia en Twitter, tanto en español como en inglés, mientras que \citet{fersini2018evalitaoverview} planteó un desafío similar pero en italiano e inglés. \citet{bosco2018overview} propuso un concurso de detección automática sobre publicaciones de Twitter y comentarios de Facebook, que incluía discursos de odio en general.
 
+
 \section{Datasets}
 
 \subsection{hatEval}
@@ -48,14 +49,14 @@ Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes 
 Para capturar esta información, consideramos una representación de bolsa de caracteres que codifica recuentos de caracteres $n$ -gramas para algunos valores de $ n $. Estos vectores se calculan a partir de textos originales de tweets, sin ningún procesamiento previo. \boc {} s tienen las mismas variantes y parámetros que \bow {} s.
 
 
-\subsection {Incrustaciones de Word}
+\subsection {Word-embeddings}
 
-Usamos \fasttext {}, una biblioteca de incrustaciones consciente de subpalabras \cite {bojanowski16} para obtener representaciones de palabras independientes del contexto.
+Usamos \fasttext {}, una biblioteca de incrustaciones consciente de subpalabras \cite{bojanowski16} para obtener representaciones de palabras independientes del contexto.
 En lugar de usar vectores previamente entrenados disponibles públicamente, entrenamos nuestras propias incrustaciones en un conjunto de datos de $ \sim90 $ millones de tweets de varios países de habla hispana.
 Preparamos dos versiones de los datos: una usando solo preprocesamiento básico y la otra usando preprocesamiento orientado a sentimientos (con la excepción de la lematización). Para estos dos conjuntos de datos, las incrustaciones de omisión de gramática se entrenaron utilizando diferentes configuraciones de parámetros, incluyendo una serie de dimensiones, tamaño de n-gramas de palabras y subpalabras, y tamaño de la ventana de contexto.
 
-\subsection {Tweet Embeddings}
-\label {sec: sif}
+\subsection{Tweet Embeddings}
+\label{sec:sif}
 
 % Hay varias formas de usar incrustaciones de palabras para el análisis de sentimientos en tweets: los enfoques van desde el simple promedio de vectores para cada palabra en el tweet hasta el uso de arquitecturas más complejas como CNN o RNN. En este trabajo,
 Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
@@ -66,12 +67,12 @@ Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 % También consideramos dos opciones que afectan las incrustaciones de tweets: binarización, que ignora las repeticiones de tokens en los tweets; y normalización, que escalas dando como resultado que los vectores de tweets tengan una norma unitaria.
 
 
-\subsection{Incorporaciones dependientes del contexto}
+\subsection{Embeddings contextualizados}
 \label{subsec:elmo}
 
-Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet {mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
+Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet{mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
 
-\elmo {} \cite {peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
+\elmo{} \cite{peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
 % Estas representaciones se consideran profundas ya que utilizan la salida de cada capa LSTM.
 Para obtener un vector final para cada token, los autores sugieren colapsar las capas en vectores mediante una combinación lineal.
 
@@ -81,5 +82,10 @@ Para obtener un vector final para cada token, los autores sugieren colapsar las 
 % ELMo_k ^ {tarea} = \gamma ^ {tarea} \sum_ {j = 0} ^ {L} s_j h_ {k, j} \label {eq: elmo}
 % \end {ecuación}
 
-En este trabajo, usamos la implementación y los modelos entrenados previamente de \citet{che-EtAl:2018:K18-2}.
-El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
+En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
+
+\section{Resultados de clasificación}
+
+\subsection{Análisis de Error}
+
+\subsection{Intepretabilidad}
