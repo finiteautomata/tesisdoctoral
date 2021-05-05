@@ -4,11 +4,13 @@ En este capítulo comentaremos distintos experimentos de clasificación realizad
 
 \subsection{Trabajos previos}
 
-El contexto no suele utilizarse masivamente
+Como contamos en la anterior sección, son pocos los trabajos y datasets que poseen contexto. Ver \ref{sec:dataset_trabajos_previos} para un repaso de los distintos datasets contextualizados.
 
+\citet{gao2018detecting} propone dos tipos de modelos: regresiones logísticas y redes neuronales recurrentes. Para los modelos de regresiones logísticas, usan como inputs bolsas de palabras, bolsas de caracteres, vectores semánticos producidos con Linguistic Inquiry and Word Count (LIWC) \cite{pennebaker2001linguistic} y features de un lexicon de emociones \cite{mohammad2013nrc}. Por otro lado, utiliza LSTM bidireccionales con mecanismo de atención de Bahdanau \cite{bahdanau2014neural} usando embeddings \emph{word2Vec} de dimensión 100.
+
+Un punto criticable de este trabajo es que utiliza el nombre de usuario como feature; algo que a priori no suele hacerse ya que permitiría ``prejuzgar'' a un usuario antes que por el contenido de sus tweets. Si bien es cierto que la información de usuarios y sus conexiones es valiosa, introducir esta información a nuestros modelos da lugar a posibles correlaciones espurias que es preferible evitar.
 
 \begin{itemize}
-    \item Contar trabajo Gao y otros
     \item Contar offensive language detection
 \end{itemize}
 
