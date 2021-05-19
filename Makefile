@@ -1,5 +1,5 @@
 all:
-	latexmk -pdf main.tex
+	latexmk -pdflatex=lualatex -pdf main.tex
 
 clean:
 	latexmk -C main.tex
