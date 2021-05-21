@@ -10,14 +10,15 @@ Como contamos en la anterior sección, son pocos los trabajos y datasets que pos
 
 Un punto criticable de este trabajo es que utiliza el nombre de usuario como feature; algo que a priori no suele hacerse ya que permitiría ``prejuzgar'' a un usuario antes que por el contenido de sus tweets. Si bien es cierto que la información de usuarios y sus conexiones es valiosa, introducir esta información a nuestros modelos da lugar a posibles correlaciones espurias que es preferible evitar.
 
+\subsection{Tareas de clasificación propuestas}
+
 Now that we have this specially-crafted corpus containing context, we now turn our attention to answer our original question: can classifiers leverage context to improve their performance on the hate speech detection task?
 
 For this purpose, we propose the following classification tasks:
 
 \begin{enumerate}
-    \item Given a tweet, predict whether it is hateful or not
-    \item Given a hateful tweet, predict whether it calls to action
-    \item Given a hateful tweet, predict the offended characteristics
+    \item Task A: Given a tweet, predict whether it is hateful or not
+    \item Task B: Given a hateful tweet, predict whether it calls to action and predict the offended characteristics
 \end{enumerate}
 
 Each instance consists of both the comment (the tweet) and its context (both title and the full body). To test our hypothesis, for each task we trained classifiers having as input the following comibinations:
@@ -85,20 +86,20 @@ La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, 
 La figura \ref{fig:recall_by_characteristic} muestra la recuperación de nuestros algoritmos. Usar solo el contexto del título mejora la sensibilidad para las características LGBTI y CRIMINALES (Mann Whitney U, $ p \ leq 0.01 $, Bonferroni corregido); agregar el cuerpo completo también lo mejora significativamente para la característica RACISMO y lo mejora un poco más para CRIMINAL (Mann Whitney U $ p \ leq 0.01 $, Bonferroni corregido). Sin embargo, el desempeño en POLÍTICA empeora al agregar contexto en cualquier forma ($ p \ leq 0.001 $, corregido Bonferroni). Para las otras características, el contexto no mejora ni empeora el desempeño.
 
 
-\begin{table}
-    \centering
-    \begin{tabular}{ll}
-        \toprule
-        Model &            Mean F1 \\
-        \midrule
-        BERT No Context &  $0.731 \pm 0.004$ \\
-        BERT Title      &  $0.808 \pm 0.006$ \\
-        BERT Title+Body &  $0.824 \pm 0.006$ \\
-        \bottomrule
-    \end{tabular}
-    \caption{Mean F1 scores for Task B: Offended characteristic detection}
-    \label{tab:task_b_results}
-\end{table}
+% \begin{table}
+%     \centering
+%     \begin{tabular}{ll}
+%         \toprule
+%         Model &            Mean F1 \\
+%         \midrule
+%         BERT No Context &  $0.731 \pm 0.004$ \\
+%         BERT Title      &  $0.808 \pm 0.006$ \\
+%         BERT Title+Body &  $0.824 \pm 0.006$ \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{Mean F1 scores for Task B: Offended characteristic detection}
+%     \label{tab:task_b_results}
+% \end{table}
 
 La figura \ref{fig:task_b_results} muestra los resultados de la característica ofendida y la tarea de detección de llamada a la acción. La tabla \ref{tab:task_b_results} muestra las puntuaciones F1 medias para tener una medida de resumen. Como se esperaba, la ganancia de tener contexto disponible es más evidente en este punto, con una diferencia media de puntuación F1 de $ 7,6 $ puntos entre no tener contexto y tener el título, y $ 1,5 $ puntos adicionales si el cuerpo está disponible. La detección de llamadas a la acción apenas se mejora al tener un contexto disponible. Nuevamente, las características LGBTI y CRIMINALES se benefician enormemente del contexto; La característica CLASS también parece tener alguna mejora. No hay grandes diferencias entre tener el título y el cuerpo completo.
 
