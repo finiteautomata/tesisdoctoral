@@ -20,8 +20,8 @@
 %%%% CARATULA
 
 \def\autor{Juan Manuel Pérez}
-\def\tituloTesis{Título de tesis: \vspace{.2cm} \\ Sarasa y alcances}
-\def\runtitulo{Título de tesis: \vspace{.2cm} \\ Técnicas y alcances}
+\def\tituloTesis{Técnicas y recursos para la detección de lenguaje discriminatorio en redes sociales}
+\def\runtitulo{Técnicas y recursos para la detección de lenguaje discriminatorio en redes sociales}
 \def\runtitle{Star Wars: Rebellion and Empire}
 \def\director{Franco Luque}
 \def\codirector{Agustín Gravano}
@@ -52,7 +52,7 @@
 
 
 \chapter{Intro}
-input{src/01_intro.tex}
+\input{src/01_intro.tex}
 
 \chapter{Preliminares}
 \input{src/02_machine_learning_nlp.tex}
@@ -63,14 +63,19 @@ input{src/01_intro.tex}
 
 \chapter{Discurso de odio}
 \input{src/04_hate_speech.tex}
-\chapter{Limitaciones de todo: metodológicos, de los corpus, de los modelos.}
-\input{src/05_limitaciones.tex}
+
+% \chapter{Limitaciones de todo: metodológicos, de los corpus, de los modelos.}
+% \input{src/05_limitaciones.tex}
 \part{Creación del dataset}
 
 \chapter{Metodología y definiciones}
 \input{src/06_dataset.tex}
+
 \chapter{Clasificadores, Análisis y Limitaciones}
 \input{src/07_deteccion_contextualizada.tex}
+
+\chapter{Adaptación de dominio}
+\input{src/08_domain_adaptation.tex}
 
 \chapter{Conclusiones}
 

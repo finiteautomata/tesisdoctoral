@@ -30,6 +30,65 @@ Each instance consists of both the comment (the tweet) and its context (both tit
 \end{enumerate}
 
 
+\subsection{Cotas a la performance}
+
+\begin{table}
+    \centering
+    \begin{tabular}{lll|ll}
+        \hline
+                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Contra gold} \\
+        {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
+        \hline
+        HATEFUL    &  0.6525 &   0.6751    & 0.8285   &   0.8515   \\
+        CALLS      &  0.6042 &   0.7037    & 0.7741   &   0.9148   \\
+        WOMEN      &  0.7258 &   0.7368    & 0.8371   &   0.8275   \\
+        LGBTI      &  0.8939 &   0.9600    & 0.9660   &   0.9743   \\
+        RACISM     &  0.9458 &   0.9592    & 0.9667   &   0.9731   \\
+        CLASS      &  0.7310 &   0.7500    & 0.8058   &   0.8391   \\
+        POLITICS   &  0.7370 &   0.7777    & 0.8920   &   0.9189   \\
+        DISABLED   &  0.7973 &   0.8800    & 0.8976   &   0.9392   \\
+        APPEARANCE &  0.8033 &   0.9024    & 0.9026   &   0.9493   \\
+        CRIMINAL   &  0.8180 &   0.9473    & 0.9614   &   0.9788   \\
+        \hline
+    \end{tabular}
+    \caption{Estadísticos de los cálculos de F1 entre anotadores - modo jerárquico}
+    \label{tab:ia_f1_scores}
+\end{table}
+
+Como observamos en la anterior sección, la tarea de detección de lenguaje discriminatorio contiene una alta cantidad de ruido, y el acuerdo entre humanos es moderado. En este contexto, cabe preguntarse cuál es la máxima performance que puede lograr un clasificador para esta tarea. Por la misma naturaleza del problema, claramente no puede ser perfecta.
+
+Para obtener algunas medidas de esto, calculamos en primer lugar las F1 usando todos los posibles pares de anotadores. Como la F1 es simétrica (invirtiendo roles se invierten la precisión y la sensibilidad) no necesitamos hacer ninguna asunción sobre cuál sus roles.
+
+Algo a tener en cuenta es que nuestra métrica final será contra la etiqueta resultante del (nuestro \emph{gold standard}). Una cota que seguro está por arriba de nuestra performance es el acuerdo que haya entre los anotadores y este \emph{gold standard}; hay que también observar que cada etiqueta ``de oro'' codifica información de sus anotaciones, con lo cual éste número es una cota superior sin dudas pero también pueden ser demasiado ``gruesa''.
+
+La tabla \ref{tab:ia_f1_scores} contiene estadísticos de estos cálculos, tanto entre anotadores como contra el \emph{gold-standard}. Como podemos observar, la mediana entre anotadores de la F1 (usada para obviar outliers) es relativamente baja para la detección de odio ($\sim 0.67$), mientras que contra el gold standard es de $0.85$. De esto entendemos que la performance máxima en la detección está entre esos dos números.
+
+Por otro lado, para el resto de las características observamos números más elevados, pero hay que recordar que estos cálculos están hecho \textbf{solamente} entre tweets etiquetados como odiosos. Si obviamos esta restricción (lo que llamamos ``modo libre''), la performance esperada baja sustancialmente. La tabla \ref{tab:ia_f1_scores_free_mode} muestra estos números, tanto calculado entre anotadores como contra el \emph{gold standard}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{lll|ll}
+        \hline
+                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Contra gold} \\
+        {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
+        \hline
+        CALLS      &  0.4341 &   0.4950   &  0.7042   &   0.8424  \\
+        WOMEN      &  0.4896 &   0.4676   &  0.7406   &   0.7593  \\
+        LGBTI      &  0.5959 &   0.5765   &  0.8462   &   0.9152  \\
+        RACISM     &  0.6532 &   0.6444   &  0.8712   &   0.8789  \\
+        CLASS      &  0.4431 &   0.4444   &  0.7220   &   0.7317  \\
+        POLITICS   &  0.4609 &   0.4360   &  0.7951   &   0.8155  \\
+        DISABLED   &  0.5502 &   0.6000   &  0.8127   &   0.8421  \\
+        APPEARANCE &  0.6485 &   0.7428   &  0.8314   &   0.9146  \\
+        CRIMINAL   &  0.5265 &   0.5801   &  0.8415   &   0.9292  \\
+        \bottomrule
+    \end{tabular}
+
+    \caption{Estadísticos de los cálculos de F1 entre anotadores - modo libre. Cada característica es tomada como una etiqueta binaria independientemente del cálculo de odio}
+    \label{tab:ia_f1_scores_free_mode}
+\end{table}
+
+
 \subsection{Preprocessing}
 
 Para cada tweet, aplicamos el siguiente procesamiento previo: primero, cortamos las repeticiones de caracteres hasta tres ocurrencias; risas normalizadas; los identificadores de usuario (\emph{@user}) se reemplazan por un token especial \emph{[USER]}; convertimos emojis en una representación de texto usando la biblioteca de python \emph{emoji} \footnote {\url{https://github.com/carpedm20/emoji/}}. Los hashtags se eliminan, están rodeados por una ficha especial \emph{[HASHTAG]} y se dividen en palabras si están en mayúsculas.
