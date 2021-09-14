@@ -249,10 +249,8 @@ En el caso de \emph{HatEval}, tenemos un primer nivel que consta de anotar si un
 
 La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado para el dataset construído en este trabajo. Seguimos un modelo jerárquico similar al propuesto por \citet{zampieri2019predicting}, aunque de sólo un nivel. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación  para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida
 
-\todo{Agregar un ejemplo}
 
 
-\section{Herramienta de etiquetado}
 
 
 \section{Etiquetadores}
@@ -299,6 +297,37 @@ Acá anotar los 3 anotados, etc
 %
 % Esto quizás va después
 %
+\subsection{Herramienta de etiquetado}
+
+%%
+%% Link a Google Draw: https://docs.google.com/drawings/d/1E24-2l6hsNj2JSKBZOD8QvZCJR6rrGjz-cWwt8XuPRg/edit
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/labeler.pdf}
+    \caption{Pantalla del etiquetador}
+    \label{fig:labeler_example}
+\end{figure}
+
+Al no utilizar ningún servicio de etiquetado, optamos por desarrollar nuestra propia aplicación para el etiquetado de tweets. En ella, a cada etiquetador les fueron asignados progresivamente los artículos a anotar, los cuales fueron agrupados en ``lotes'' para facilitar la tarea administrativa de la asignación.
+
+La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados (máximo 50 comentarios). Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar
+
+\begin{enumerate}
+    \item Si el comentario contiene discurso discriminatorio
+    \item En caso de ser discriminatorio, marcar si llama a la acción
+    \item En caso de ser discriminatorio, marcar al menos una característica ofendida
+\end{enumerate}
+
+Para respetar el esquema propuesto anteriormente, asignamos primero los artículos a dos anotadores. Si los dos saltearon el artículo o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear.
+
+Al asignar el 3er anotador, sólo se muestran los comentarios que hayan sido marcados por al menos un etiquetador previamente como discriminatorios.
+
+Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.djangoproject.com/}}, un framework de python para desarrollo web, y Javascript plano. Como base de datos utilizamos SQLite ya que tenía una baja tasa de concurrencia (sólo 6 usuarios.)
+
+
+
 
 \section{Dataset resultante}
 
