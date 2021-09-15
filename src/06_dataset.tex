@@ -285,14 +285,16 @@ Luego de una breve entrevista donde les contamos el proyecto y corroboramos que 
 
 \section{Proceso de etiquetado}
 
-\subsection{Preprocesado de los datos}
+\subsection{Preprocesado y filtrado de los datos}
 
-El preprocesado de los datos es muy básico, y sólo
+El preprocesado de los datos es muy básico: en los hechos, efectuamos el mismo preprocesamiento que en anteriores tareas, consistente en reemplazar handles de Twitter por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario conocido como ``odiador'' (llamemos \verb|@hater|) retwittea la noticia y otro responde a ese RT, aparece ese nombre de usuario lo cual podría condicionar al etiquetador.
+
+Así mismo, descartamos cualquier tweet que tuviera algún link ya que pueden referir a contenido no textual
 
 
 \subsection{Entrenamiento de etiquetadores}
-\subsection{Esquema de anotación}
-Acá anotar los 3 anotados, etc
+
+
 
 %
 % Esto quizás va después
@@ -312,7 +314,7 @@ Acá anotar los 3 anotados, etc
 
 Al no utilizar ningún servicio de etiquetado, optamos por desarrollar nuestra propia aplicación para el etiquetado de tweets. En ella, a cada etiquetador les fueron asignados progresivamente los artículos a anotar, los cuales fueron agrupados en ``lotes'' para facilitar la tarea administrativa de la asignación.
 
-La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados (máximo 50 comentarios). Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar
+La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados. Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar
 
 \begin{enumerate}
     \item Si el comentario contiene discurso discriminatorio
@@ -320,12 +322,17 @@ La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquet
     \item En caso de ser discriminatorio, marcar al menos una característica ofendida
 \end{enumerate}
 
-Para respetar el esquema propuesto anteriormente, asignamos primero los artículos a dos anotadores. Si los dos saltearon el artículo o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear.
-
-Al asignar el 3er anotador, sólo se muestran los comentarios que hayan sido marcados por al menos un etiquetador previamente como discriminatorios.
-
 Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.djangoproject.com/}}, un framework de python para desarrollo web, y Javascript plano. Como base de datos utilizamos SQLite ya que tenía una baja tasa de concurrencia (sólo 6 usuarios.)
 
+\subsection{Esquema de anotación}
+
+%Teniendo en cuenta el modelo de anotación ilustrado en la figura \ref{fig:annotation_model}, optamos por la siguiente metodología para el etiquetado de los comentarios de nuestro dataset.
+
+Los artículos son asignados a cada etiquetador. Cada etiquetador, al serle presentado un artículo, tiene dos opciones: etiquetarlo o saltearlo. La idea de saltear era doble: evitar contenido poco ``interesante'' en términos de comentarios discriminatorios, o evitar contenido sensible para el anotador (algo que no ocurrió afortunadamente).
+
+Una posibilidad que barajamos en un principio fue asignar para el etiquetado el artículo completo a 3 anotadores. Sin embargo, esta modalidad sería altamente ineficiente dada la baja cantidad de contenido discriminatorio. Entonces, decidimos ir por un esquema de ``desempate'': dos anotadores anotan un artículo, y luego un tercero anota sólo aquellos donde al menos uno marcó que es discriminatorio. Esto da la posibilidad de que haya una tercera anotación incluso cuando dos previas marcaron que el comentario es discriminatorio, y lo hacemos para recolectar más información. \todo{marcar otros trabajos que hayan hecho esto}. Con este esquema de anotación, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo.
+
+Entonces, cada artículo es asignado a 2 anotadores. Luego de esto, se solicita una tercera anotación pero sólo sobre los comentarios que tengan alguna de las dos etiquetadas marcando contenido discriminatorio, y no dando la posibilidad de saltear. Ahora ¿qué pasa si alguno de los dos anotadores saltea el artículo?. Tenemos dos casos. Si los dos saltean el artículo, entonces descartamos ese artículo. Ahora, puede ocurrir el caso de que uno lo saltee y el otro lo anote: en ese caso, y en pos de maximizar el contenido discriminatorio encontrado o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear.
 
 
 
