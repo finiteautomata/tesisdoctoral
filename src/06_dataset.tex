@@ -378,9 +378,25 @@ Como resultado de este esquema, cada comentario de nuestro dataset puede tener d
 
 \subsection{Asignación}
 
-\citet{pustejovsky2012natural} denominan ``asignación'' al procedimiento de extraer las ``gold labels'' de las etiquetas. En este punto tenemos una etiqueta binaria si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias
+\citet{pustejovsky2012natural} denominan ``asignación'' al procedimiento de extraer las ``gold labels'' de las etiquetas. En este punto tenemos una etiqueta binaria si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias: una para la llamadas a la acción (CALLS) y otras 8 para las características ofendidas. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características restantes.
+
+Para este dataset, tomamos las siguientes decisiones:
+
+\begin{enumerate}
+    \item Para la etiqueta de HS, realizamos la votación mayoritaria
+    \item Si hay HS, CALLS es positivo sii es votación mayoritaria
+    \item Si hay HS, marco como positivas todas aquellas características marcadas por los anotadores
+\end{enumerate}
+
+La primer decisión es la más obvia y razonable, pero las otras dos decisiones merecen alguna discusión. Para que sea un comentario considerado como HS, tiene que ocurrir que al menos dos etiquetadores lo marquen como tal. En ese caso, para que haya votación mayoritaria de CALLS, tiene que haber dos o más votos marcados como tal; en caso de empate, es decir, que un anotador marca que hay llamado a la acción y otro que no, marcamos que no hay llamado a la acción.
+
+En el caso de las características, marcamos todas las que hayan marcado aquellos anotadores que hayan etiquetado HS. Esta decisión podría haberse tomado de otra manera; por ejemplo, sólo tomando aquellos casos donde haya cierto grado de coincidencia entre los comentarios. Sin embargo, al considerar que los límites entre las características son difusos (por ejemplo, apariencia y mujer tienen un grado de coincidencia, y a veces clasismo y racismo también) preferimos optar por este esquema.
+
+\todo{Agregar algún gráfico de esto}
 
 \subsection{Recursos utilizados}
+
+El etiquetado constó de XXX horas. A cada etiquetador le fue pagado YYYY por hora, y luego ZZZ por hora en segunda instancia. Esto equivale a WWW USD.
 
 \section{Dataset resultante}
 
@@ -442,8 +458,6 @@ La tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usan
 \end{table}
 
 
-
-\subsection{Algunos ejemplos}
 
 
 \input{src/dataset_ejemplos.tex}
