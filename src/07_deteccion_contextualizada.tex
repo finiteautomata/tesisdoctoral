@@ -1,14 +1,18 @@
-\section{Técnicas de clasificación contextualizadas}
-En este capítulo comentaremos distintos experimentos de clasificación realizados en base al dataset anotado en el capítulo anterior.
+
+En este capítulo abordaremos una de las preguntas centrales de la tesis: ¿puede ayudar el contexto a mejorar la performance de métodos automáticos de lenguaje de odio? Para intentar contestar esta pregunta, utilizaremos el dataset que construímos en el capítulo \ref{chap:dataset_creation}, y aplicaremos técnicas del estado del arte basadas en transformers. Exploraremos dos versiones de clasificadores: descontextualizadas, donde sólo observamos el comentario analizado; y contextualizadas, donde podemos consumir el título o el título y el cuerpo del artículo.
+
+Proponemos en este capítulo dos tareas: detección ``plana'', donde sólo predecimos la característica de si hay o no discurso de odio; y la detección ``granular'', donde además predecimos todas las características ofendidas (potencialmente más de una). Analizaremos el impacto de agregar contexto para cada una de estos problemas de clasificación.
 
 
-\subsection{Trabajos previos}
+\section{Trabajos previos}
 
 Como contamos en la anterior sección, son pocos los trabajos y datasets que poseen contexto. Ver \ref{sec:dataset_trabajos_previos} para un repaso de los distintos datasets contextualizados.
 
-\citet{gao2018detecting} propone dos tipos de modelos: regresiones logísticas y redes neuronales recurrentes. Para los modelos de regresiones logísticas, usan como inputs bolsas de palabras, bolsas de caracteres, vectores semánticos producidos con Linguistic Inquiry and Word Count (LIWC) \cite{pennebaker2001linguistic} y features de un lexicon de emociones \cite{mohammad2013nrc}. Por otro lado, utiliza LSTM bidireccionales con mecanismo de atención de Bahdanau \cite{bahdanau2014neural} usando embeddings \emph{word2Vec} de dimensión 100.
+\citet{gao-huang-2017-detecting} propone dos tipos de modelos: regresiones logísticas y redes neuronales recurrentes. Para los modelos de regresiones logísticas, usan como inputs bolsas de palabras, bolsas de caracteres, vectores semánticos producidos con Linguistic Inquiry and Word Count (LIWC) \cite{pennebaker2001linguistic} y features de un lexicon de emociones \cite{mohammad2013nrc}. Por otro lado, utiliza LSTM bidireccionales con mecanismo de atención de Bahdanau \cite{bahdanau2014neural} usando embeddings \emph{word2Vec} de dimensión 100.
 
 Un punto criticable de este trabajo es que utiliza el nombre de usuario como feature; algo que a priori no suele hacerse ya que permitiría ``prejuzgar'' a un usuario antes que por el contenido de sus tweets. Si bien es cierto que la información de usuarios y sus conexiones es valiosa, introducir esta información a nuestros modelos da lugar a posibles correlaciones espurias que es preferible evitar.
+
+\citet{pavlopoulos2020toxicity} propone la utilización de de RNNs y modelos basados en Transformers para contestar la pregunta de si el contexto puede ayudar a mejorar la detección de toxicidad (para mayores detalles, ver la sección \ref{sec:dataset_previous}).
 
 \subsection{Tareas de clasificación propuestas}
 

@@ -1,3 +1,5 @@
+\label{chap:dataset_creation}
+
 En este capítulo contaremos el diseño del proceso de recolección, selección y anotación de datos. Por lo marcado en anteriores secciones, consideramos interesante el problema de hacer una detección de lenguaje discriminatorio bajo un contexto. Es decir, no es lo mismo considerar el mensaje ``sos un hombre'' en solitario que si ese mismo mensaje está dirigido hacia una mujer trans.
 
 Nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta. Un ejemplo puede verse .
@@ -7,7 +9,7 @@ Muchos sitios de noticias disponen de sistemas embebidos de comentarios, pero vi
 Algo a tener en cuenta es que este tipo de datos tiene una naturaleza particular, ya que las agresiones discriminatorias son usualmente a personajes públicos o colectivos de personas, y se dan de manera indirecta (a través del comentario en la noticia) y no directa (es decir, como respuesta al usuario de Twitter ofendido)
 
 \section{Trabajos previos}
-\label{sec:dataset_trabajos_previos}
+\label{sec:dataset_previous}
 
 Pocos trabajos incorporan algún tipo de contexto a los comentarios del usuario para estas tareas. \citet{gao-huang-2017-detecting} construyó un dataset de lenguaje discriminatorio sobre 1518 comentarios del sitio de Fox News. A los anotadores les fue presentado tanto el comentario como la noticia a la hora de realizar el etiquetado. Sobre este dataset, efectuó experimentos de clasificación usando modelos lineales (regresiones logísticas) y modelos neuronales. En estos experimentos observó que un clasificador (tanto lineal como neuronal) mejora su performance al consumir el título de la noticia, dando indicios de que se puede aprovechar el contexto para mejorar la detección de este fenómeno. Sin embargo, como marca \citet{pavlopoulos2020toxicity} este trabajo cuenta con algunos problemas: en primer lugar, el tamaño del dataset es pequeño, y está extraído de sólo 10 noticias, lo cual limita los posibles contextos. A su vez, la anotación fue realizada mayormente por un único anotador, lo cual hace poco confiables las etiquetas. Luego, algunos detalles menores debieran ser analizados con mayor detalle, como por ejemplo la utilización de los nombres de usuarios como features predictivas.
 
@@ -314,7 +316,7 @@ Así mismo, descartamos cualquier tweet que tuviera algún link ya que pueden re
 
 Al no utilizar ningún servicio de etiquetado, optamos por desarrollar nuestra propia aplicación para el etiquetado de tweets. En ella, a cada etiquetador les fueron asignados progresivamente los artículos a anotar, los cuales fueron agrupados en ``lotes'' para facilitar la tarea administrativa de la asignación.
 
-La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados. Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar
+La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados. Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar usando un control de tipo ``switch''
 
 \begin{enumerate}
     \item Si el comentario contiene discurso discriminatorio
@@ -328,25 +330,136 @@ Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.dja
 
 %Teniendo en cuenta el modelo de anotación ilustrado en la figura \ref{fig:annotation_model}, optamos por la siguiente metodología para el etiquetado de los comentarios de nuestro dataset.
 
+%%
+%%
+%% Link a Google Draw:
+%% https://docs.google.com/drawings/d/1esS9tAwpPVydohxd-B-xwVdAaPQRVGAo0MruBrgSKig/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/esquema_anotacion.pdf}
+    \caption{Esquema de anotación. Caso en que ambos anotadores etiqueten los comentarios del artículo}
+    \label{fig:annotation_schema}
+\end{figure}
+
 Los artículos son asignados a cada etiquetador. Cada etiquetador, al serle presentado un artículo, tiene dos opciones: etiquetarlo o saltearlo. La idea de saltear era doble: evitar contenido poco ``interesante'' en términos de comentarios discriminatorios, o evitar contenido sensible para el anotador (algo que no ocurrió afortunadamente).
 
-Una posibilidad que barajamos en un principio fue asignar para el etiquetado el artículo completo a 3 anotadores. Sin embargo, esta modalidad sería altamente ineficiente dada la baja cantidad de contenido discriminatorio. Entonces, decidimos ir por un esquema de ``desempate'': dos anotadores anotan un artículo, y luego un tercero anota sólo aquellos donde al menos uno marcó que es discriminatorio. Esto da la posibilidad de que haya una tercera anotación incluso cuando dos previas marcaron que el comentario es discriminatorio, y lo hacemos para recolectar más información. \todo{marcar otros trabajos que hayan hecho esto}. Con este esquema de anotación, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo.
+Una posibilidad que barajamos en un principio fue asignar para el etiquetado el artículo completo a 3 anotadores. Sin embargo, esta modalidad sería altamente ineficiente dada la baja cantidad de contenido discriminatorio. Entonces, decidimos ir por un esquema de ``desempate'': dos anotadores anotan un artículo, y luego un tercero anota sólo aquellos donde al menos uno marcó que es discriminatorio. Esto da la posibilidad de que haya una tercera anotación incluso cuando dos previas marcaron que el comentario es discriminatorio, y lo hacemos para recolectar más información. \todo{marcar otros trabajos que hayan hecho esto}. Con este esquema de anotación, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo. La figura \ref{fig:annotation_schema} ilustra este flujo de anotación.
 
-Entonces, cada artículo es asignado a 2 anotadores. Luego de esto, se solicita una tercera anotación pero sólo sobre los comentarios que tengan alguna de las dos etiquetadas marcando contenido discriminatorio, y no dando la posibilidad de saltear. Ahora ¿qué pasa si alguno de los dos anotadores saltea el artículo?. Tenemos dos casos. Si los dos saltean el artículo, entonces descartamos ese artículo. Ahora, puede ocurrir el caso de que uno lo saltee y el otro lo anote: en ese caso, y en pos de maximizar el contenido discriminatorio encontrado o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear.
+Entonces, en primer lugar cada artículo es asignado a 2 anotadores. Luego de esto, se solicita una tercera anotación pero sólo sobre los comentarios que tengan alguna de las dos etiquetadas marcando contenido discriminatorio, y no dando la posibilidad de saltear. Ahora ¿qué pasa si alguno de los dos anotadores saltea el artículo?. Tenemos dos casos. Si los dos saltean el artículo, entonces descartamos ese artículo. Ahora, puede ocurrir el caso de que uno lo saltee y el otro lo anote: en ese caso, y en pos de maximizar el contenido discriminatorio encontrado o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear. La figura \ref{fig:annotation_schema_case_two} ilustra el flujo para este caso.
 
 
+%%
+%%
+%% Link a Google Draw
+%% https://docs.google.com/drawings/d/1TOlCgZggCmYHgZWV7ZrIIlXuhcFUMeYw4PcFM7XdY2k/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/esquema_anotacion_caso_2.pdf}
+    \caption{Esquema de anotación. Caso en que ambos anotadores etiqueten los comentarios del artículo}
+    \label{fig:annotation_schema_case_two}
+\end{figure}
+
+
+Como resultado de este esquema, cada comentario de nuestro dataset puede tener dos o tres anotaciones, siendo los casos posibles los siguientes:
+
+\begin{enumerate}
+    \item Dos anotaciones negativas
+    \item Tres anotaciones, siendo al menos una que marque el comentario como discriminatorio
+\end{enumerate}
+
+
+
+
+\subsection{Asignación}
+
+\citet{pustejovsky2012natural} denominan ``asignación'' al procedimiento de extraer las ``gold labels'' de las etiquetas. En este punto tenemos una etiqueta binaria si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias
+
+\subsection{Recursos utilizados}
 
 \section{Dataset resultante}
+
+\begin{table}
+    \centering
+    % \begin{tabular}{lrr}
+    %     \toprule
+    %     Total articles & 1238    \\
+    %     Total comments &  56869  \\
+    %     Hateful Tweets &   8715  \\
+    %     Ratio          &   0.153 \\
+    % \end{tabular}
+    \begin{tabular}{lrr}
+        \toprule
+        Característica &  Count &  Calls to Action \\
+        \midrule
+        RACISM         &   2469 &              674 \\
+        APPEARANCE     &   1803 &               34 \\
+        CRIMINAL       &   1642 &              722 \\
+        POLITICS       &   1428 &              136 \\
+        WOMEN          &   1332 &               18 \\
+        CLASS          &    823 &              135 \\
+        LGBTI          &    818 &               11 \\
+        DISABLED       &    580 &                4 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Figures of the annotated dataset, by total numbers and segmented by characteristic}
+    \label{tab:dataset_figures}
+
+\end{table}
+
+El dataset resultante consta de 1238 artículos etiquetados, y 56869 comentarios respectivamente, de los cuales 8715 contienen contenido discriminatorio según los criterios de asignación antes referidos. Podemos observar que aproximadamente 1 de cada 6 comentarios es discriminatorio; esto no es representativo del universo de notas periodísticas ya que recordemos que la selección de los datos no fue aleatoria. La tabla \ref{tab:dataset_figures} contiene estos datos estadísticos.
+
+De todos los tweets discriminatorios, tenemos en particular los llamados a la acción. La inmensa mayoría de estos está dirigido hacia la categoría CRIMINAL, muchos en la forma de llamados a matar a criminales y otros delincuentes.
+
+La tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usando la métrica alpha de Krippendorff \todo{agregar cita}. Reportamos el valor de $\alpha$ para HS sobre todas las etiquetas, y luego todas las etiquetas del segundo nivel del modelo jerárquico (características y llamado a la acción) sólo sobre aquellas que hayan marcado que el comentario contiene HS. Esto es equivalente a calcular el acuerdo con una etiqueta faltante en el segundo nivel para las características y el llamado a la acción. Si bien este acuerdo tiende a ser alto, debe leerse como el acuerdo sobre la razón detrás del hate speech; la mayor penalización queda reservada a HS, que tiene $\alpha = 0.59$, algo que podría marcarse como un buen acuerdo teniendo en cuenta los parámetros vistos en las tablas de preliminares. \todo{linkear esto}
+
+\begin{table}
+    \centering
+    \begin{tabular}{lc}
+        \toprule
+        Categoría   & $\alpha$ de Krippendorff \\
+        \midrule
+        Hateful              &  0.579 \\
+        Calls to Action      &  0.641 \\
+        \midrule
+        WOMEN                &  0.783 \\
+        LGBTI                &  0.920 \\
+        RACISM               &  0.929 \\
+        CLASS                &  0.706 \\
+        POLITICS             &  0.808 \\
+        DISABLED             &  0.849 \\
+        APPEARANCE           &  0.871 \\
+        CRIMINAL             &  0.931 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Reported Agreements. \emph{Hateful} agreement is reported for the binary decision of a tweet assigned as hateful or not; for the other characteristics (and the calls to action) the agreement is calculated over those tweets with two or more hateful marks}
+    \label{tab:annotation_agreement}
+\end{table}
+
+
 
 \subsection{Algunos ejemplos}
 
 
 \input{src/dataset_ejemplos.tex}
 
-\subsection{Estadísticas}
-\subsection{Asignación}
 
-\subsection{Agreements}
-\subsection{Recursos utilizados}
+
 \subsection{Anonimización para publicación de los datos}
 
+
+
+\section{Conclusión}
+
+En este capítulo, describimos la construcción de un dataset contextualizado de lenguaje discriminatorio o hate speech. Para ello, recolectamos respuestas a noticias periodísticas posteadas en Twitter por los principales medios de noticias de Argentina. Exploramos distintas alternativas para la selección de artículos a etiquetar, tanto observando los tópicos de los artículos como los comentarios a este. Decidimos elegir los artículos en base a sus comentarios potencialmente discriminatorios, y luego seleccionar una muestra aleatoria y acotada de comentarios.
+
+Para realizar la tarea de etiquetado, desarrollamos nuestra propia herramienta la cual hacemos pública. Definimos un modelo de anotación jerárquico y granular para la tarea, siendo relativamente novedoso el hecho de anotar las características ofendidas en cada texto social. Seis etiquetadores nativos de la variedad dialectal rioplatense realizaron la tarea de anotación bajo un esquema de 2 anotaciones + desempate.
+
+Como producto, obtuvimos un dataset de cerca de 57k comentarios repartidos en 1.2k artículos, una cantidad de tamaño considerable aunque no tengamos parámetro de comparación ya que no existen muchos datasets similares. De los 57k comentarios, alrededor de 8k comentarios tienen contenido discriminatorio (una tasa de 1 cada 6). Un análisis exploratorio de los comentarios discriminatorios muestra ejemplos complejos y ricos, algunos de ellos altamente dependientes del contexto.
+
+En el siguiente capítulo, abordaremos nuestra pregunta original: ¿puede el contexto ayudar a los algoritmos de clasificación a mejorar su performance?. Para responder esto, utilizaremos este dataset especialmente diseñado.
