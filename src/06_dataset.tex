@@ -47,9 +47,21 @@ Nuestra definición de discurso de odio contiene algunas formas implícitas de a
 \end{table*}
 
 
-\todo{Explicar un poco más
-qué es lo que queremos recolectar.
-Poner algún gráfico de la idea}
+%%
+%%
+%%
+%% https://docs.google.com/drawings/d/1IcBITgNJN-tehmvnZqcSF9cUuWIpNKJg6yHI5yjNF9c/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
+    \caption{Muestra de la recolección de datos}
+    \label{fig:idea_dataset}
+\end{figure}
+
+
 
 
 Usamos la API de Twitter Stream mencionando cualquiera de estas cuentas. \todo{Explicar el proceso más detalladamente} Para cualquier tweet de uno de estos medios, reconstruimos la conversación. Para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original \footnote{Usamos una versión antigua de la API. La versión 2.0 parece facilitar la recopilación de conversaciones}. También eliminamos las URLs de los artículos de los enlaces.
@@ -59,6 +71,8 @@ Si bien consideramos otros medios (en particular, los ``periódicos'' electróni
 
 
 El foco se hizo en artículos relacionados con COVID-19. Para ello, seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. La tabla \ref{tab: article_words} contiene las palabras utilizadas para recuperar estos artículos. También estábamos interesados en la pandemia del dengue; sin embargo, solo se recuperó un número muy pequeño de artículos.
+
+La figura \ref{fig:idea_dataset} ilustra lo recolectado: en este caso, un tweet de un medio periodístico y todos los comentarios realizados sobre éste. En el caso de Twitter, los comentarios son respuestas al tweet original.
 
 
 \subsection{Diarios elegidos}
