@@ -27,7 +27,7 @@ Para responder estas preguntas, los autores construyeron dos datasets en base a 
 
 Para responder la segunda pregunta, anotaron un dataset de 20k comentarios, 10k anotados por un grupo que etiquetó viendo el contexto y otros 10k que no lo vio. Entre todos los comentarios del dataset original de Wikipedia Talk Pages, eligieron aquellos con profundidad entre 2 (respuestas directas) a 5, y con entre 10 y 400 caracteres de largo. Luego, entrenaron varios clasificadores usando este dataset y allí pudieron observar que el contexto no pareciera mejorar la performance. En el próximo capítulo nos extenderemos sobre las técnicas utilizadas por este trabajo.
 
-\citet{xenos-2021-context} continúa el trabajo de \citet{pavlopoulos2020toxicity} desagregando el resultado de la segunda pregunta. Puntualmente, y observando que sólo un porcentaje pequeño de los comentarios parecen ser incididos por el contexto, construyen una nueva tarea: estimación de sensibilidad al contexto. Para ello, toman el dataset de Civil Comments\cite{borkan2019civil}, y reanotan un subconjunto de este dataset usando información de contexto a través de crowdsourcing. Las etiquetas de este dataset son de toxicidad en un estilo similar a una regresión ordinal, entendiendo las categorías no tóxico, incierto, tóxico, y muy tóxico. Ahora, teniendo las anotaciones originales del dataset (que fueron hechas sin contexto) y las nuevas anotaciones, pueden definir para cada comentario una sensibilidad al contexto, dada por
+\citet{xenos-2021-context} continúa el trabajo de \citet{pavlopoulos2020toxicity} desagregando el resultado de la segunda pregunta. Puntualmente, y observando que sólo un porcentaje pequeño de los comentarios parecen ser incididos por el contexto en el trabajo previo, construyen una nueva tarea: estimación de sensibilidad al contexto. Para ello, toman el dataset de Civil Comments\cite{borkan2019civil}, y reanotan un subconjunto de este dataset usando información de contexto a través de crowdsourcing. Las etiquetas de este dataset son de toxicidad en un estilo similar a una regresión ordinal, entendiendo las categorías no tóxico, incierto, tóxico, y muy tóxico. Ahora, teniendo las anotaciones originales del dataset (que fueron hechas sin contexto) y las nuevas anotaciones, pueden definir para cada comentario una sensibilidad al contexto, dada por
 
 \begin{equation}
     \delta(p) = s^{oc}(p) - s^{ic}(p)
@@ -37,7 +37,7 @@ donde $s^{oc}$ es la fracción de anotadores sin contexto que marcaron toxicidad
 
 \citet{sheth2021defining} señala algunas oportunidades para incorporar fuentes de información más ricas a la tarea de detección de toxicidad, como el historial de interacción entre los usuarios, el contexto social y otras bases de conocimiento externas.
 
-Nuestra definición de discurso de odio contiene algunas formas implícitas de abuso y, en particular, marcamos las ``llamadas a la acción'', que se detallan en \citet{wiegand2021implicitly} entre otros tipos sutiles de comportamiento tóxico en las redes sociales.
+\citet{wiegand2021implicitly} menciona formas implícitas de abuso, mucho más complejas que las basadas solamente en palabras ofensivas. Por ejemplo, deshumanizaciones (``los judíos son una plaga que merece ser eliminada''), llamadas a la acción (``hay que tirar una bomba en ese país''), acusaciones (``los chinos inventaron el coronavirus''), entre otros tipos sutiles de comportamiento tóxico. Así mismo, menciona que la mayoría de los datasets no consiguen capturar estos fenómenos debido a la forma de recolección usualmente basada en keywords.
 
 \section{Recolección de noticias y comentarios}
 
@@ -479,8 +479,19 @@ La tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usan
     \label{tab:annotation_agreement}
 \end{table}
 
+\subsection{Análisis por característica}
 
+En la tabla XXX podemos observar algunos ejemplos seleccionados de comentarios. Algunas observaciones que pueden realizarse es que los comentarios marcados contra las mujeres tienen en algunos casos ciertas complejidades, como las acusaciones de ``mentirosa'' a una mujer que sufrió una violación (caso Thelma Fardin \todo{Agregar nota de esto}), apreciaciones a su cuerpo, entre otras cosas.
 
+Una categoría desafiante pareciera ser los comentarios discriminatorios contra la comunidad LGBTI. Más allá de algunos insultos explícitamente ofensivos (mediante insultos del estilo trolo, trabuco, maricón, etc), hay muchos que tienen un contenido difícil de descifrar; en particular, aquellos comentarios contra personas trans. Muchos de estos mensajes hacen alusiones a su genitalidad o a su cuerpo en general, de manera metafórica o irónica, lo cual hace verdaderamente difícil su detección. A su vez, es claro que en muchos de estos comentarios es sumamente necesaria la información contextual para poder comprender el caracter abusivo de estos comentarios.
+
+En el caso de la categoría CRIMINAL, se puede observar por un lado comentarios muy violentos (``bala'', ``mátenlos'', ``plomo'') que necesitan el contexto para entenderse como ofensivos contra esa característica (por ejemplo, si la nota fuese sobre una plaga de mosquitos no deberíamos considerarlo como ``discriminatorio''). Por otro lado, algunos comentarios son más difíciles de descifrar y dependientes del contexto, como las celebraciones ante el abatimiento de un preso o criminal (``bravo'', ``felicitaciones!'') que parecen inofensivas hasta que se lee el contexto de la noticia. De hecho, a diferencia de otros comentarios, parecen tener hasta una polaridad positiva.
+
+En el caso de racismo (la categoría más marcada del dataset) hay una fuerte cantidad de comentarios discriminatorios contra la comunidad china. Esto es esperable por el brote racista debido a la pandemia del COVID-19, documentado en YYYY \todo{agregar cita}. Así mismo, es de las categorías que más llamados a la acción tiene, muchos del estilo de tirar bombas, aniquilar, etc a China o a la comunidad de dicho país, o llamados a tomar medidas ``blandas'', como ``no ir a comprarles a los supermercados''.
+
+Algunas de las categorías tienen características más elementales, como política, apariencia, y discapacidad. En los comentarios ilustrados. Esto es esperable ya que
+
+Algunas de las agresiones, a su vez, usan técnicas de camuflaje (``tafaldegaver'', falta de verga, ``docer''), que dificultan su detección por las técnicas actuales.
 
 \input{src/dataset_ejemplos.tex}
 
