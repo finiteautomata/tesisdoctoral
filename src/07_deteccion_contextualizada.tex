@@ -6,13 +6,51 @@ Proponemos en este capítulo dos tareas: detección ``plana'', donde sólo prede
 
 \section{Trabajos previos}
 
-Como contamos en la anterior sección, son pocos los trabajos y datasets que poseen contexto. Ver \ref{sec:dataset_trabajos_previos} para un repaso de los distintos datasets contextualizados.
+Como contamos en la anterior sección, son pocos los trabajos y datasets que poseen contexto. Ver \ref{sec:dataset_previous} para un repaso de los distintos datasets contextualizados.
 
 \citet{gao-huang-2017-detecting} propone dos tipos de modelos: regresiones logísticas y redes neuronales recurrentes. Para los modelos de regresiones logísticas, usan como inputs bolsas de palabras, bolsas de caracteres, vectores semánticos producidos con Linguistic Inquiry and Word Count (LIWC) \cite{pennebaker2001linguistic} y features de un lexicon de emociones \cite{mohammad2013nrc}. Por otro lado, utiliza LSTM bidireccionales con mecanismo de atención de Bahdanau \cite{bahdanau2014neural} usando embeddings \emph{word2Vec} de dimensión 100.
 
 Un punto criticable de este trabajo es que utiliza el nombre de usuario como feature; algo que a priori no suele hacerse ya que permitiría ``prejuzgar'' a un usuario antes que por el contenido de sus tweets. Si bien es cierto que la información de usuarios y sus conexiones es valiosa, introducir esta información a nuestros modelos da lugar a posibles correlaciones espurias que es preferible evitar.
 
-En la sección \ref{sec:dataset_previous} hemos descripto el dataset de \citet{pavlopoulos2020toxicity}. En ese trabajo obtuvieron dos datasets de entrenamiento, uno etiquetado viendo el contexto y  otro sin verlo. El dataset de test sí fue etiquetado viendo el contextopropone la utilización de de RNNs y modelos basados en Transformers para contestar la pregunta de si el contexto puede ayudar a mejorar la detección de toxicidad (para mayores detalles, ver la sección \ref{sec:dataset_previous})
+
+\begin{figure*}[t]
+    \centering
+    \begin{minipage}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{img/pavlopoulos_rnn_rnn_classifier.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{img/pavlopoulos_rnn_bert_classifier.png}
+    \end{minipage}
+
+    \begin{minipage}[b]{0.35\textwidth}
+        \includegraphics[width=\textwidth]{img/pavlopoulos_bert_sep_classifier.png}
+    \end{minipage}
+
+
+    \caption{Clasificadores que consumen contexto propuestos por \citet{pavlopoulos2020toxicity}. Los dos primeros clasificadores proponen una arquitectura de dos encoders, uno para el texto y otro para el contexto usando bi-LSTMs y BERT como posibilidades. El tercer clasificador propuesto es un BERT usando su estructura natural para codificar dos oraciones separadas por el token $SEP$ }
+    \label{fig:pavlopoulos_classifiers}
+\end{figure*}
+
+
+En la sección \ref{sec:dataset_previous} hemos descripto el dataset construído por \citet{pavlopoulos2020toxicity}. Nos detendremos un momento para analizar sus experimentos de clasificación  ya que guardan importantes similaridades con lo que haremos en este capítulo. En ese trabajo se obtuvieron dos datasets de entrenamiento, uno etiquetado viendo el contexto y otro sin verlo. El dataset de test fue etiquetado viendo el contexto, considerando que el etiquetado es de mejor calidad usando más información. Tenemos entonces, dos preguntas: ¿mejora la performance de la tarea usando el dataset etiquetado con contexto? ¿mejora la performance del clasificador consumiendo información contextual? Estas dos preguntas nos brinda entonces dos elecciones: dataset de entrenamiento con o sin contexto, y clasificador con o sin contexto. Tenemos 4 posibles combinaciones de experimentos, sin aún considerar posibles técnicas de clasificación.
+
+Para cada una de estas combinaciones, se consideraron técnicas del estado del arte de clasificación. Para aquellos clasificadores que no consumen contexto, las opciones son las mismas que hemos visto en capítulos anteriores: bi-LSTM o BERT. Para aquellos que sí consumen contexto, se evaluan dos estrategias: una, concatenar con algún caracter, y otra usando dos encoders distintos para el contexto y el texto. A su vez también utilizan la API Perspective de Google \todo{Agregar alguna cita de esto, y quizás alguna explicación en capítulo 4}.
+
+Para todas las combinaciones posibles, si bien hay una mejora en la performance medida con ROC-AUC al usar contexto en ambas formas, esta no es significativa. De esto los autores concluyen que no pueden encontrar evidencia suficiente sobre la utilidad del contexto en la detección de toxicidad.
+
+Algo a mencionar (que retomaremos en este y en el siguiente capítulo) es que usan dos versiones de BERT: una usando los pesos del modelo de BERT, y otro haciendo un ajuste de dominio () corriendo la tarea de MLM sobre un dataset grande y no etiquetado. En el caso de el trabajo mencionado, sólo hacen un fine-tuning sobre comentarios sueltos del dataset de Civil Comments. Esto podría tener algún efecto deteriorando la performance al usar contexto; sin embargo, en el BERT a secas (sin hacer ajustes) tampoco se observa mejora significativa en la performance.
+
+Algunas limitaciones marcadas por los autores son:
+
+\begin{itemize}
+    \item Contexto muy pequeño: sólo el título más el comentario previo
+    \item Se ignora el hilo completo de comentarios
+    \item Los datos fueron sampleados aleatoriamente
+\end{itemize}
+
+En \citet{xenos-2021-context}, continuación de este trabajo, reetiquetaron el dataset de Civil Comments usando contexto y --como mencionamos en la sección \ref{sec:dataset_previous}-- presentaron una nueva tarea de detección de sensibilidad al contexto. Usando la API Perspective (y la estrategia de concatenación ``básica'' con algún caracter), notaron que la performance del clasificador que consume el contexto mejora con respecto al que no lo hace a medida que restringimos nuestra atención a comentarios más ``sensibles al contexto'' (de acuerdo a la métrica definida por los autores)
+
 
 \subsection{Tareas de clasificación propuestas}
 
@@ -100,6 +138,22 @@ Para cada tweet, aplicamos el siguiente procesamiento previo: primero, cortamos 
 Aunque no realizamos un análisis de ablación para evaluar el impacto de cada paso del preprocesamiento, el proceso general pareció mejorar el rendimiento de la clasificación en el conjunto de datos de desarrollo.
 
 \subsection{Clasificadores}
+
+
+%%
+%%
+%% Link a Draw
+%% https://docs.google.com/drawings/d/1F8iVSIRqHhGkQ0zglxqXLGD36RHZ9OhHMZYsg_xFOS4/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/bert_multioutput.pdf}
+    \caption{Muestra de la recolección de datos}
+    \label{fig:bert_classifier}
+\end{figure}
+
 
 Los clasificadores propuestos se basan en \emph{BETO}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}. \emph{BETO} tiene un tamaño similar a \emph {BERT Base}, y tiene 12 capas de transformadores con 12 cabezas de atención cada una, sumando 110 millones de parámetros. Para obtener más referencias sobre arquitecturas BERT y Transformer, sugerimos CITA NECESARIA.
 
