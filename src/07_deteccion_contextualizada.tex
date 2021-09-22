@@ -52,18 +52,32 @@ Algunas limitaciones marcadas por los autores son:
 En \citet{xenos-2021-context}, continuación de este trabajo, reetiquetaron el dataset de Civil Comments usando contexto y --como mencionamos en la sección \ref{sec:dataset_previous}-- presentaron una nueva tarea de detección de sensibilidad al contexto. Usando la API Perspective (y la estrategia de concatenación ``básica'' con algún caracter), notaron que la performance del clasificador que consume el contexto mejora con respecto al que no lo hace a medida que restringimos nuestra atención a comentarios más ``sensibles al contexto'' (de acuerdo a la métrica definida por los autores)
 
 
-\subsection{Tareas de clasificación propuestas}
+\section{Tareas de clasificación propuestas}
 
-Now that we have this specially-crafted corpus containing context, we now turn our attention to answer our original question: can classifiers leverage context to improve their performance on the hate speech detection task?
 
-For this purpose, we propose the following classification tasks:
+
+Ahora que tenemos este corpus especialmente diseñado que contiene el contexto, ahora dirigimos nuestra atención a responder nuestra pregunta original: ¿pueden los clasificadores aprovechar el contexto para mejorar su desempeño en la tarea de detección del discurso discriminatorio? Para ello, proponemos las siguientes tareas de clasificación:
 
 \begin{enumerate}
-    \item Task A: Given a tweet, predict whether it is hateful or not
-    \item Task B: Given a hateful tweet, predict whether it calls to action and predict the offended characteristics
+    \item \textbf{Detección ``plain''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
+    \item \textbf{Detección ``fine-grained''}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción
 \end{enumerate}
 
-Each instance consists of both the comment (the tweet) and its context (both title and the full body). To test our hypothesis, for each task we trained classifiers having as input the following comibinations:
+
+Puede pensarse la tarea de detección plana (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos pide información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
+
+La tarea en su versión fine-grained nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores, principalmente los falsos positivos. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea plana sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea fine-grained necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
+
+Planteándolos como problemas de clasificación, la detección plana consta de predecir una sola etiqueta binaria, mientras que la tarea fine-grained consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea fine-grained podemos construir un clasificador para la tarea plana tomando la disyunción lógica de sus salidas. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/hate_detection_tasks.pdf}
+    \caption{Tareas propuestas de detección}
+    \label{fig:hate_detection_tasks}
+\end{figure}
+
+To test our hypothesis, for each task we trained classifiers having as input the following comibinations:
 
 \begin{enumerate}
     \item The comment
