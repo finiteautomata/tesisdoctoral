@@ -16,6 +16,83 @@ La detección del discurso del odio es una tarea de clasificación de oraciones 
 En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un desafío en la detección de misoginia en Twitter, tanto en español como en inglés, mientras que \citet{fersini2018evalitaoverview} planteó un desafío similar pero en italiano e inglés. \citet{bosco2018overview} propuso un concurso de detección automática sobre publicaciones de Twitter y comentarios de Facebook, que incluía discursos de odio en general.
 
 
+\section{Definición de discurso de odio}
+
+No existe una definición universalmente aceptada de lo que configura discurso de odio. En esta sección haremos un repaso muy breve de algunos tratados internacionales sobre la materia para intentar aproximarnos a este concepto, a la vez que también haremos un racconto de las definiciones utilizadas en trabajos dedicados a la construcción de datasets.
+
+Un derecho que suele estar protegido por constituciones nacionales y tratados internacionales es el del derecho a la expresión. Por ejemplo, el Pacto de San José de Costa Rica (a la cual Argentina adhiere)\cite{humanos2018convencion} dice en su Artículo 13:
+
+\begin{displayquote}[CADH, Artículo 13][]
+
+    1. Toda persona tiene derecho a la libertad de pensamiento y de expresión.  Este derecho comprende la libertad de buscar, recibir y difundir informaciones e ideas de toda índole, sin consideración de fronteras, ya sea oralmente, por escrito o en forma impresa o artística, o por cualquier otro procedimiento de su elección.
+
+    2. El ejercicio del derecho previsto en el inciso precedente no puede estar sujeto a previa censura sino a responsabilidades ulteriores, las que deben estar expresamente fijadas por la ley y ser necesarias para asegurar:
+
+    a)  el respeto a los derechos o a la reputación de los demás, o
+
+    b) la protección de la seguridad nacional, el orden público o la salud o la moral públicas.
+\end{displayquote}
+
+En Estados Unidos, la primer enmienda protege este derecho humano, mientras que en la Unión Europea, legislación similar ofrece protección a la libertad de expresión. Finalmente, la declaración universal de los derechos humanos de la ONU \todo{citation needed} menciona tanto en su preámbulo como en el artículo 19
+
+\begin{displayquote}[Declaración Universal de los Derechos Humanos][ONU]
+    Todo individuo tiene derecho a la libertad de opinión y de expresión; este derecho incluye el de no ser molestado a causa de sus opiniones, el de investigar y recibir informaciones y opiniones, y el de difundirlas, sin limitación de fronteras, por cualquier medio de expresión.
+\end{displayquote}
+
+Sin embargo, y como menciona este último apartado, la libertad de expresión tiene un límite: el ejercicio de los derechos e igualdad ante la ley. Por ejemplo, el Artículo 1 del Pacto de San José de Costa Rica dice lo siguiente:
+
+\begin{displayquote}[Pacto San José de Costa Rica, CADH][Artículo 1]
+    1. Los Estados Partes en esta Convención se comprometen a respetar los derechos y libertades reconocidos en ella y a garantizar su libre y pleno ejercicio a toda persona que esté sujeta a su jurisdicción, sin discriminación alguna por motivos de raza, color, sexo, idioma, religión, opiniones políticas o de cualquier otra índole, origen nacional o social, posición económica, nacimiento o cualquier otra condición social.
+\end{displayquote}
+
+A su vez, la Declaración Universal de los Derechos Humanos en su Artículo 1:
+
+\begin{displayquote}
+    Todos los seres humanos nacen libres e iguales en dignidad y derechos y, dotados como están de razón y conciencia, deben comportarse fraternalmente los unos con los otros.
+\end{displayquote}
+
+Entonces, los Estados y otros organismos deben tomar medidas para poder asegurar el libre ejercicio de los derechos y la igualdad de todos sus miembros, aún cuando esto pueda significar una restricción en la libertad de expresión \cite{article192015}.
+
+
+
+¿Qué es el discurso de odio entonces? Como hemos mencionado, no hay una definición universalmente aceptada. Repasemos algunas clasificaciones hechas en estos tratados para acercarnos un poco más a las características comunes que comparten.
+
+Como vimos, el Pacto de San José de Costa Rica en su Artículo 1 habla del ejercicio de derechos sin discriminación alguna por varias razones, entre las que menciona raza, sexo, idioma, religión, política, nacionalidad, posición económica, entre otras.
+
+La Observación General 35 del Comité por la Eliminación de la Discriminación Racial de la ONU (CERD) considera que será discurso de odio, y debe ser tipificado penalmente:
+
+
+\begin{displayquote}[Recomendación 35 del Comité por la Eliminación de la Discriminación Racial, CERD]
+
+    a) Toda difusión de ideas basada en la superioridad o en el odio racial o étnico, por cualquier medio;
+
+    b) La incitación al odio, el desprecio o la discriminación contra los miembros de un grupo por motivos de su raza, color, linaje, u origen nacional o étnico;
+
+    c) Las amenazas o la incitación a la violencia contra personas o grupos por los motivos señalados en el apartado anterior;
+
+    d) La expresión de insultos, burlas o calumnias contra personas o grupos, o la justificación del odio, el desprecio o la discriminación por los motivos señalados en el apartado b) anterior, cuando constituyan claramente incitación al odio o a la discriminación;
+
+    e) La participación en organizaciones y actividades que promuevan e inciten a la discriminación racial.
+\end{displayquote}
+
+%%
+%%
+%% Link
+%% https://docs.google.com/drawings/d/149dpb2nrvmFgWZJYcrToAxO4M5n7JNQInfWd62kw3jc/edit
+%%
+%%
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/discurso_de_odio.pdf}
+    \caption{Definición de discurso de odio de acuerdo al Toolkit de Article 19}
+    \label{fig:hate_speech_definition_article_19}
+\end{figure}
+
+
+
+
+
 \section{Datasets}
 
 En esta sección haremos un recuento de los conjuntos de datos para la detección de lenguaje odioso.
