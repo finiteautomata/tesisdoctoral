@@ -1,8 +1,8 @@
 \label{chap:dataset_creation}
 
-En este capítulo contaremos el diseño del proceso de recolección, selección y anotación de datos. Por lo marcado en anteriores secciones, consideramos interesante el problema de hacer una detección de lenguaje discriminatorio bajo un contexto. Es decir, no es lo mismo considerar el mensaje ``sos un hombre'' en solitario que si ese mismo mensaje está dirigido hacia una mujer trans.
+En este capítulo describiremos la construcción de un dataset contextualizado de discurso de odio. Describiremos en detalle el proceso de recolección, selección y anotación de datos. Este dataset nos permitirá analizar
 
-Nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta. Un ejemplo puede verse .
+Por lo marcado en anteriores secciones, consideramos interesante el problema de hacer una detección de lenguaje discriminatorio teniendo en cuenta el contexto. Para citar un ejemplo de por qué es necesario, el mensaje ``sos un hombre'' en solitario puede parecer inofensivo; ahora, si ese mismo mensaje está dirigido hacia una mujer trans, su contenido es claramente discriminatorio. Para analizar esto, nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta. Un ejemplo puede verse .
 
 Muchos sitios de noticias disponen de sistemas embebidos de comentarios, pero vista la dificultad para la recolección a la vez que los limitados datos provistos por estos sitios nos llevaron a buscar otro medio: Twitter. Twitter provee una sencilla API para descargar datos, a la vez
 
@@ -41,7 +41,41 @@ donde $s^{oc}$ es la fracción de anotadores sin contexto que marcaron toxicidad
 
 \citet{wiegand2021implicitly} menciona formas implícitas de abuso, mucho más complejas que las basadas solamente en palabras ofensivas. Por ejemplo, deshumanizaciones (``los judíos son una plaga que merece ser eliminada''), llamadas a la acción (``hay que tirar una bomba en ese país''), acusaciones (``los chinos inventaron el coronavirus''), entre otros tipos sutiles de comportamiento tóxico. Así mismo, menciona que la mayoría de los datasets no consiguen capturar estos fenómenos debido a la forma de recolección usualmente basada en keywords.
 
-\section{Recolección de noticias y comentarios}
+\section{Idea del dataset}
+
+Para construir un dataset contextualizado barajamos varias opciones. Como vimos en otros datasets, se puede entender el contexto de varias maneras: un contexto ``temático'', donde sabemos que cierto comentario habla sobre un tema en particular; y un contexto conversacional, donde tenemos una secuencia de comentarios (un hilo o thread) y podemos extraer un comentario padre para cada uno salvo el raíz. La primer opción es la explorada por \cite{gao-huang-2017-detecting,mubarak-etal-2017-abusive}, donde construyen un dataset de comentarios de Fox News y Al-Jazeera respectivamente. El contexto conversacional, como hemos relatado anteriormente, es explorado en \citet{pavlopoulos2020toxicity,xenos-2021-context}; sin embargo, como es marcado en el primer trabajo, la recolección de datos es no trivial, aún en un caso más amplio como el lenguaje abusivo, ya que la incidencia es relativamente baja. Puede esperarse que en el contexto de lenguaje odioso se dificulte aún más esto.
+
+Para analizar el contexto, decidimos entonces usar la primera opción: comentarios sobre notas periodísticas. No vamos a considerar un hilo de respuestas, sino simplemente aquellos comentarios que sean directos sobre la nota. En ese punto, el dataset que queremos construir sería similar al de \cite{gao-huang-2017-detecting}. Una diferencia respecto a este dataset sería la de incorporar dos modos de contexto: uno corto, donde sólo tengamos el título de la noticia; y uno largo, donde tengamos el texto completo de la noticia.
+
+El dataset construido será sobre comentarios realizados en idioma español, más precisamente en la variedad dialectal del Río de la Plata. Como dice la ``Regla de Bender''\cite{bender2011achieving}
+
+\begin{quote}
+    Do state the name of the language that is being studied, even if it's English. Acknowledging that we are working on a particular language foregrounds the possibility that the techniques may in fact be language specific. Conversely, neglecting to state that the particular data used were in, say, English, gives [a] false veneer of language-independence to the work.
+\end{quote}
+
+Este punto es importante ya que, a pesar de ser el segundo idioma en hablantes nativos (por delante del inglés), los recursos suelen ser escasos y siempre a la rastra y reproducción de resultados en inglés. \todo{quizás esto lo mandaríamos a otro lado}
+
+Algo no menor a la hora de considerar la construcción del dataset es la posibilidad de publicar los datos. Por citar un ejemplo, el dataset de \citet{gao-huang-2017-detecting}, si bien tiene sus datos de acceso público \footnote{\url{https://github.com/sjtuprog/fox-news-comments}}, no queda claro que los términos y condiciones de la fuente de donde se extrajeron permita esto. Más aún, si hubiésemos querido extraerlo de múltiples fuentes (por ejemplo, varios diarios), deberíamos chequear y/o acceder a permisos para cada sitio, a la vez que tendríamos el problema de tener fuentes diversas de los datos (diferentes longitudes, metadatos distintos, entre otras).
+
+Para evitar muchos de estos problemas, y reutilizar muchas cuestiones con las que venimos trabajando en esta tesis, decidimos trabajar sobre comentarios hechos por usuarios en Twitter. Concretamente, sobre respuestas de comentarios de usuarios a posteos hechos por cuentas de medios. De alguna manera, esto emularía un foro de comentarios de medios, tendríamos un formato único para comentarios mientras tenemos diferentes ``audiencias''. La Figura \ref{fig:idea_dataset} ilustra esta idea. A su vez, los términos y condiciones de Twitter nos permiten publicar los datos \todo{Agregar algún link a esto}. Las notas periodísticas las descargaremos pero debido a problemas de copyright no serán publicados.
+
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
+    \caption{Muestra de la recolección de datos}
+    \label{fig:idea_dataset}
+\end{figure}
+
+
+\section{Recolección de datos}
+
+
+
+
+
+\subsection{Recolección de datos}
 
 \begin{table*}[t]
     \centering
@@ -63,13 +97,6 @@ donde $s^{oc}$ es la fracción de anotadores sin contexto que marcaron toxicidad
 %% https://docs.google.com/drawings/d/1IcBITgNJN-tehmvnZqcSF9cUuWIpNKJg6yHI5yjNF9c/edit
 %%
 %%
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
-    \caption{Muestra de la recolección de datos}
-    \label{fig:idea_dataset}
-\end{figure}
 
 
 
