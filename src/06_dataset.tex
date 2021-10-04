@@ -41,7 +41,22 @@ donde $s^{oc}$ es la fracción de anotadores sin contexto que marcaron toxicidad
 
 \citet{wiegand2021implicitly} menciona formas implícitas de abuso, mucho más complejas que las basadas solamente en palabras ofensivas. Por ejemplo, deshumanizaciones (``los judíos son una plaga que merece ser eliminada''), llamadas a la acción (``hay que tirar una bomba en ese país''), acusaciones (``los chinos inventaron el coronavirus''), entre otros tipos sutiles de comportamiento tóxico. Así mismo, menciona que la mayoría de los datasets no consiguen capturar estos fenómenos debido a la forma de recolección usualmente basada en keywords.
 
-\section{Idea del dataset}
+\section{Esquema del dataset}
+
+
+%%
+%%
+%% Link a Draw
+%% https://docs.google.com/drawings/d/1IcBITgNJN-tehmvnZqcSF9cUuWIpNKJg6yHI5yjNF9c/edit
+%%
+%%
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
+    \caption{Muestra de la recolección de datos}
+    \label{fig:idea_dataset}
+\end{figure}
 
 Para construir un dataset contextualizado barajamos varias opciones. Como vimos en otros datasets, se puede entender el contexto de varias maneras: un contexto ``temático'', donde sabemos que cierto comentario habla sobre un tema en particular; y un contexto conversacional, donde tenemos una secuencia de comentarios (un hilo o thread) y podemos extraer un comentario padre para cada uno salvo el raíz. La primer opción es la explorada por \cite{gao-huang-2017-detecting,mubarak-etal-2017-abusive}, donde construyen un dataset de comentarios de Fox News y Al-Jazeera respectivamente. El contexto conversacional, como hemos relatado anteriormente, es explorado en \citet{pavlopoulos2020toxicity,xenos-2021-context}; sin embargo, como es marcado en el primer trabajo, la recolección de datos es no trivial, aún en un caso más amplio como el lenguaje abusivo, ya que la incidencia es relativamente baja. Puede esperarse que en el contexto de lenguaje odioso se dificulte aún más esto.
 
@@ -61,17 +76,26 @@ Para evitar muchos de estos problemas, y reutilizar muchas cuestiones con las qu
 
 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
-    \caption{Muestra de la recolección de datos}
-    \label{fig:idea_dataset}
-\end{figure}
+\subsection{Proceso de construcción}
+
+Dividiremos la construcción del dataset en tres etapas:
+
+\begin{enumerate}
+    \item Recolección: Proceso de recolección de datos de Twitter y
+    \item Selección: Dado el conjunto de artículos y comentarios recolectados, tomar una muestra de artículos y comentarios a etiquetar
+    \item Anotación: Proceso de etiquetado de los artículos seleccionados
+\end{enumerate}
+
+Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la selección se limita a una muestra aleatoria de la recolección, este procedimiento sería muy ineficiente en el caso de discurso de odio. Esto se debe a que en nuestro dominio de comentarios periodísticos y discurso de odio, encontramos este tipo de discurso distribuido de manera muy poco uniforme.
+
+En algunos trabajos previos (como por ejemplo \citet{waseem2016hateful,hateval2019semeval}) la recolección y selección constan conjuntamente de usar ciertos keywords y, o bien recolectar tweets que usen esas palabras, o bien sirven para preseleccionar usuarios de los cuales luego extraer tweets para ser etiquetados.
+
+En nuestro caso, la selección de artículos y comentarios presenta cierta novedad y complejidad, con lo cual separamos este procedimiento para explicarlo detalladamente en las siguientes secciones.
 
 
 \section{Recolección de datos}
 
-
+En esta sección describiremos el proceso de recolección de datos. La salida de esta etapa será un conjunto de artículos y sus comentarios extraídos de Twitter. Describiremos a continuación las decisiones realizadas respecto a las fuentes y a decisiones técnicas realizadas.
 
 \subsection{Diarios elegidos}
 
@@ -82,20 +106,49 @@ Además, si bien buscamos otros medios del interior (como por ejemplo ``La voz d
 Los diarios seleccionados fueron los siguientes:
 
 \begin{itemize}
-    \item Clarín
-    \item La Nación
-    \item Infobae
-    \item Perfil
-    \item Crónica
+    \item @infobae
+    \item @clarincom
+    \item @perfilcom
+    \item @LANACION
+    \item @cronica
 \end{itemize}
 
 
-Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios tradicionales y con soporte escrito.
-
-Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa'' (puntualmente, ``La Derecha Diario''\footnote{\url{http://twitter.com/laderechadiario}}). Estos medios son altamente generadores
+Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, la mayoría de ellos con soporte escrito. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa'' (puntualmente, ``La Derecha Diario''\footnote{\url{http://twitter.com/laderechadiario}}). Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de las subsiguientes etapas.
 
 
-\subsection{Recolección de datos}
+\subsection{}
+
+
+
+La API de Twitter\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones} en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma:
+
+\begin{enumerate}
+    \item Search API: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
+    \item Stream API: permite buscar tweets en tiempo real sobre una muestra de cerca del 1\% de todos los tweets de la red social
+\end{enumerate}
+
+La API Stream, mientras por un lado limita temporalmente la recolección de datos, por el otro nos brinda la posibilidad de recolectar una mayor cantidad de información en tiempo real. Más aún, dada la naturaleza de nuestros datos (discurso de odio), se corre el riesgo de que con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la API Search. \todo{Mencionar algo de los términos y condiciones de Twitter}
+
+
+Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de estas cuentas. Si estamos entonces recolectando tweets sobre \verb|@medio|, el proceso de recolección nos da:
+
+\begin{enumerate}
+    \item Tweets de \verb|@medio|
+    \item Respuestas a los tweets de \verb|@medio|
+    \item Tweets de terceros que mencionan a \verb|@medio|
+    \item Retweets (RT) de tweets de \verb|@medio|
+    \item Citas de tweets de \verb|@medio|
+\end{enumerate}
+
+Los RTs y tweets que arroben a \verb|@medio| carecen de interés para nuestro estudio, con lo cual los descartamos. Por otro lado, también descartamos las citas, aunque podrían entenderse como ``respuestas'' a los tweets originales. Nos quedamos con tweets de \verb|@medio| y las respuestas a estos. Si bien la API nos da estos tweets desestructuradamente, reconstruimos el árbol de la discusión mediante el campo \verb|in_reply_to_status_id|\footnote{Ver la documentación y la referencia al campo en \url{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}}.
+
+Para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporaremos hilos de respuestas.
+
+También eliminamos las URLs de los artículos de los enlaces.
+
+
+
 
 \begin{table*}[t]
     \centering
@@ -111,33 +164,7 @@ Consideramos la posibilidad de elegir medios no tradicionales y más orientados 
 \end{table*}
 
 
-%%
-%%
-%%
-%% https://docs.google.com/drawings/d/1IcBITgNJN-tehmvnZqcSF9cUuWIpNKJg6yHI5yjNF9c/edit
-%%
-%%
-
-
-La API de Twitter, en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma:
-
-\begin{enumerate}
-    \item Search API: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
-    \item Stream API: permite buscar tweets en tiempo real sobre una muestra de cerca del 1\% de todos los tweets de la red social
-\end{enumerate}
-
-La API Stream, mientras limita temporalmente la recolección de datos, nos brinda la posibilidad de recolectar una mayor cantidad de información. Más aún, dada la naturaleza de nuestros datos (discurso de odio), se corre el riesgo de que con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la API Search. \todo{Mencionar algo de los términos y condiciones de Twitter}
-
-
-Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de estas cuentas. \todo{Explicar el proceso más detalladamente} Para cualquier tweet de uno de estos medios, reconstruimos la conversación. Para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original \footnote{Usamos una versión antigua de la API. La versión 2.0 parece facilitar la recopilación de conversaciones}. También eliminamos las URLs de los artículos de los enlaces.
-
-
-Si bien consideramos otros medios (en particular, los ``periódicos'' electrónicos de derecha) decidimos apostar por medios más tradicionales con apoyo escrito: Clarín (@clarincom), La Nación (@LANACION), Infobae (@infobae), Perfil. (@perfilcom), Crónica (@cronicacom). Como el proceso de anotación iba a ser realizado por anotadores locales, decidimos no recopilar ningún dato de otros países de habla hispana.
-
-
 El foco se hizo en artículos relacionados con COVID-19. Para ello, seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. La tabla \ref{tab: article_words} contiene las palabras utilizadas para recuperar estos artículos. También estábamos interesados en la pandemia del dengue; sin embargo, solo se recuperó un número muy pequeño de artículos.
-
-La figura \ref{fig:idea_dataset} ilustra lo recolectado: en este caso, un tweet de un medio periodístico y todos los comentarios realizados sobre éste. En el caso de Twitter, los comentarios son respuestas al tweet original.
 
 
 
@@ -250,7 +277,7 @@ Vale remarcar que este proceso de selección es para los \emph{artículos}, no p
 
 Luego de algunos análisis experimentales y observacionales de las dos posibles metodologías, decidimos utilizar el muestreo de artículos en base a comentarios. En base a un análisis subjetivo, los artículos seleccionados parecían tener mayor incidencia de mensajes odiosos y eso nos decantó hacia esa opción.
 
-\section{Criterios de anotación}
+\section{Anotación}
 \label{sec:criterios}
 
 
@@ -284,13 +311,13 @@ Tenemos entonces 8 características que agrupan tipos de discurso de odio: contr
 
 \todo{Linkear el apéndice}
 
-\section{Modelo de etiquetado}
+\subsection{Modelo de etiquetado}
 
 
 
 Un modelo de anotación es, según \citet{pustejovsky2012natural}, una representación práctica del objetivo de anotación. En nuestro caso, queremos marcar comentarios discriminatorios, marcar a qué grupos y/o características se está ofendiendo, y también identificar llamados a tomar alguna acción contra los objetos de esos discursos. Por lo pronto, haremos una definición que capture ese objetivo sin deternos demasiado en especificarlo formalmente (lo que llaman en ese libro ``especificación'').
 
-\subsection{Modelo Jerárquico de Etiquetado}
+\subsubsection{Modelo Jerárquico de Etiquetado}
 
 
 
@@ -301,7 +328,7 @@ Un modelo de anotación es, según \citet{pustejovsky2012natural}, una represent
     \label{fig:modelos_offenseval_hateval}
 \end{figure}
 
-\subsection{Modelo de etiquetado jerárquico y contextualizado}
+\subsubsection{Modelo de etiquetado jerárquico y contextualizado}
 
 \citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado en las competiciones OffensEval \cite{zampieri2019semeval2019} y hatEval \cite{hateval2019semeval}. La idea de la anotación jerárquica es realizar anotaciones adicionales sólo para algunos casos de anotaciones del nivel anterior.
 
@@ -329,7 +356,7 @@ La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado p
 
 
 
-\section{Etiquetadores}
+\subsection{Etiquetadores}
 
 A diferencia de otros trabajos (como hatEval \cite{hateval2019semeval}), decidimos por un lado, garantizar que nuestros anotadores estén más cercanos culturalmente al problema en cuestión, a la vez que tener mayor control del perfil de estos. Consideramos que el discurso de odio tiene un fuerte componente cultural, muchas veces expresado a través de jerga o expresiones dialectales muy particulares, y relacionado con noticias muy propias de esta región.
 
@@ -347,7 +374,7 @@ Comentar otros trabajos acá
     \item Context offensive (el de Google, y el griego)
 \end{itemize}
 
-\subsection{Perfil de etiquetadores}
+\subsubsection{Perfil de etiquetadores}
 
 Para la selección de anotadores, realizamos una búsqueda interna. Puntualmente, buscamos:
 
@@ -359,7 +386,7 @@ Para la selección de anotadores, realizamos una búsqueda interna. Puntualmente
 
 Luego de una breve entrevista donde les contamos el proyecto y corroboramos que efectivamente sean hablantes nativos de Español Rioplatense y usuarios de RRSS, les mandamos una pequeña evaluación paga que constó de leer el manual de criterios de anotación (que agregamos en \ref{app:manual_criterios_anotacion}) y anotar 5 artículos. Esto lo realizamos para ver que efectivamente estén entendiendo la tarea. Estos artículos fueron luego reutilizados para el proceso de entrenamiento.
 
-\section{Proceso de etiquetado}
+\subsection{Proceso de etiquetado}
 
 \subsection{Preprocesado y filtrado de los datos}
 
