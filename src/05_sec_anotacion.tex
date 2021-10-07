@@ -1,0 +1,236 @@
+\section{Anotación}
+\label{sec:criterios}
+
+
+
+
+\subsection{Definición de discurso de odio utilizada}
+
+\begin{table}[t]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        Característica & Descripción \\
+        \hline
+        MUJER        & Misoginia, agresiones basadas en ser mujer  \\
+        LGBTI        & Homofobia, transfobia, y ofensas a la comunidad LGBTI \\
+        RACISMO      & Racismo, Xenofobia, Judeofobia, etc \\
+        POBREZA      & Basado en su condición de clase \\
+        POLITICA     & En base a la filiación política del agredido \\
+        ASPECTO      & Gordofobia, gerontofobia \\
+        CRIMINAL     & Criminales, presos, y otras personas en situación de conflicto con la ley \\
+        DISCAPACIDAD & Discapacidades y adictos a sustancias
+
+    \end{tabularx}
+    \label{tab:caracteristicas_protegidas}
+    \caption{Características protegidas consideradas en este trabajo}
+\end{table}
+
+
+Teniendo en cuenta la discusión realizada en la sección \ref{sec:hate_speech_definitions} realizamos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es necesario solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita a al menos una característica protegida.
+
+A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser ``protegidas''. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (``aporofobia''), por su aspecto físico, y otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, el discurso de odio ``político'', que de acuerdo a XXX \todo{citation needed}, es difícil considerar como protegida ya que puede dar lugar a censuras. Por otro lado, también consideramos el discurso de odio contra criminales, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como una característica protegida en ninguno de los trabajos mencionados en la sección \ref{sec:hate_speech_definitions}, al haber tanto contenido que incita a la violencia contra criminales en las noticias de policiales, agregamos esta característica. Así mismo, esta característica puede ser de utilidad ya que nos interesa recoger incitaciones a la violencia, y este rubro es prolífico en ello en las redes.
+
+Tenemos entonces 8 características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás odio por aspecto; por su ideología política; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la tabla \ref{tab:caracteristicas_protegidas} junto a acrónimos que usaremos en el resto del capítulo.
+
+En el apéndice \ref{app:manual_criterios_anotacion} puede encontrarse el manual de etiquetado, con descripciones detalladas y ejemplos de lo que consideramos que configura discurso de odio para cada característica.
+
+\subsection{Modelo de etiquetado}
+
+Un modelo de anotación es, según \citet{pustejovsky2012natural}, una representación práctica del objetivo de anotación. En nuestro caso, queremos marcar comentarios discriminatorios, marcar a qué grupos y/o características se está ofendiendo, y también identificar llamados a tomar alguna acción contra los objetos de esos discursos. Por lo pronto, haremos una definición que capture ese objetivo sin deternos demasiado en especificarlo formalmente (lo que llaman en ese libro ``especificación'').
+
+\todo{Describir un poquito más lo que está mencionado en el review de Polletto}
+
+\subsubsection{Modelo Jerárquico de Etiquetado}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/modelosjerarquicos.png}
+    \caption{Modelos jerárquicos de anotación. A la izquierda, tenemos el modelo jerárquico propuesto para HatEval \cite{hateval2019semeval}, a la derecha el modelo propuesto para OffensEval \cite{zampieri2019semeval2019}}
+    \label{fig:modelos_offenseval_hateval}
+\end{figure}
+
+
+\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado en las competiciones OffensEval \cite{zampieri2019semeval2019} y hatEval \cite{hateval2019semeval}. La idea de la anotación jerárquica es realizar anotaciones adicionales sólo para algunos casos de anotaciones del nivel anterior.
+
+En el caso de \emph{hatEval}, tenemos un primer nivel que consta de anotar si un tweet contiene o no lenguaje de odio (nivel 1). Si el tweet tiene lenguaje de odio, entonces anotamos si está dirigido a un individuo o a un grupo, y también anotamos si es agresivo o no (ambos nivel 2). En el caso de \emph{OffensEval}, primero anotamos si es ofensivo (nivel 1), luego si está dirigido o es un insulto no dirigido (nivel 2) y finalmente, si es dirigido y ofensivo, marcamos su objetivo (nivel 3). En la figura \ref{fig:modelos_offenseval_hateval} ilustramos ambos modelos.
+
+
+%
+%
+% Link: https://docs.google.com/drawings/d/1ZgTmvRwMWn0B-kokfw87jfSa7eY5-OSBHwltetnNT08/edit
+%
+
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/Annotation Model.png}
+    \caption{Modelo de anotación}
+    \label{fig:annotation_model}
+\end{figure}
+
+
+La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado para el dataset construído en este trabajo. Seguimos un modelo jerárquico similar al propuesto por \citet{zampieri2019predicting}, aunque de sólo un nivel. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación  para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida
+
+
+
+
+
+\subsection{Etiquetadores}
+
+%
+% Chequear https://docs.google.com/spreadsheets/d/1PaOVw_tKVRvjZIqRl2YKnaNsvX5tHJjjY0CV9PLrc6g/edit?resourcekey#gid=366330815
+%
+
+\begin{table}[t]
+    \centering
+    \small
+    \begin{tabularx}{\textwidth}{l l l l l l l l}
+        Género      & Edad   & Estudios           & Área          & Identificación    & ¿Activista?   & Experiencia\\
+        \hline
+        F    & 27     & Doctorado*          & Psicología    & Mujer             & No                   & Sí         \\
+        NB   & 33     & Grado*              & Artes         & LGBTTIQ           & No                   & No         \\
+        F    & 30     & Grado*              & Antropología  & Mujer, LGBTTIQ    & Feminista            & Sí         \\
+        M    & 38     & Grado               & Sociología    & No                & No                   & No         \\
+        F    & 36     & Doctorado           & Psicología    & Mujer             & No                   & No         \\
+        F    & 34     & Grado               & Comunicación  & No                & Migrantes            & No         \\
+        \hline
+    \end{tabularx}
+    \label{tab:informacion_sobre_anotadores}
+    \caption{Características protegidas consideradas en este trabajo}
+\end{table}
+
+A diferencia de otros trabajos (como hatEval \cite{hateval2019semeval}), decidimos por un lado, garantizar que nuestros anotadores estén más cercanos culturalmente al problema en cuestión, a la vez que tener mayor control del perfil de estos. Consideramos que el discurso de odio tiene un fuerte componente cultural, muchas veces expresado a través de jerga o expresiones dialectales muy particulares, y relacionado con noticias muy propias de esta región.
+
+Para ello, reclutamos etiquetadores hablantes nativos, y estudiantes o graduados/as de carreras de ciencias sociales o humanidades, como ser Psicología, Sociología, Comunicación, Antropología, etc. Algo que particularmente nos interesó fue que no tengan conocimientos de inteligencia artificial, ``ciencia de datos'' ni relacionados, de manera de no sesgar su tarea. También, que sean usuarios asiduos de redes sociales.
+
+El proceso de reclutamiento constó en una breve entrevista donde corroboramos que sean hablantes nativos, les describimos la tarea mientras le mostrábamos la herramienta de etiquetado. Finalmente, se les solicitó hacer una prueba paga de leer el manual de etiquetado y anotar 10 artículos. Esto lo hicimos para corroborar la calidad de los etiquetadores. No rechazamos ningún etiquetador en este proceso.
+
+La tabla \ref{tab:informacion_sobre_anotadores} brinda información desagregada sobre los 6 etiquetadores. Finalmente, nuestros etiquetadores son altamente escolarizados, con 2 etiquetadoras con experiencia previa, y siendo 2 activistas.
+
+
+\subsection{Tipos de anotación en otros trabajos}
+
+Comentar otros trabajos acá
+
+\begin{itemize}
+    \item Davidson
+    \item Waseem
+    \item hatEval
+    \item CONAN
+    \item Gao (contextualizado)
+    \item Context offensive (el de Google, y el griego)
+\end{itemize}
+
+\subsection{Proceso de etiquetado}
+
+\subsection{Preprocesado y filtrado de los datos}
+
+El preprocesado de los datos es muy básico: en los hechos, efectuamos el mismo preprocesamiento que en anteriores tareas, consistente en reemplazar handles de Twitter por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario conocido como ``odiador'' (llamemos \verb|@hater|) retwittea la noticia y otro responde a ese RT, aparece ese nombre de usuario lo cual podría condicionar al etiquetador.
+
+Así mismo, descartamos cualquier tweet que tuviera algún link ya que pueden referir a contenido no textual
+
+
+\subsection{Entrenamiento de etiquetadores}
+
+
+
+%
+% Esto quizás va después
+%
+\subsection{Herramienta de etiquetado}
+
+%%
+%% Link a Google Draw: https://docs.google.com/drawings/d/1E24-2l6hsNj2JSKBZOD8QvZCJR6rrGjz-cWwt8XuPRg/edit
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/labeler.pdf}
+    \caption{Pantalla del etiquetador}
+    \label{fig:labeler_example}
+\end{figure}
+
+Al no utilizar ningún servicio de etiquetado, optamos por desarrollar nuestra propia aplicación para el etiquetado de tweets. En ella, a cada etiquetador les fueron asignados progresivamente los artículos a anotar, los cuales fueron agrupados en ``lotes'' para facilitar la tarea administrativa de la asignación.
+
+La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados. Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar usando un control de tipo ``switch''
+
+\begin{enumerate}
+    \item Si el comentario contiene discurso discriminatorio
+    \item En caso de ser discriminatorio, marcar si llama a la acción
+    \item En caso de ser discriminatorio, marcar al menos una característica ofendida
+\end{enumerate}
+
+Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.djangoproject.com/}}, un framework de python para desarrollo web, y Javascript plano. Como base de datos utilizamos SQLite ya que tenía una baja tasa de concurrencia (sólo 6 usuarios.)
+
+\subsection{Esquema de anotación}
+
+%Teniendo en cuenta el modelo de anotación ilustrado en la figura \ref{fig:annotation_model}, optamos por la siguiente metodología para el etiquetado de los comentarios de nuestro dataset.
+
+%%
+%%
+%% Link a Google Draw:
+%% https://docs.google.com/drawings/d/1esS9tAwpPVydohxd-B-xwVdAaPQRVGAo0MruBrgSKig/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/esquema_anotacion.pdf}
+    \caption{Esquema de anotación. Caso en que ambos anotadores etiqueten los comentarios del artículo}
+    \label{fig:annotation_schema}
+\end{figure}
+
+Los artículos son asignados a cada etiquetador. Cada etiquetador, al serle presentado un artículo, tiene dos opciones: etiquetarlo o saltearlo. La idea de saltear era doble: evitar contenido poco ``interesante'' en términos de comentarios discriminatorios, o evitar contenido sensible para el anotador (algo que no ocurrió afortunadamente).
+
+Una posibilidad que barajamos en un principio fue asignar para el etiquetado el artículo completo a 3 anotadores. Sin embargo, esta modalidad sería altamente ineficiente dada la baja cantidad de contenido discriminatorio. Entonces, decidimos ir por un esquema de ``desempate'': dos anotadores anotan un artículo, y luego un tercero anota sólo aquellos donde al menos uno marcó que es discriminatorio. Esto da la posibilidad de que haya una tercera anotación incluso cuando dos previas marcaron que el comentario es discriminatorio, y lo hacemos para recolectar más información. \todo{marcar otros trabajos que hayan hecho esto}. Con este esquema de anotación, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo. La figura \ref{fig:annotation_schema} ilustra este flujo de anotación.
+
+Entonces, en primer lugar cada artículo es asignado a 2 anotadores. Luego de esto, se solicita una tercera anotación pero sólo sobre los comentarios que tengan alguna de las dos etiquetadas marcando contenido discriminatorio, y no dando la posibilidad de saltear. Ahora ¿qué pasa si alguno de los dos anotadores saltea el artículo?. Tenemos dos casos. Si los dos saltean el artículo, entonces descartamos ese artículo. Ahora, puede ocurrir el caso de que uno lo saltee y el otro lo anote: en ese caso, y en pos de maximizar el contenido discriminatorio encontrado o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear. La figura \ref{fig:annotation_schema_case_two} ilustra el flujo para este caso.
+
+
+%%
+%%
+%% Link a Google Draw
+%% https://docs.google.com/drawings/d/1TOlCgZggCmYHgZWV7ZrIIlXuhcFUMeYw4PcFM7XdY2k/edit
+%%
+%%
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/esquema_anotacion_caso_2.pdf}
+    \caption{Esquema de anotación. Caso en que un anotador saltee}
+    \label{fig:annotation_schema_case_two}
+\end{figure}
+
+
+Como resultado de este esquema, cada comentario de nuestro dataset puede tener dos o tres anotaciones, siendo los casos posibles los siguientes:
+
+\begin{enumerate}
+    \item Dos anotaciones negativas
+    \item Tres anotaciones, siendo al menos una que marque el comentario como discriminatorio
+\end{enumerate}
+
+
+
+
+\subsection{Asignación}
+
+\citet{pustejovsky2012natural} denominan ``asignación'' al procedimiento de extraer las ``gold labels'' de las etiquetas. En este punto tenemos una etiqueta binaria si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias: una para la llamadas a la acción (CALLS) y otras 8 para las características ofendidas. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características restantes.
+
+Para este dataset, tomamos las siguientes decisiones:
+
+\begin{enumerate}
+    \item Para la etiqueta de HS, realizamos la votación mayoritaria
+    \item Si hay HS, CALLS es positivo sii es votación mayoritaria
+    \item Si hay HS, marco como positivas todas aquellas características marcadas por los anotadores
+\end{enumerate}
+
+La primer decisión es la más obvia y razonable, pero las otras dos decisiones merecen alguna discusión. Para que sea un comentario considerado como HS, tiene que ocurrir que al menos dos etiquetadores lo marquen como tal. En ese caso, para que haya votación mayoritaria de CALLS, tiene que haber dos o más votos marcados como tal; en caso de empate, es decir, que un anotador marca que hay llamado a la acción y otro que no, marcamos que no hay llamado a la acción.
+
+En el caso de las características, marcamos todas las que hayan marcado aquellos anotadores que hayan etiquetado HS. Esta decisión podría haberse tomado de otra manera; por ejemplo, sólo tomando aquellos casos donde haya cierto grado de coincidencia entre los comentarios. Sin embargo, al considerar que los límites entre las características son difusos (por ejemplo, apariencia y mujer tienen un grado de coincidencia, y a veces clasismo y racismo también) preferimos optar por este esquema.
+
+\todo{Agregar algún gráfico de esto}
+
+\subsection{Recursos utilizados}
+
+El etiquetado constó de XXX horas. A cada etiquetador le fue pagado YYYY por hora, y luego ZZZ por hora en segunda instancia. Esto equivale a WWW USD.
