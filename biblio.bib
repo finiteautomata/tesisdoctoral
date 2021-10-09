@@ -1,5 +1,25 @@
 
 %%
+%% Deep Learning
+%%
+%%
+
+@book{goodfellow2016deep,
+  title={Deep learning},
+  author={Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  year={2016},
+  publisher={MIT press}
+}
+
+@inproceedings{glorot2011domain,
+  title={Domain adaptation for large-scale sentiment classification: A deep learning approach},
+  author={Glorot, Xavier and Bordes, Antoine and Bengio, Yoshua},
+  booktitle={ICML},
+  year={2011}
+}
+
+
+%%
 %%
 %% Intro
 %%
@@ -495,6 +515,8 @@
   year={2018}
 }
 
+
+
 %%
 %%
 %%  BERT y amigos
@@ -502,6 +524,20 @@
 %%
 %%
 
+@inproceedings{howard-ruder-2018-universal,
+    title = "Universal Language Model Fine-tuning for Text Classification",
+    author = "Howard, Jeremy  and
+      Ruder, Sebastian",
+    booktitle = "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2018",
+    address = "Melbourne, Australia",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/P18-1031",
+    doi = "10.18653/v1/P18-1031",
+    pages = "328--339",
+    abstract = "Inductive transfer learning has greatly impacted computer vision, but existing approaches in NLP still require task-specific modifications and training from scratch. We propose Universal Language Model Fine-tuning (ULMFiT), an effective transfer learning method that can be applied to any task in NLP, and introduce techniques that are key for fine-tuning a language model. Our method significantly outperforms the state-of-the-art on six text classification tasks, reducing the error by 18-24{\%} on the majority of datasets. Furthermore, with only 100 labeled examples, it matches the performance of training from scratch on 100 times more data. We open-source our pretrained models and code.",
+}
 
 @article{devlin2018bert,
   title={Bert: Pre-training of deep bidirectional transformers for language understanding},
@@ -517,7 +553,36 @@
   year={2020}
 }
 
+@article{liu2019roberta,
+  title={Roberta: A robustly optimized bert pretraining approach},
+  author={Liu, Yinhan and Ott, Myle and Goyal, Naman and Du, Jingfei and Joshi, Mandar and Chen, Danqi and Levy, Omer and Lewis, Mike and Zettlemoyer, Luke and Stoyanov, Veselin},
+  journal={arXiv preprint arXiv:1907.11692},
+  year={2019}
+}
 
+%%
+%%
+%% Domain adaptation
+%%
+@inproceedings{gururangan-etal-2020-dont,
+    title = "Don{'}t Stop Pretraining: Adapt Language Models to Domains and Tasks",
+    author = "Gururangan, Suchin  and
+      Marasovi{\'c}, Ana  and
+      Swayamdipta, Swabha  and
+      Lo, Kyle  and
+      Beltagy, Iz  and
+      Downey, Doug  and
+      Smith, Noah A.",
+    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.acl-main.740",
+    doi = "10.18653/v1/2020.acl-main.740",
+    pages = "8342--8360",
+    abstract = "Language models pretrained on text from a wide variety of sources form the foundation of today{'}s NLP. In light of the success of these broad-coverage models, we investigate whether it is still helpful to tailor a pretrained model to the domain of a target task. We present a study across four domains (biomedical and computer science publications, news, and reviews) and eight classification tasks, showing that a second phase of pretraining in-domain (domain-adaptive pretraining) leads to performance gains, under both high- and low-resource settings. Moreover, adapting to the task{'}s unlabeled data (task-adaptive pretraining) improves performance even after domain-adaptive pretraining. Finally, we show that adapting to a task corpus augmented using simple data selection strategies is an effective alternative, especially when resources for domain-adaptive pretraining might be unavailable. Overall, we consistently find that multi-phase adaptive pretraining offers large gains in task performance.",
+}
 
 %%
 %%

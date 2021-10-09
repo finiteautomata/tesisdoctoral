@@ -187,8 +187,12 @@ En esta sección haremos un recuento de los conjuntos de datos para la detecció
     \label{tab:nobata_guidelines}
 \end{table*}
 
+\todo{Mandar esto al siguiente capítulo}
 
-\subsubsection{}
+
+\subsubsection{Datos}
+
+Utilizamos el dataset en español de hatEval \cite{hateval2019semeval}
 
 \section{Método}
 
@@ -221,14 +225,39 @@ Para capturar esta información, consideramos una representación de bolsa de ca
 
 \subsection {Word-embeddings}
 
-Usamos \fasttext {}, una biblioteca de incrustaciones consciente de subpalabras \cite{bojanowski16} para obtener representaciones de palabras independientes del contexto.
-En lugar de usar vectores previamente entrenados disponibles públicamente, entrenamos nuestras propias incrustaciones en un conjunto de datos de $ \sim90 $ millones de tweets de varios países de habla hispana.
+Usamos \fasttext{}, una biblioteca de embeddings basada en combinaciones lineales de sub n-gramas \cite{bojanowski16} para obtener representaciones de palabras independientes del contexto.
+
+
+De la misma manera que en la anterior sección, en lugar de usar vectores previamente entrenados disponibles públicamente, entrenamos nuestras propias incrustaciones en un conjunto de datos de $ \sim90 $ millones de tweets de varios países de habla hispana.
 Preparamos dos versiones de los datos: una usando solo preprocesamiento básico y la otra usando preprocesamiento orientado a sentimientos (con la excepción de la lematización). Para estos dos conjuntos de datos, las incrustaciones de omisión de gramática se entrenaron utilizando diferentes configuraciones de parámetros, incluyendo una serie de dimensiones, tamaño de n-gramas de palabras y subpalabras, y tamaño de la ventana de contexto.
 
 \subsection{Tweet Embeddings}
 \label{sec:sif}
 
-% Hay varias formas de usar incrustaciones de palabras para el análisis de sentimientos en tweets: los enfoques van desde el simple promedio de vectores para cada palabra en el tweet hasta el uso de arquitecturas más complejas como CNN o RNN. En este trabajo,
+%%
+%%
+%%
+%%  https://docs.google.com/drawings/d/1BU3ulBiqU0NojpW6Fkb4xFlMCDigSWwfjN7z9smO6nY/edit
+%%
+%%
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/tweet_embeddings.pdf}
+    \caption{Muestra de la recolección de datos}
+    \label{fig:tweet_embeddings}
+\end{figure}
+
+Una forma relativamente simple de obtener una representación de una oración es realizar una combinación lineal de las representaciones obtenidas para cada palabra. Es decir, dada una oración $s = w_1 w_2 \ldots w_n$, y representaciones $\overline{w_1}, \overline{w_2}, \ldots, \overline{w_n} \in \mathbb{R}^m$, podemos obtener una representación
+
+\begin{equation}
+    \overline{s} = \sum\limits_{i=1}^{n} \alpha_i \overline{w_i}
+\end{equation}
+
+con $\alpha_1, \ldots, \alpha_n \in \mathbb{R}$ escalares (dependientes de la oración). De esta manera, obtenemos de $n$ representaciones independientes del contexto una representación para el tweet, sin tener en cuenta posibles interacciones entre los distintos componentes. La figura \ref{fig:tweet_embeddings} ilustra esta metodología simple para obtener representaciones de oraciones.
+
+Tenemos entonces dos posibilidades para determinar la combinación lineal: la forma de obtener las representaciones, y la forma de calcular los coeficientes. Para las representaciones, podemos usar varias de las técnicas que ya vimos como word2vec, GloVe, o \fasttext{}. Para calcular los coeficientes, consideramos en nuestro trabajo dos formas. La primera, la forma canónica, calculando un promedio de las representaciones, es decir, tomando $\alpha_i = \frac{1}{n}$
+
 Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
 Seguimos dos enfoques simples: promedio simple y promedio ponderado. En el segundo caso, utilizamos un esquema que se asemeja a la frecuencia inversa suave (SIF) \cite {arora17}, inspirado en la reponderación de TF-IDF.
 Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado.
