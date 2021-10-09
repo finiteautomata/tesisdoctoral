@@ -7,11 +7,12 @@ Abordaremos la pregunta ¿cómo se compara en el dominio social el ajuste de dom
 
 Comenzamos este capítulo haciendo una pequeña recapitulación de las técnicas de adaptación de dominio.
 
-\section{Adaptación de dominio}
+\section{Trabajo previo}
 
-\citet{goodfellow2016deep} definen la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado sobre una distribución de datos o dominio $P_1$, lo utilizamos sobre una distribución $P_2$ relativamente similar.
 
-En el caso de la adaptación de dominio, nos referimos a la aplicación de alguna técnica que ajuste la distribución de la entrada (de $P_1$) a la distribución de nuestro nuevo dominio. \citet{glorot2011domain} es uno de los primeros trabajos que aplica esta técnica en NLP, usando denoising auto-encoders para este fin.
+\citet{goodfellow2016deep} define la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado sobre una distribución de datos o dominio $P_1$, lo utilizamos sobre una distribución $P_2$ relativamente similar.
+
+En el caso de la adaptación de dominio, nos referimos a la aplicación de alguna técnica que ajuste la distribución de la entrada (de $P_1$) a la distribución de nuestro nuevo dominio. \citet{glorot2011domain} es uno de los primeros trabajos que aplica esta técnica en NLP, usando denoising auto-encoders para este fin. \todo{Escribir un poco más de esto}
 
 Para lo que nos concierne en NLP solemos querer, dado un modelo de lenguaje (tanto causal como enmascarado) entrenado en un dominio, ajustarlo a otro dominio distinto. Por ejemplo, un modelo BERT pre-entrenado en textos formales (como Wikipedia o noticias) queremos ajustarlo a la distribución de textos sociales, que si bien ambas mantienen el idioma (inglés o español) suelen tener distribuciones notoriamente distintas.
 
@@ -24,7 +25,48 @@ Recientemente, \citet{gururangan-etal-2020-dont} analizan el impacto de los ajus
     \item Task Adaptation: ajustar el modelo de lenguaje sobre el dataset, de la misma manera que se hace en ULM-Fit
 \end{itemize}
 
-En todos los casos, usando modelos del estado del arte como RoBERTa, que aplicar conjuntamente lo que ellos consideran Domain Adaptation y Task Adaptation mejora la performance significativamente
+En todos los casos, usando modelos del estado del arte como RoBERTa muestran que aplicar conjuntamente lo que ellos consideran Domain Adaptation y Task Adaptation mejora la performance significativamente. La adaptación, dado que usan modelos como RoBERTa, consiste tan sólo en correr la tarea de MLM sobre los textos del dominio a adaptar.
+
+\begin{table}
+    \centering
+    \begin{tabular}{llll}
+        Nombre                                 & Idioma            & Dominio                          & Familia     \\
+        \hline
+        SciBERT\cite{beltagy-etal-2019-scibert}& Inglés            & Papers científicos               & BERT        \\
+        BERT-CT                                &                   &                                  &             \\
+        BERTweet\cite{bertweet}                & Inglés            & Tweets, algunos COVID-related    & RoBERTa     \\
+        TwilBERT                               &                   &                                  &             \\
+        AlBERTo                                &                   &                                  &             \\
+    \end{tabular}
+
+    \caption{Modelos pre-entrenados sobre distintos dominios. En familia nos referimos a qué tipo de modelo de lenguaje es usado (BERT, RoBERTa, etc)}
+    \label{tab:bert_pretrained_models}
+\end{table}
 
 
-Algo que queda pendiente de este trabajo es analizar el dominio social, y por otro lado, hacer una comparación de los ajustes de dominios contra entrenar el modelo desde cero en dicho dominio
+Luego del estallido de los modelos de lenguaje basados en transformers, algunos trabajos se han basado en directamente entrenar estos modelos ya no en textos formales como Wikipedia o noticias sino directamente en el dominio en cuestión. Por ejemplo, SciBERT \cite{beltagy-etal-2019-scibert} es un modelo BERT entrenado directamente en textos científicos, BERTweet \cite{bertweet} entrena un modelo RoBERTa\cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. La tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos.
+
+En español tenemos el modelo TwilBERT\cite{gonzalez2021twilbert}; sin embargo, tiene algunas limitaciones: en primer lugar, no queda claro cuánto tiempo de entrenamiento recibió ni si los datos fueron suficientes; en segundo, usaron un modo de entrenamiento basado en una variante de la tarea NSP (ver subsección XXX) cuando numerosos trabajos muestran que el tipo de entrenamiento basado en RoBERTa (sólo tarea MLM) mejora el desempeño. Finalmente, su modelo no es accesible mediante el hub de huggingface\todo{agregar URL o cita}, que usamos para este trabajo.
+
+
+Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-dont} son, en primer lugar y siguiendo la regla de Bender\cite{bender2011achieving}, realizar el estudio en un idioma distinto del inglés. Por otro lado, un dominio que no está estudiado en dicho trabajo es el dominio de tareas en textos sociales. Finalmente, y dado el estallido dees de interés realizar una comparación de la performance de modelos adaptados al domini
+
+\section{Tareas utilizadas en el benchmark}
+
+Para analizar el impacto de la adaptación de dominio y realizar una comparación contra un modelo entrenado desde cero en dicho dominio usamos un conjunto de tareas como benchmark. Las tareas elegidas son todas las que analizamos en este trabajo hasta el momento:
+
+\begin{enumerate}
+    \item Análisis de sentimientos
+    \item Análisis de emociones
+    \item Detección de discurso de odio
+    \item Detección contextualizada de discurso de odio
+    \item Detección de Ironía
+\end{enumerate}
+
+La única tarea que no estudiamos hasta el momento es la de detección de ironía, que es básicamente una tarea de detección binaria sobre textos sociales para distintos. Todas las tareas (con la excepción de la detección contextualizada explicada en los capítulos anteriores) forman parte de IberLEF.
+
+\section{Recolección de tweets}
+
+\section{Entrenamiento de modelo}
+
+\section{Adaptación de modelos pre-entrenados}
