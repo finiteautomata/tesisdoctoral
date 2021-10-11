@@ -176,7 +176,7 @@ Aunque no realizamos un análisis de ablación para evaluar el impacto de cada p
 \end{figure}
 
 
-Los clasificadores propuestos se basan en \emph{BETO}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}. \emph{BETO} tiene un tamaño similar a \emph {BERT Base}, y tiene 12 capas de transformadores con 12 cabezas de atención cada una, sumando 110 millones de parámetros. Para obtener más referencias sobre arquitecturas BERT y Transformer, sugerimos CITA NECESARIA.
+Los clasificadores propuestos se basan en \emph{BETO}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}; para más referencias sobre BERT ver sección XXX.
 
 Para la tarea de detección del discurso de odio, presentamos versiones sin contexto y conscientes del contexto, utilizando el título y el cuerpo completo como posibles contextos. Usamos el token especial BERT \emph {[SEP]} para codificar el contexto y el texto analizado. Recuerde que el token \emph {[SEP]} se usa para la tarea de predicción de la siguiente oración (tarea NSP) en el preentrenamiento al estilo BERT.
 
@@ -189,6 +189,34 @@ En cuanto a la detección de características ofendidas, consideramos este probl
 donde $CHAR$ es el conjunto de todas las características protegidas (MUJERES, LGBTI, RACISMO, CLASE, etc.) y $CALLS$ es `` llamadas a la acción ''. $ J_c $, ya que cualquier $ c $ es una pérdida de entropía cruzada binaria.
 
 Para tener costos computacionales más amigables, limitamos nuestras secuencias a 128, 256 y 512 tokens para el modelo no contextualizado, el modelo de título y el modelo de título y cuerpo, respectivamente.
+
+Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio sobre textos relacionados a nuestro problema; en nuestro caso, al dominio de redes sociales. Esto se realiza corriendo la tarea de MLM (ver sección YYY) sobre un dataset grande y no supervisado relacionado a nuestro dominio, o directamente sobre el dataset de la tarea si esto no está disponible. En la sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña de esta técnica, pero por lo pronto podemos entender que ajusta nuestro ``conocimiento'' a los textos disponibles (en este caso, BETO entrenado en Wikipedia y noticias es ajustado a un dominio de tweets).
+
+Para lo que nos concierne en esta sección, \citet{pavlopoulos2020toxicity} realizó una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} (a lo que denomina BERT-CCTK), sin realizar una adaptación sobre textos con contexto. Proponemos, entonces, y a diferencia de este trabajo que tomamos como referencia, 3 tipos de adaptaciones: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia.
+\todo{agregar secciones}
+
+Realizamos el ajuste utilizando el sobrante de la recolección de datos del anterior capítulo: alrededor de 288k artículos y 5.1M comentarios\footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}. La tabla \ref{tab:hs_ft_hyperparameter} contiene los hiperparámetros utilizados. Para correr estos experimentos, las corrimos sobre una TPU v2-8 y una máquina de Google Colab Pro por alrededor de 10 hs (en su largo de cadena máximo).
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{ll}
+        \toprule
+        Hiperparámetro & Valor         \\
+        \midrule
+        Steps          & $10K$           \\
+        Batch size     & 2048            \\
+        max seq length & 128, 256 y 512  \\
+        $\beta_1$      & $0.9$           \\
+        $\beta_2$      & $0.98$          \\
+        $\epsilon$     & $10^{-6}$       \\
+        decay          & $0.01$          \\
+        Peak LR        & $4*10^{-4}$     \\
+        warmup ratio   & 0.1             \\
+        \bottomrule
+    \end{tabular}
+    \caption{Hiperparámetros para la adaptación de dominio de BERT}
+    \label{tab:hs_ft_hyperparameter}
+\end{table}
 
 
 \section{Resultados}
