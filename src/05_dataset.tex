@@ -92,6 +92,38 @@ En algunos trabajos previos (como por ejemplo \citet{waseem2016hateful,hateval20
 
 En nuestro caso, la selección de artículos y comentarios presenta cierta novedad y complejidad, con lo cual separamos este procedimiento para explicarlo detalladamente en las siguientes secciones.
 
+\section{Definición de discurso de odio}
+\label{sec:our_hate_speech_definition}
+\begin{table}[t]
+    \centering
+    \begin{tabularx}{\textwidth}{l X}
+        Característica & Descripción \\
+        \hline
+        MUJER        & Misoginia, agresiones basadas en ser mujer  \\
+        LGBTI        & Homofobia, transfobia, y ofensas a la comunidad LGBTI \\
+        RACISMO      & Racismo, Xenofobia, Judeofobia, etc \\
+        POBREZA      & Basado en su condición de clase \\
+        POLITICA     & En base a la filiación política del agredido \\
+        ASPECTO      & Gordofobia, gerontofobia \\
+        CRIMINAL     & Criminales, presos, y personas en conflicto con la ley \\
+        DISCAPACIDAD & Discapacidades y adictos a sustancias
+
+    \end{tabularx}
+    \label{tab:caracteristicas_protegidas}
+    \caption{Características protegidas consideradas en este trabajo}
+\end{table}
+
+
+Teniendo en cuenta la discusión realizada en la sección \ref{sec:hate_speech_definitions} realizamos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es necesario solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita a al menos una característica protegida.
+
+A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser ``protegidas''. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (``aporofobia''), por su aspecto físico, y otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, el discurso de odio ``político'', que de acuerdo a XXX \todo{citation needed}, es difícil considerar como protegida ya que puede dar lugar a censuras. Por otro lado, también consideramos el discurso de odio contra criminales, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como una característica protegida en ninguno de los trabajos mencionados en la sección \ref{sec:hate_speech_definitions}, al haber tanto contenido que incita a la violencia contra criminales en las noticias de policiales, agregamos esta característica. Así mismo, esta característica puede ser de utilidad ya que nos interesa recoger incitaciones a la violencia, y este rubro es prolífico en ello en las redes.
+
+Tenemos entonces 8 características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás odio por aspecto; por su ideología política; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la tabla \ref{tab:caracteristicas_protegidas} junto a acrónimos que usaremos en el resto del capítulo.
+
+
+
+
+
 \input{src/05_sec_coleccion.tex}
 \input{src/05_sec_selection.tex}
 \input{src/05_sec_anotacion.tex}

@@ -1,39 +1,5 @@
 \section{Anotación}
-\label{sec:criterios}
 
-Una vez
-
-
-
-\subsection{Definición de discurso de odio utilizada}
-
-\begin{table}[t]
-    \centering
-    \begin{tabularx}{\textwidth}{l X}
-        Característica & Descripción \\
-        \hline
-        MUJER        & Misoginia, agresiones basadas en ser mujer  \\
-        LGBTI        & Homofobia, transfobia, y ofensas a la comunidad LGBTI \\
-        RACISMO      & Racismo, Xenofobia, Judeofobia, etc \\
-        POBREZA      & Basado en su condición de clase \\
-        POLITICA     & En base a la filiación política del agredido \\
-        ASPECTO      & Gordofobia, gerontofobia \\
-        CRIMINAL     & Criminales, presos, y personas en conflicto con la ley \\
-        DISCAPACIDAD & Discapacidades y adictos a sustancias
-
-    \end{tabularx}
-    \label{tab:caracteristicas_protegidas}
-    \caption{Características protegidas consideradas en este trabajo}
-\end{table}
-
-
-Teniendo en cuenta la discusión realizada en la sección \ref{sec:hate_speech_definitions} realizamos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es necesario solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita a al menos una característica protegida.
-
-A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser ``protegidas''. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (``aporofobia''), por su aspecto físico, y otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, el discurso de odio ``político'', que de acuerdo a XXX \todo{citation needed}, es difícil considerar como protegida ya que puede dar lugar a censuras. Por otro lado, también consideramos el discurso de odio contra criminales, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como una característica protegida en ninguno de los trabajos mencionados en la sección \ref{sec:hate_speech_definitions}, al haber tanto contenido que incita a la violencia contra criminales en las noticias de policiales, agregamos esta característica. Así mismo, esta característica puede ser de utilidad ya que nos interesa recoger incitaciones a la violencia, y este rubro es prolífico en ello en las redes.
-
-Tenemos entonces 8 características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás odio por aspecto; por su ideología política; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la tabla \ref{tab:caracteristicas_protegidas} junto a acrónimos que usaremos en el resto del capítulo.
-
-En el apéndice \ref{app:manual_criterios_anotacion} puede encontrarse el manual de etiquetado, con descripciones detalladas y ejemplos de lo que consideramos que configura discurso de odio para cada característica.
 
 \subsection{Modelo de etiquetado}
 
@@ -74,6 +40,14 @@ En el caso de \emph{hatEval}, tenemos un primer nivel que consta de anotar si un
 La figura \ref{fig:annotation_model} muestra el modelo de anotación utilizado para el dataset construído en este trabajo. Seguimos un modelo jerárquico similar al propuesto por \citet{zampieri2019predicting}, aunque de sólo un nivel. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación  para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida
 
 
+\subsection{Manual de etiquetado}
+\label{sec:criterios}
+
+Considerando la definición que consideramos en \ref{sec:hate_speech_definition}, confeccionamos un manual de etiquetado.
+
+Para escribirlo, realizamos algunas pruebas de etiquetado con miembros del equipo, y rondas de discusión posterior analizando. Algunas de las características mencionadas en nuestra definición fueron agregadas luego de esto. De estas iteraciones logramos ir mejorando el manual, agregándole ejemplos y definiciones, hasta llegar a una versión definitiva. Para cada característica agregamos algunas consideraciones adicionales: por ejemplo, para MUJER no basta con que se insulte a la mujer sino que se apele a algo distintivo de la mujer (``algo que no le diría a un hombre'') y para la característica LGBTI mencionamos particularmente las expresiones de asco, incluyendo en esto a los emojis.
+
+En el apéndice \ref{app:manual_criterios_anotacion} puede encontrarse el manual de etiquetado completo entregado a los etiquetadores.
 
 
 
@@ -109,19 +83,6 @@ El proceso de reclutamiento constó en una breve entrevista donde corroboramos q
 
 La tabla \ref{tab:informacion_sobre_anotadores} brinda información desagregada sobre los 6 etiquetadores. Finalmente, nuestros etiquetadores son altamente escolarizados, con 2 etiquetadoras con experiencia previa, y siendo 2 activistas.
 
-
-\subsection{Tipos de anotación en otros trabajos}
-
-Comentar otros trabajos acá
-
-\begin{itemize}
-    \item Davidson
-    \item Waseem
-    \item hatEval
-    \item CONAN
-    \item Gao (contextualizado)
-    \item Context offensive (el de Google, y el griego)
-\end{itemize}
 
 \subsection{Proceso de etiquetado}
 
