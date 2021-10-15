@@ -2,18 +2,16 @@
 
 En este capítulo describiremos la construcción de un dataset contextualizado de discurso de odio. Describiremos en detalle el proceso de recolección, selección y anotación de datos.
 
-Por lo marcado en anteriores secciones, consideramos interesante el problema de analizar el impacto del contexto en la detección de lenguaje discriminatorio. Para citar un ejemplo de por qué es necesario, el mensaje ``sos un hombre'' en solitario puede parecer inofensivo; ahora, si ese mismo mensaje está dirigido hacia una mujer trans, su contenido es claramente discriminatorio. Para analizar esto, nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre esta.
+Por lo marcado en anteriores secciones, consideramos interesante el problema de analizar el impacto del contexto en la detección de lenguaje discriminatorio. Para citar un ejemplo de por qué es necesario, el mensaje ``sos un hombre'' en solitario puede parecer inofensivo; ahora, si ese mismo mensaje está dirigido hacia una mujer trans, su contenido es claramente discriminatorio. Para analizar esto, nos abocamos a la decisión de crear un dataset que no sólo contenga un mensaje/comentario, sino que provea un contexto en el cual se da este mensaje. Un ámbito natural para esta tarea son las notas periodísticas, donde disponemos de una nota y comentarios realizados sobre ésta.
 
-Muchos sitios de noticias disponen de sistemas embebidos de comentarios, pero vista la dificultad para la recolección a la vez que los limitados datos provistos por estos sitios nos llevaron a buscar otro medio: Twitter. Twitter provee una sencilla API para descargar datos, a la vez que tiene términos y condiciones amigables para poder publicar estos datos.
+Muchos sitios de noticias disponen de sistemas embebidos de comentarios, pero vista la dificultad para la recolección a la vez que los limitados datos provistos por estos sitios nos llevaron a buscar otro medio: Twitter. Twitter provee una sencilla API para descargar datos, a la vez que tiene términos y condiciones amigables para poder publicar estos datos. Así mismo, esta red social opera de una manera similar a un foro de comentarios de un sitio de noticias. Este tipo de datos (comentarios sobre artículos periodísticos) tiene una naturaleza particular, ya que las agresiones discriminatorias son usualmente a personajes públicos o colectivos de personas, y se dan de manera indirecta (a través del comentario en la noticia) y no directa (es decir, como respuesta al usuario de Twitter ofendido).
 
-Algo a tener en cuenta es que este tipo de datos tiene una naturaleza particular, ya que las agresiones discriminatorias son usualmente a personajes públicos o colectivos de personas, y se dan de manera indirecta (a través del comentario en la noticia) y no directa (es decir, como respuesta al usuario de Twitter ofendido)
-
-El trabajo realizado en este capítulo fue realizado en el contexto de un Proyecto Interdisciplinario de la UBA\footnote{\url{https://cyt.rec.uba.ar/vinculacion-transferencia/piuba/}} junto a sociólogos, abogados, lingüistas, y computólogos. Particularmente, el trabajo de la construcción del manual de etiquetado fue discutido en conjunto, contemplando varias perspectivas a la hora de armar una definición propia (algunas de estas ya fueron vertidas en la discusión en la sección \ref{sec:hate_speech_definitions}). Teniendo en cuenta que un alto porcentaje de trabajos del área de detección de discurso de odio (y de manera más importante, en la construcción de sus recursos) mediante técnicas de NLP no abordan una mirada interdisciplinaria, es un aspecto a remarcar de lo realizado en la construcción de este dataset.
+El trabajo realizado en este capítulo tuvo lugar en el contexto de un Proyecto Interdisciplinario de la UBA\footnote{\url{https://cyt.rec.uba.ar/vinculacion-transferencia/piuba/}} junto a sociólogos, abogados, lingüistas, y computólogos. Particularmente, el trabajo de la construcción del manual de etiquetado fue discutido en conjunto, contemplando varias perspectivas a la hora de armar una definición propia (algunas de estas ya fueron vertidas en la discusión en la sección \ref{sec:hate_speech_definitions}). Teniendo en cuenta que un alto porcentaje de trabajos del área de detección de discurso de odio (y de manera más importante, en la construcción de sus recursos) mediante técnicas de NLP no abordan una mirada interdisciplinaria, es un aspecto a remarcar de lo realizado en la construcción de este dataset.
 
 \section{Trabajos previos}
 \label{sec:dataset_previous}
 
-Pocos trabajos incorporan algún tipo de contexto a los comentarios del usuario para estas tareas. \citet{gao-huang-2017-detecting} construyó un dataset de lenguaje discriminatorio sobre 1518 comentarios del sitio de Fox News. A los anotadores les fue presentado tanto el comentario como la noticia a la hora de realizar el etiquetado. Sobre este dataset, efectuó experimentos de clasificación usando modelos lineales (regresiones logísticas) y modelos neuronales. En estos experimentos observó que un clasificador (tanto lineal como neuronal) mejora su performance al consumir el título de la noticia, dando indicios de que se puede aprovechar el contexto para mejorar la detección de este fenómeno. Sin embargo, como marca \citet{pavlopoulos2020toxicity} este trabajo cuenta con algunos problemas: en primer lugar, el tamaño del dataset es pequeño, y está extraído de sólo 10 noticias, lo cual limita los posibles contextos. A su vez, la anotación fue realizada mayormente por un único anotador, lo cual hace poco confiables las etiquetas. Luego, algunos detalles menores debieran ser analizados con mayor detalle, como por ejemplo la utilización de los nombres de usuarios como features predictivas.
+Pocos trabajos del área de detección de lenguaje abusivo o discurso de odio incorporan algún tipo de contexto a los comentarios del usuario para estas tareas. En esta sección haremos un repaso de los trabajos que han abordado esto de alguna manera. \citet{gao-huang-2017-detecting} construyó un dataset de lenguaje discriminatorio sobre 1518 comentarios del sitio de Fox News. A los anotadores les fue presentado tanto el comentario como la noticia a la hora de realizar el etiquetado. Sobre este dataset, los autores efectuaron experimentos de clasificación usando modelos lineales (regresiones logísticas) y modelos neuronales. En estos experimentos, observaron que un clasificador (tanto lineal como neuronal) mejora su performance al consumir el título de la noticia, dando indicios de que se puede aprovechar el contexto para mejorar la detección de este fenómeno. Sin embargo, como marca \citet{pavlopoulos2020toxicity} este trabajo cuenta con algunos problemas: en primer lugar, el tamaño del dataset es pequeño, y está extraído de sólo 10 noticias, lo cual limita fuertemente los posibles contextos. A su vez, la anotación fue realizada mayormente por una única persona, lo cual hace poco confiables las etiquetas obtenidas. Luego, algunos detalles menores debieran ser analizados con mayor detalle, como por ejemplo la utilización de los nombres de usuarios como features predictivas.
 
 \citet{mubarak-etal-2017-abusive} construyó un dataset en árabe sobre comentarios con contenido abusivo del portal Al Jazeera. Sin embargo, este daaset tiene un problema: los comentarios son sólo presentados a los anotadores sobre noticias, ignorando todo el thread de la conversación. Esto hace que el contexto sea parcial.
 
@@ -53,7 +51,7 @@ donde $s^{oc}$ es la fracción de anotadores sin contexto que marcaron toxicidad
 %%
 %%
 
-\begin{figure}[t]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{img/idea_dataset.pdf}
     \caption{Muestra de la recolección de datos}
@@ -83,12 +81,12 @@ Para evitar muchos de estos problemas, y reutilizar muchas cuestiones con las qu
 Dividiremos la construcción del dataset en tres etapas:
 
 \begin{enumerate}
-    \item Recolección: Proceso de recolección de datos de Twitter y
+    \item Recolección: Proceso de recolección de datos de Twitter y de los artículos periodísticos
     \item Selección: Dado el conjunto de artículos y comentarios recolectados, tomar una muestra de artículos y comentarios a etiquetar
     \item Anotación: Proceso de etiquetado de los artículos seleccionados
 \end{enumerate}
 
-Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la selección se limita a una muestra aleatoria de la recolección, este procedimiento sería muy ineficiente en el caso de discurso de odio. Esto se debe a que en nuestro dominio de comentarios periodísticos y discurso de odio, encontramos este tipo de discurso distribuido de manera muy poco uniforme.
+Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la selección se limita a una muestra aleatoria de la recolección, este procedimiento sería muy ineficiente en el caso de discurso de odio. Esto se debe a que en nuestro dominio de comentarios periodísticos y discurso de odio, encontramos este tipo de discurso distribuido de manera muy poco uniforme, usualmente concentrada alrededor de ciertos tópicos. Para construir un dataset con una proporción no marginal del fenómeno estudiado, estudiamos algunas posibilidades para seleccionar los artículos y sus respectivos comentarios.
 
 En algunos trabajos previos (como por ejemplo \citet{waseem2016hateful,hateval2019semeval}) la recolección y selección constan conjuntamente de usar ciertos keywords y, o bien recolectar tweets que usen esas palabras, o bien sirven para preseleccionar usuarios de los cuales luego extraer tweets para ser etiquetados.
 
@@ -113,17 +111,17 @@ En nuestro caso, la selección de artículos y comentarios presenta cierta noved
         \toprule
         Característica &  Número &  Llamadas a acción \\
         \midrule
-        RACISM         &   2469 &              674 \\
-        APPEARANCE     &   1803 &               34 \\
+        RACISMO        &   2469 &              674 \\
+        APARIENCIA     &   1803 &               34 \\
         CRIMINAL       &   1642 &              722 \\
-        POLITICS       &   1428 &              136 \\
-        WOMEN          &   1332 &               18 \\
-        CLASS          &    823 &              135 \\
+        POLITICA       &   1428 &              136 \\
+        MUJER          &   1332 &               18 \\
+        CLASE          &    823 &              135 \\
         LGBTI          &    818 &               11 \\
-        DISABLED       &    580 &                4 \\
+        DISCAPACIDAD   &    580 &                4 \\
         \bottomrule
     \end{tabular}
-    \caption{Figures of the annotated dataset, by total numbers and segmented by characteritsic}
+    \caption{Cantidad de comentarios odiosos del dataset resultante, segmentados por característica. Se listan además la cantidad de llamados a la acción dentro de los comentarios odiosos para cada característica}
     \label{tab:dataset_figures}
 
 \end{table}
@@ -220,7 +218,7 @@ La tabla \ref{tab:multi_char_examples} muestra algunos ejemplos de comentarios c
 
 Otra forma de analizar la co-ocurrencia de comentarios es agrupando por artículos, para observar como un mismo contexto puede suscitar distintos tipos de comentarios discriminatorios. La figura \ref{fig:heatmap_characteristics_article} ilustra las interacciones entre las distintas características por artículo. Podemos observar que tenemos en este mapa de calor que tenemos mayor dispersión en las co-ocurrencias que reduciendo al análisis a sólo observar comentarios. Por mencionar algunas que no aparecen en la figura agrupada únicamente por comentarios, puede verse una mayor interacción entre discurso de odio RACISMO y POLITICA, y, quizás inesperadamente entre APARIENCIA y POLITICA. Las interacciones de la característica LGBTI se mantienen muy bajas, indicando que este tema suele estar concentrado en este tipo de ataques.
 
-Observando estas co-ocurrencias, podemos observar que el dataset anotado posee cierta diversidad en sus instancias, con comentarios conteniendo múltiples tipos de discriminación, y artículos que poseen comentarios odiosos de diversa naturaleza. Sobre esto, podemos especular que tanto el texto (el comentario en sí) como el contexto (el tweet del medio periodístico y su artículo periodístico) contienen información valiosa para poder distinguir entre las distintas categorías discriminatorias.
+Observando estas co-ocurrencias, podemos observar que el dataset anotado posee cierta diversidad en sus instancias, con comentarios conteniendo múltiples tipos de discriminación, y artículos que poseen comentarios odiosos de diversa naturaleza. Sobre esto, podemos especular que tanto el texto (el comentario en sí) como el contexto (el tweet del medio periodístico y su artículo periodístico) contienen información valiosa para poder distinguir entre las distintas categorías discriminatorias. \todo{esto es polémico, reformular: que varios comentarios sean discriminatorios y de característica distinta no implica que el contexto necesariamente ayude}
 
 
 

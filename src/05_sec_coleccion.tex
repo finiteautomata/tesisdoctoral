@@ -8,7 +8,7 @@ En esta sección describiremos el proceso de recolección de datos. La salida de
 
 Limitamos nuestra recolección de datos a cuentas de diarios de la República Argentina y, puntualmente, nos centramos en diarios con comunidad mayormente rioplatense ya que (como comentaremos más adelante) los anotadores son nativos de esa variedad dialectal. Esto es teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios.
 
-Además, si bien buscamos otros medios del interior (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja: pocos usuarios comentan sus notas. En pos de maximizar
+Además, si bien buscamos otros medios del interior de Argentina (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja: pocos usuarios comentan sus notas.
 
 Los diarios seleccionados fueron los siguientes:
 
@@ -21,14 +21,24 @@ Los diarios seleccionados fueron los siguientes:
 \end{itemize}
 
 
-Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, la mayoría de ellos con soporte escrito. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa'' (puntualmente, ``La Derecha Diario''\footnote{\url{http://twitter.com/laderechadiario}}). Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de las subsiguientes etapas.
+Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, 4 de ellos con soporte escrito, siendo Infobae el único medio enteramente digital. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa'' (puntualmente, ``La Derecha Diario''\footnote{\url{http://twitter.com/laderechadiario}}). Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de las subsiguientes etapas.
 
 
 \subsection{Método de recolección}
 
+\begin{table*}[t]
+    \centering
+    \begin{tabular}{ c|c|c }
+        coronavirus  &  encierro          & síntomas \\
+        covid        &  fase              & fiebre   \\
+        cuarentena   &  infectados        & distanciamiento     \\
+        normalidad   &  Wuhan             & aislamiento\\
+    \end{tabular}
+    \caption{Palabras usadas para recolectar artículos relacionados a COVID-19.\label{tab:article_words}}
+\end{table*}
 
 
-La API de Twitter\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones} en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma:
+La API de Twitter\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones. Recomendamos investigar mejor esta versión actualizada para esquivar muchas de las dificultades técnicas que incursionamos para lo descripto en esta sección} en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma:
 
 \begin{enumerate}
     \item Search API: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
@@ -52,24 +62,10 @@ Los RTs y tweets que arroben a \verb|@medio| carecen de interés para nuestro es
 
 Para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporaremos hilos de respuestas.
 
-También eliminamos las URLs de los artículos de los enlaces.
 
+Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Por ese motivo, y dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se hizo foco en artículos relacionados con COVID-19. Para ello seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. La tabla \ref{tab:article_words} contiene las palabras utilizadas para recuperar estos artículos.
 
-
-
-\begin{table*}[t]
-    \centering
-    \begin{tabular}{ c|c|c }
-        coronavirus  &  encierro          & síntomas \\
-        covid        &  fase              & fiebre   \\
-        cuarentena   &  infectados        & distanciamiento     \\
-        normalidad   &  Wuhan             & aislamiento\\
-    \end{tabular}
-    \caption{Palabras usadas para recolectar artículos relacionados a COVID-19.\label{tab:article_words}}
-\end{table*}
-
-
-Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Por ese motivo, y dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se hizo foco en artículos relacionados con COVID-19. Para ello, seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. La tabla \ref{tab:article_words} contiene las palabras utilizadas para recuperar estos artículos.
+Por último, nos quedamos con aquellos tweets de los medios periodísticos que tuvieran un link a un artículo. Para ello, utilizamos la librería \emph{newspaper3k}\footnote{\url{https://newspaper.readthedocs.io/en/latest/}}, que nos permite acceder a la información relacionada a los artículos en cuestión, en particular siendo lo que más nos interesa el cuerpo del artículo. Esto vamos a utilizarlo posteriormente como una suerte de ``contexto largo''. Aquellos tweets de medios periodísticos que no contengan un link a un artículo fueron descartados de las siguientes etapas.
 
 \subsection{Datos recolectados}
 
@@ -91,13 +87,13 @@ Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido d
 \end{table}
 
 
-En la tabla \ref{tab:articulos_recoletados_por_medio} damos los números de los artículos recolectados por cada medio, luego de aplicado. Si bien recolectamos más artículos de otros medios, no son enumerados. Infobae es el medio que más producción de artículos genera, y también será finalmente sobre el que más comentarios etiquetemos.
+La tabla \ref{tab:articulos_recoletados_por_medio} contiene los números de los artículos recolectados por cada medio, luego de aplicado el filtro de palabras mencionado en la anterior sección. Si bien recolectamos más artículos de otros medios, no son enumerados. Infobae es el medio que más producción de artículos genera, y también será finalmente sobre el que más comentarios etiquetemos.
 
 La figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando el filtro de palabras listado en la tabla \ref{tab:article_words}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a la caída de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país.
 
 Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas notas contienen links a otras con sus títulos y eso puede interferir en estas estimaciones. Así y todo, decidimos mantener este método ya que consideramos que mayormente las notas en el período referido tienen relación con la pandemia.
 
-Si bien en las siguientes secciones realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación, utilizaremos este conjunto de datos no supervisado para efectuar ajustes de dominio en la siguiente sección.
+Si bien en las siguientes secciones realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación, este conjunto de datos no supervisado será utilizado para efectuar ajustes de dominio en la siguiente sección.
 
 \begin{figure}
     \centering
