@@ -15,6 +15,8 @@
 \usepackage{amsfonts}
 \usepackage{tabularx}
 \usepackage{todonotes}
+\usepackage{changepage}
+\usepackage{makecell}
 
 \setlength{\marginparwidth}{2cm}
 
@@ -30,64 +32,70 @@
 \def\runtitle{Techniques and resources for the automatic detection of hate speech in social networks}
 \def\director{Franco Luque}
 \def\codirector{Agustín Gravano}
-\def\lugar{Buenos Aires, 2021}
-\input{caratula}
+\def\lugarTrabajo{\makecell{
+Departamento de Computación \\
+Facultad de Cs. Exactas y Naturales \\
+Universidad de Buenos Aires}}
 
+\def\lugar{Buenos Aires, 2021}
+
+\input{caratula}
+%
 %%%% ABSTRACTS, AGRADECIMIENTOS Y DEDICATORIA
 \frontmatter
 \pagestyle{empty}
 \input{src/abs_esp.tex}
-
+%
 \cleardoublepage
 \input{src/abs_en.tex}
-
+%
 \cleardoublepage
 \input{src/agradecimientos.tex} % OPCIONAL: comentar si no se quiere
-
+%
 \cleardoublepage
 \input{src/dedicatoria.tex}  % OPCIONAL: comentar si no se quiere
-
+%
 \cleardoublepage
 \tableofcontents
-
+%
 \mainmatter
 \pagestyle{headings}
-
+%
 %%%% ACA VA EL CONTENIDO DE LA TESIS
-
-
+%
+%
 \chapter{Intro}
 \input{src/01_intro.tex}
-
+%
 \chapter{Preliminares}
 \input{src/02_machine_learning_nlp.tex}
 \part{Trabajos con datasets existentes}
-
+%
 \chapter{Análisis de Sentimientos}
 \input{src/03_sentiment.tex}
-
+%
 \chapter{Discurso de odio}
 \input{src/04_hate_speech.tex}
-
+%
 % \chapter{Limitaciones de todo: metodológicos, de los corpus, de los modelos.}
 % \input{src/05_limitaciones.tex}
 \part{Creación del dataset}
-
+%
 \chapter{Metodología y definiciones}
 \input{src/05_dataset.tex}
-
+%
 \chapter{Clasificadores, Análisis y Limitaciones}
 \input{src/06_deteccion_contextualizada.tex}
-
+%
 \chapter{Adaptación de dominio}
 \input{src/08_domain_adaptation.tex}
-
+%
 \chapter{Conclusiones}
-
+%
 \input{src/conclusiones.tex}
-
+%
 \appendix
-
+%
 \input{src/appendices.tex}
 
 
