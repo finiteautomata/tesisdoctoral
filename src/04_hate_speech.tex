@@ -361,9 +361,16 @@ Un problema que observamos en el dataset estudiado en este capítulo (pero que a
 
 Más aún, un género no explorado en estos mensajes (usualmente aislados) son aquellos en los cuales el contexto es necesario para extraer un significado. Por ejemplo, un comentario que dice ``hay que matarlos'' puede o no entenderse como discurso de odio. Si el objeto del mensaje se refiere a mosquitos, ese mensaje no es odioso; si, por otro lado, está hablando sobre chinos en el contexto del COVID-19, entonces ese mensaje es discriminatorio (y además llama a tomar una medida violenta).
 
-
-Una pregunta que puede realizarse sobre este punto es si el acceso a información contextual nos puede auxiliar en la detección de discurso de odio. Esto, que puede observarse
+En ese sentido, podemos preguntarnos sobre este punto es si el acceso a información contextual nos puede auxiliar en la detección de discurso de odio. Por ejemplo, tener acceso a una noticia, al hilo de conversación
 
 \todo{Quizás falta también algo más a nivel semiótico acá}
 
 \subsection{Interpretabilidad y fragilidad de clasificadores}
+
+
+
+\section{Conclusiones}
+
+En este capítulo hemos hecho una primer acercamiento a la tarea de detección de lenguaje discriminatorio. Propusimos técnicas de clasificación sobre el dataset de HatEval en español \cite{hateval2019semeval}, en base a \citet{atalaya_tass2018}. Hicimos un análisis sobre el dataset, los resultados de los clasificadores, y en base a ello marcamos algunas oportunidades de mejora sobre la tarea de detección de odio. Por un lado, la anotación de
+
+En los siguientes capítulos, tomaremos algunas de estas ideas para construir un dataset. Particularmente, nos centraremos en la incorporación de contexto en la detección de discurso discriminatorio. Luego de eso, abordaremos la pregunta ¿puede el contexto de un mensaje ayudar a mejorar la detección de discurso de odio?
