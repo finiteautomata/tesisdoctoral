@@ -283,7 +283,69 @@ Para obtener un vector final para cada token, los autores sugieren colapsar las 
 
 En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
 
+\section{Dataset}
+
+\begin{table}[t]
+    \centering
+\begin{tabular}{ll}
+    Categoría  & Cantidad \\
+    \hline
+    No odiosos &          \\
+    Odiosos    &          \\
+\end{tabular}
+\caption{Números del dataset de \citet{hateval2019semeval}}
+\label{tab:hateval_dataset}
+\end{table}
+
+El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estará centrado en el dataset en español.
+
+Posee las siguientes etiquetas:
+
+\begin{itemize}
+    \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio (0 si no lo tiene, 1 si hay discurso de odio)
+    \item \textbf{Target}: Si hay HS, una etiqueta binaria que marca si el objetivo del discurso de odio es un objetivo genérico (0) o si se refiere a un individuo específico (1)
+    \item \textbf{Agresividad}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
+\end{itemize}
+
+
+La tabla \ref{tab:hateval_dataset} posee los números del dataset. La tabla ZZZ posee algunos ejemplos para cada una de las características en cuestión.
+
+
+
+
 \section{Resultados de clasificación}
+
+\begin{table}[t]
+    \centering
+    \footnotesize
+    \begin{tabular}{l  r  r  r  r | r  r  r  r }
+         & \multicolumn{4}{c}{Spanish} & \multicolumn{4}{c}{English} \\
+         &  \multicolumn{2}{c}{Dev}& \multicolumn{2}{c}{Test} &  \multicolumn{2}{c}{Dev}& \multicolumn{2}{c}{Test} \\
+        Classifier & Acc & F1 (avg) & Acc & F1 (avg) & Acc & F1 (avg) & Acc & F1 (avg)\\
+        \hline
+        \svmmodel{}          & \textbf{0.850} & \textbf{0.850} & 0.731           & \textbf{0.730} & ---            & ---             & ---            & ---           \\
+        \elmomodel{}         & 0.820          & 0.816          & \textbf{0.732}  & 0.721          & 0.705          & 0.695           & \textbf{0.508} & \textbf{0.471}\\
+        \elmobowmodel{}      & 0.824          & 0.821          & 0.719           & 0.712          & \textbf{0.743} & \textbf{0.738}  & 0.502          & 0.461         \\
+        \hline
+    \end{tabular}
+    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por la métrica macro F1. En negrita, el mejor resultado.}
+    \label{tab:hateval_task_a}
+\end{table}
+
+
+
+La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los tres modelos propuestos para la detección de discurso de odio:  \svmmodel{}, y los dos modelos neuronales, \elmomodel{} and \elmobowmodel{}. En español, el modelo con mejor performance (presentado en su momento a la tarea de HatEval\citet{hateval2019semeval}) es \svmmodel{}.
+% To our surprise,
+A pesar de su simplicidad, tuvo mejor performance en términos de Macro F1 en la competencia.
+
+
+
+Entre los modelos neuronales presentados, \elmobowmodel{} performed best, y quedó posicionado en 17mo lugar en español.
+
+
+We can observe that \elmobowmodel{} performs better on the development set, although its performance decreases sharply in the test set. In spite of the applied regularization, we might have incurred in overfitting during model selection \cite{cawley2010over} as the chosen model has higher variance than \elmomodel{}. This last model achieved similar results to \svmmodel{}. This difference between the models was not seen in English.
+
+For the Spanish subtask B (ES-B), the same \svmmodel{} system was used, achieving an average F1 of 0.758 and an EMR score of 0.657 over the test set (fourth place in terms of EMR).
 
 \subsection{Análisis de Error}
 
@@ -294,5 +356,14 @@ En este trabajo, usamos la implementación y los modelos entrenados previamente 
 \subsection{Problemas de anotación}
 
 \subsection{Falta de contexto}
+
+Un problema que observamos en el dataset estudiado en este capítulo (pero que aplica a otros también) es la falta de contexto: muchos de los mensajes carecen de información adicional sobre la noticia o el tema del que se está hablando. Cuando leemos un mensaje de un tweet, casi siempre los leemos en el contexto de una noticia, o un trending topic. Muy rara vez leemos un mensaje en total aislamiento \todo{podemos justificar un poco más esto?}.
+
+Más aún, un género no explorado en estos mensajes (usualmente aislados) son aquellos en los cuales el contexto es necesario para extraer un significado. Por ejemplo, un comentario que dice ``hay que matarlos'' puede o no entenderse como discurso de odio. Si el objeto del mensaje se refiere a mosquitos, ese mensaje no es odioso; si, por otro lado, está hablando sobre chinos en el contexto del COVID-19, entonces ese mensaje es discriminatorio (y además llama a tomar una medida violenta).
+
+
+Una pregunta que puede realizarse sobre este punto es si el acceso a información contextual nos puede auxiliar en la detección de discurso de odio. Esto, que puede observarse
+
+\todo{Quizás falta también algo más a nivel semiótico acá}
 
 \subsection{Interpretabilidad y fragilidad de clasificadores}
