@@ -4,7 +4,7 @@ decir que no ha sido el caso. La prevalencia del racismo en la ``World White Web
 El discurso racista y sexista es una constante en las redes sociales, pero los picos se documentan después de eventos ``detonantes'', como asesinatos con motivos religiosos o políticos \cite{burnap2015cyber}. Las empresas de redes sociales están preocupadas por esto y toman acciones en su contra; sin embargo, la mayoría de los esfuerzos todavía necesitan la intervención humana, lo que hace que esta tarea sea muy costosa. Reducir la intervención humana es vital para tener herramientas efectivas para evitar la escalada del discurso de odio.
 
 
-En este capítulo haremos una introducción a este problema, que a su vez trataremos en los capítulos subsiguientes. Definiremos el discurso de odio y haremos una breve reseña de este fenómeno desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. Comentaremos parte de nuestro trabajo en \citet{atalaya_tass2018} como parte de la competencia hatEval\cite{hateval2019semeval}, a la vez que marcaremos algunos problemas actuales en los enfoques actuales del discurso discriminatorio.
+En este capítulo haremos una introducción a este problema, que a su vez trataremos en los capítulos subsiguientes. Definiremos el discurso de odio y haremos una breve reseña de este fenómeno desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. En base al dataset de la competencia hatEval\cite{hateval2019semeval}, propondremos técnicas de detección de discurso de odio para las tareas propuestas, algunas de ellas presentadas en \citet{atalaya_tass2018}. Finalmente, marcaremos algunos problemas actuales en los enfoques actuales de la detección de discurso discriminatorio y algunas oportunidades de mejora que abordaremos en capítulos subsiguientes.
 
 
 \section{Definición de discurso de odio}
@@ -189,10 +189,57 @@ En esta sección haremos un recuento de los conjuntos de datos para la detecció
 
 \todo{Mandar esto al siguiente capítulo}
 
+\section{Dataset}
 
-\subsubsection{Datos}
+\begin{table}[t]
+    \centering
+\begin{tabular}{ll}
+    Categoría  & Cantidad \\
+    \hline
+    No odiosos &          \\
+    Odiosos    &          \\
+\end{tabular}
+\caption{Números del dataset de \citet{hateval2019semeval}}
+\label{tab:hateval_dataset}
+\end{table}
 
-Utilizamos el dataset en español de hatEval \cite{hateval2019semeval}
+El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estará centrado en el dataset en español.
+
+Posee las siguientes etiquetas:
+
+\begin{itemize}
+    \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio (0 si no lo tiene, 1 si hay discurso de odio)
+    \item \textbf{Target}: Si hay HS, una etiqueta binaria que marca si el objetivo del discurso de odio es un objetivo genérico (0) o si se refiere a un individuo específico (1)
+    \item \textbf{Agresividad}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
+\end{itemize}
+
+
+La tabla \ref{tab:hateval_dataset} posee los números del dataset. La tabla ZZZ posee algunos ejemplos para cada una de las características en cuestión.
+
+\section{Tareas de clasificación propuestas}
+
+Sobre el dataset de hatEval, los autores propusieron dos tareas:
+
+\newcommand{\subtaska}[0]{\textbf{Tarea A}}
+\newcommand{\subtaskb}[0]{\textbf{Tarea B}}
+
+\begin{itemize}
+    \item \subtaska{}: Dado un tweet predecir si contiene discurso de odio contra mujeres o inmigrantes (HS)
+    \item \subtaskb{}: Dado un tweet, predecir si contiene discurso de odio (HS), si está dirigido contra un individuo o un grupo (TR), y si es agresivo o no (AG)
+\end{itemize}
+
+\footnote{Pensar algún nombre mejor?}
+
+La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno.
+
+La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiva y negativa. En el caso de \subtaskb{}, se mide por la Macro F1 de las 3 clases (HS, TR, AG) y también por la medida Exact Match Ratio
+
+\begin{equation*}
+    EMR = \frac{1}{n} \sum\limits_{i=1}^{n} I(Y_i, Y_i^*)
+\end{equation*}
+
+
+Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores.
 
 \section{Método}
 
@@ -283,32 +330,6 @@ Para obtener un vector final para cada token, los autores sugieren colapsar las 
 
 En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
 
-\section{Dataset}
-
-\begin{table}[t]
-    \centering
-\begin{tabular}{ll}
-    Categoría  & Cantidad \\
-    \hline
-    No odiosos &          \\
-    Odiosos    &          \\
-\end{tabular}
-\caption{Números del dataset de \citet{hateval2019semeval}}
-\label{tab:hateval_dataset}
-\end{table}
-
-El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estará centrado en el dataset en español.
-
-Posee las siguientes etiquetas:
-
-\begin{itemize}
-    \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio (0 si no lo tiene, 1 si hay discurso de odio)
-    \item \textbf{Target}: Si hay HS, una etiqueta binaria que marca si el objetivo del discurso de odio es un objetivo genérico (0) o si se refiere a un individuo específico (1)
-    \item \textbf{Agresividad}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
-\end{itemize}
-
-
-La tabla \ref{tab:hateval_dataset} posee los números del dataset. La tabla ZZZ posee algunos ejemplos para cada una de las características en cuestión.
 
 
 
