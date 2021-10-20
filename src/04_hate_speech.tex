@@ -228,7 +228,7 @@ Sobre el dataset de hatEval, los autores propusieron dos tareas:
     \item \subtaskb{}: Dado un tweet, predecir si contiene discurso de odio (HS), si está dirigido contra un individuo o un grupo (TR), y si es agresivo o no (AG)
 \end{itemize}
 
-\footnote{Pensar algún nombre mejor?}
+\todo{Pensar algún nombre mejor?}
 
 La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno.
 
@@ -238,8 +238,7 @@ La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiv
     EMR = \frac{1}{n} \sum\limits_{i=1}^{n} I(Y_i, Y_i^*)
 \end{equation*}
 
-
-Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores.
+siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$, $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como se usa en \citet{zhang-2014-multilabel} para referirse a esta métrica (a diferencia del Hamming Score).
 
 \section{Método}
 
