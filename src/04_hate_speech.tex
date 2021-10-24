@@ -350,7 +350,7 @@ Para el caso de la tarea de multidetección (\subtaskb{}), podemos pensar este p
 
 En el primer caso, el enfoque sería predecir por separado HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
 
-Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en SVM (consumiendo la misma entrada que detallamos anteriormente). No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí.
+Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en SVM (consumiendo la misma entrada que detallamos anteriormente). No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí, considerando que evaluaremos modelos que han demostrado tener mejor performance para numerosas tareas de clasificación de texto.
 
 Así mismo, proponemos para esta subtarea modelos basados en transformers basado en multi-clasificación. La arquitectura usual de modelos basados en BERT para clasificación constan de poner como última capa una  ``cabeza'' que consume la salida del token \verb|[CLS]|. En términos concretos, esto agrega una matriz de parámetros $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers, y usando softmax como función de activación.
 
@@ -359,36 +359,45 @@ Para construir un modelo de multi-clasificación, mantenemos la misma arquitectu
 Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma o promedio\footnote{Es equivalente optimizar una u otra} de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la pérdida es:
 
 \begin{equation}
+\label{eq:multi_loss}
 L(y, \widehat{y}) = \sum\limits_{k \in \{HS, TR, AG\}} J(y_k, \widehat{y_k})
 \end{equation}
 
 donde $J$ es la entropía cruzada. Esta función de pérdida, sin embargo, ignora cualquier tipo de jerarquía entre las variables; por ejemplo, si para una instancia tenemos $HS = 0$, toma la pérdida de las variables $TR$ y $AG$. Contemplamos entonces una variante de esta función para tener en cuenta esta jerarquía:
 
 \begin{equation}
+    \label{eq:hierarchical_loss}
     L(y, \widehat{y}) =  J(y_{HS}, \widehat{y_{HS}}) + \beta(y_{HS})\sum\limits_{k \in \{TR, AG\}} J(y_k, \widehat{y_k})
 \end{equation}
 
-donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR, AG$ cuando no hay discurso discriminatorio. Podemos considerar esto agregando un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$
+donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR, AG$ cuando no hay discurso discriminatorio. Análogamente, $\beta(y) = 1$ sería el caso descripto en la ecuación \ref{eq:multiloss}.
+
+Para generalizar esto, podemos agregar un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$.
 
 
-\todo{Ponerle algún nombre a esto?}
+\section{Resultados}
+
+\newcommand{\mr}[2]{\multirow{#1}{*}{#2}}
+\newcommand{\esrow}[1]{\multirow{#1}{*}{es}}
+\newcommand{\enrow}[1]{\multirow{#1}{*}{en}}
+\newcommand{\tbf}[1]{\textbf{#1}}
 
 
+\begin{table}
 
-\section{Resultados de clasificación}
-
-\begin{table}[t]
     \centering
-    \footnotesize
-    \begin{tabular}{l  r  r  r  r | r  r  r  r }
-         & \multicolumn{4}{c}{Spanish} & \multicolumn{4}{c}{English} \\
-         &  \multicolumn{2}{c}{Dev}& \multicolumn{2}{c}{Test} &  \multicolumn{2}{c}{Dev}& \multicolumn{2}{c}{Test} \\
-        Classifier & Acc & F1 (avg) & Acc & F1 (avg) & Acc & F1 (avg) & Acc & F1 (avg)\\
+
+    \begin{tabular}{l l| l l l}
+        Modelo       & Idioma              & Recall     & Precision & Macro-F1 \\
         \hline
-        \svmmodel{}          & \textbf{0.850} & \textbf{0.850} & 0.731           & \textbf{0.730} & ---            & ---             & ---            & ---           \\
-        \elmomodel{}         & 0.820          & 0.816          & \textbf{0.732}  & 0.721          & 0.705          & 0.695           & \textbf{0.508} & \textbf{0.471}\\
-        \elmobowmodel{}      & 0.824          & 0.821          & 0.719           & 0.712          & \textbf{0.743} & \textbf{0.738}  & 0.502          & 0.461         \\
+        SVM          & \mr{3}{es}          & Recall     & Precision & 0.730    \\
+        ELMO-RNN     &                     & 0.753      & 0.669     & 0.735    \\
+        BETO         &                     & 0.839      & 0.674     & 0.764    \\
         \hline
+        ELMO-RNN     & \mr{4}{en}          & ?          & ?         & 0.471   \\
+        BERT         &                     & 0.968      & 0.474     & 0.496   \\
+        RoBERTa      &                     & 0.965      & 0.470     & 0.488   \\
+        BERTweet     &                     & 0.958      & 0.495     & 0.546
     \end{tabular}
     \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por la métrica macro F1. En negrita, el mejor resultado.}
     \label{tab:hateval_task_a}
@@ -396,24 +405,37 @@ donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de 
 
 
 
-La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los tres modelos propuestos para la detección de discurso de odio:  \svmmodel{}, y los dos modelos neuronales, \elmomodel{} and \elmobowmodel{}. En español, el modelo con mejor performance (presentado en su momento a la tarea de HatEval\citet{hateval2019semeval}) es \svmmodel{}.
-% To our surprise,
-A pesar de su simplicidad, tuvo mejor performance en términos de Macro F1 en la competencia.
+La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos para la detección de discurso de odio ``plana''. Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, podemos observar que entre los presentados para aquella competencia, el modelo basado en SVMs obtiene la mejor performance, aún contra aquel basado en embeddings contextualizados, obteniendo el mejor desempeño en dicha con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal entrenamiento , y puede que también debido al cambio de dominio, contra los cuales la entrada de las SVM está mejor adaptada.
+
+Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo (y a los SVMs en el caso del español). Particularmente, en el caso del inglés, BERTweet \cite{bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a BERTweet para español que mejora la performance sobre BETO\footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
+
+La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: Multi refiere a clasificación múltiple, Jerárquica a clasificación múltiple con la función de costo jerárquica, y Combinatoria a la conversión del problema en una clasificación de 5 clases. Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en
+
+
+\begin{table}
+
+    \centering
+    \footnotesize
+    \begin{tabular}{lll rrr rr}
+        Modelo       & Salida         & Idioma     &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       \\
+        \mr{3}{beto} & multi         & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} \\
+                     & jerárquico    &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722       \\
+                     & combinatoria  &             &  \tbf{742} &  0.763       &  0.668        & 0.698       &     0.724       \\
+    \end{tabular}
+
+    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por la métrica macro F1. En negrita, el mejor resultado.}
+    \label{tab:hateval_task_b}
+\end{table}
 
 
 
-Entre los modelos neuronales presentados, \elmobowmodel{} performed best, y quedó posicionado en 17mo lugar en español.
 
 
-We can observe that \elmobowmodel{} performs better on the development set, although its performance decreases sharply in the test set. In spite of the applied regularization, we might have incurred in overfitting during model selection \cite{cawley2010over} as the chosen model has higher variance than \elmomodel{}. This last model achieved similar results to \svmmodel{}. This difference between the models was not seen in English.
-
-For the Spanish subtask B (ES-B), the same \svmmodel{} system was used, achieving an average F1 of 0.758 and an EMR score of 0.657 over the test set (fourth place in terms of EMR).
 
 \subsection{Análisis de Error}
 
-\subsection{Intepretabilidad}
 
-\section{Limitaciones}
+\section{Discusión}
 
 \subsection{Problemas de anotación}
 
@@ -425,14 +447,16 @@ Más aún, un género no explorado en estos mensajes (usualmente aislados) son a
 
 En ese sentido, podemos preguntarnos sobre este punto es si el acceso a información contextual nos puede auxiliar en la detección de discurso de odio. Por ejemplo, tener acceso a una noticia, al hilo de conversación
 
-\todo{Quizás falta también algo más a nivel semiótico acá}
+\todo{¿Quizás falta también algo más a nivel semiótico acá?}
 
 \subsection{Interpretabilidad y fragilidad de clasificadores}
 
-
-
 \section{Conclusiones}
 
-En este capítulo hemos hecho una primer acercamiento a la tarea de detección de lenguaje discriminatorio. Propusimos técnicas de clasificación sobre el dataset de HatEval en español \cite{hateval2019semeval}, en base a \citet{atalaya_tass2018}. Hicimos un análisis sobre el dataset, los resultados de los clasificadores, y en base a ello marcamos algunas oportunidades de mejora sobre la tarea de detección de odio. Por un lado, la anotación de
+En este capítulo hemos hecho una primer acercamiento a la tarea de detección de lenguaje discriminatorio, haciendo un repaso de su definición desde una perspectiva legal y sociológica, así como también desde una perspectiva técnica analizando técnicas de clasificación usando el dataset presentado en la shared task multilingual \emph{hatEval}\cite{hateval2019semeval}. En base a este dataset, analizamos dos tareas: detección binaria de discurso de odio, y detección de múltiples variables (si es discurso de odio, si es dirigido, si es agresivo).
+
+Para estas tareas, presentamos varios modelos de clasificación. Por un lado, clasificadores lineales que consumen distintos tipos de entrada como ser tweet embeddings y bolsas de caracteres; modelos recurrentes que consumen embeddings contextualizados; y finalmente, modelos del estado del arte basados en modelos de lenguaje pre-entrenados usando la arquitectura de transformers. Para ambas, los modelos de transformers
+
+En el caso de la tarea de detección múltiple, propusimos dos formas de atacar el problema: como clasificación múltiple (prediciendo simultáneamente las 3 variables), y convirtiendo a un problema de clasificación simple sobre 5 clases posibles. Observamos, a su vez, que lejos de dañar la performance de la detección de discurso de odio, predecir más de una variable mejora la performance de nuestros clasificadores.
 
 En los siguientes capítulos, tomaremos algunas de estas ideas para construir un dataset. Particularmente, nos centraremos en la incorporación de contexto en la detección de discurso discriminatorio. Luego de eso, abordaremos la pregunta ¿puede el contexto de un mensaje ayudar a mejorar la detección de discurso de odio?
