@@ -413,9 +413,11 @@ La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, repo
 
 Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, esta diferencia la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro-F1, la mejor performance es de BETO con el problema de clasificación múltiple y sin la función de costo jerárquica, pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
 
-Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con BERTweet con la salida de 5 clases. Este resultado, sin embargo, queda en términos de EMR por debajo de un baseline de los mejores resultados de la competencia, obtenidos por el equipo MITRE \cite{gertner-etal-2019-mitre}. En ese trabajo se basaron en un ensemble de modelos entrenados con BERT, usando también un ajuste de dominio sobre tweets.
+Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con BERTweet con la salida de 5 clases. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y contemplando el Macro F1 de los mejores resultados de la competencia, obtenidos por el equipo MITRE \cite{gertner-etal-2019-mitre}. En ese trabajo se basaron en un ensemble de modelos entrenados con BERT, usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuid
 
-Algo que puede observarse es que, lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir varias variables pareciera mejorar la performance.
+Algo que puede observarse es que, lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir varias variables pareciera mejorar la performance. Este resultado puede verse en ambos idiomas, obteniendo cerca de (+1 puntos de Macro F1, y cerca de +4 puntos Macro F1 en inglés). \todo{Correr un test estadístico para ver si esto es significativo}.
+
+
 
 \begin{table}
     \small
@@ -425,28 +427,29 @@ Algo que puede observarse es que, lejos de dañarse la performance de la detecci
         \mr{3}{beto}      & multi         & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} &  0.771      \\
                           & jerárquico    &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722       &  0.776      \\
                           & combinatoria  &             &  \tbf{742} &  0.763       &  0.668        & 0.698       &     0.724       &  0.776      \\
-        \mr{3}{bert}      & multi         & \mr{3}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       &  0.512      \\
+
+        \hline
+        \mr{3}{BERT}      & multi         & \mr{3}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       &  0.512      \\
                           & jerárquico    &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       &  0.521      \\
                           & combinatoria  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       &  0.531      \\
-        \mr{3}{bertweet}  & multi         &\mr{3}{en}   &  0.658     &  0.629       &  0.462        & 0.426       &     0.583       &  0.567      \\
+        \mr{3}{BERTweet}  & multi         &\mr{3}{en}   &  0.658     &  0.629       &  0.462        & 0.426       &     0.583       &  0.567      \\
                           & jerárquico    &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       &  0.555      \\
                           & combinatoria  &             &  0.666     &  0.637       &  0.444        & 0.449       &     0.582       &  0.589      \\
     \end{tabular}
 
-    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por la métrica macro F1. En negrita, el mejor resultado.}
+    \caption{Resultados de la evaluación para la detección de discurso múltiple de discurso de odio, \subtaskb{}, en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS.  }
     \label{tab:hateval_task_b}
 \end{table}
 
 
 
 
-
-
-
 \subsection{Análisis de Error}
 
+Analizamos los errores sólo para el dataset en español. Para ello, tomamos las predicciones de 10 clasificadores BERT, y observamos qué instancias son repetidamente clasificadas erróneamente por los modelos, para así sortear la alta variabilidad de estos.
 
 \section{Discusión}
+
 
 \subsection{Problemas de anotación}
 
@@ -464,10 +467,12 @@ En ese sentido, podemos preguntarnos sobre este punto es si el acceso a informac
 
 \section{Conclusiones}
 
-En este capítulo hemos hecho una primer acercamiento a la tarea de detección de lenguaje discriminatorio, haciendo un repaso de su definición desde una perspectiva legal y sociológica, así como también desde una perspectiva técnica analizando técnicas de clasificación usando el dataset presentado en la shared task multilingual \emph{hatEval}\cite{hateval2019semeval}. En base a este dataset, analizamos dos tareas: detección binaria de discurso de odio, y detección de múltiples variables (si es discurso de odio, si es dirigido, si es agresivo).
+En este capítulo hemos hecho una primer acercamiento a la tarea de detección de lenguaje discriminatorio, haciendo un repaso de su definición desde una perspectiva legal y social\todo{?}, así como también desde una perspectiva técnica analizando técnicas de clasificación usando el dataset presentado en la shared task multilingual \emph{hatEval}\cite{hateval2019semeval}. En base a este dataset, analizamos dos tareas: detección binaria de discurso de odio, y detección de múltiples variables (si es discurso de odio, si es dirigido, si es agresivo).
 
 Para estas tareas, presentamos varios modelos de clasificación. Por un lado, clasificadores lineales que consumen distintos tipos de entrada como ser tweet embeddings y bolsas de caracteres; modelos recurrentes que consumen embeddings contextualizados; y finalmente, modelos del estado del arte basados en modelos de lenguaje pre-entrenados usando la arquitectura de transformers. Para ambas, los modelos de transformers
 
 En el caso de la tarea de detección múltiple, propusimos dos formas de atacar el problema: como clasificación múltiple (prediciendo simultáneamente las 3 variables), y convirtiendo a un problema de clasificación simple sobre 5 clases posibles. Observamos, a su vez, que lejos de dañar la performance de la detección de discurso de odio, predecir más de una variable mejora la performance de nuestros clasificadores.
 
-En los siguientes capítulos, tomaremos algunas de estas ideas para construir un dataset. Particularmente, nos centraremos en la incorporación de contexto en la detección de discurso discriminatorio. Luego de eso, abordaremos la pregunta ¿puede el contexto de un mensaje ayudar a mejorar la detección de discurso de odio?
+Analizando este dataset y algunos otros de la bibliografía, marcamos algunas puntos de mejora en la detección de discurso de odio: principalmente, la falta de información contextual. La mayoría de los datasets no tienen mayor información sobre los mensajes de los usuarios, algo que usualmente no pasa en las redes sociales. Por otro lado, y teniendo en cuenta la observación hecha en el párrafo anterior, nos preguntamos si tener información más granular acerca de las características . Finalmente, observamos que para la creación de datasets de un fenómeno tan complejo y social es indispensable tener muchos recaudos a la hora de la anotación, algo que ya ha sido observado en otros trabajos \todo{Citar trabajo sobre la performance de entrenar sobre datos de crowdsource vs etiquetadores especializados}.
+
+En los siguientes capítulos, exploraremos algunas de estas observaciones. Particularmente, nos centraremos en la incorporación de contexto en la detección de discurso discriminatorio, construyendo un dataset que incorpore esta información a los mensajes anotados. Luego de eso, abordaremos la pregunta ¿puede el contexto de un mensaje ayudar a mejorar la detección de discurso de odio?
