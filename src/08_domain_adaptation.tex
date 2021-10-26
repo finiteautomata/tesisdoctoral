@@ -1,4 +1,6 @@
 
+\newcommand{\robertuito}[0]{\emph{RoBERTuito}}
+
 En este capítulo exploraremos como mejorar la detección de discurso de odio desde una perspectiva más general, analizando en general la clasificación de textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta ) generan representaciones ricas al ser entrenadas en dominios sociales. Así mismo, también observamos que en algunos modelos pre-entrenados (como AWD-LSTM usando la técnica de ULMFit) \todo{meter citas} realizar un ajuste de dominio más extenso sobre
 
 Entrenar modelos de lenguaje basados en Transformers toman una cantidad de recursos importantes, algo que puede imposibilitar que
@@ -66,6 +68,16 @@ Para analizar el impacto de la adaptación de dominio y realizar una comparació
 La única tarea que no estudiamos hasta el momento es la de detección de ironía, que es básicamente una tarea de detección binaria sobre textos sociales para distintos. Todas las tareas (con la excepción de la detección contextualizada explicada en los capítulos anteriores) forman parte de IberLEF.
 
 \section{Recolección de tweets}
+
+A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}.
+
+El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es una muestra de alrededor del 1\% de los tweets, supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de la posible manipulación de esta muestra \cite{pfeffer2018tampering}. Si bien esto puede ser un problema para estudios de ciencias sociales computacionales, para nuestros fines descartamos estas preocupaciones.
+
+En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019\footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.
+
+Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores.
+
+De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
 
 \section{Entrenamiento de modelo}
 
