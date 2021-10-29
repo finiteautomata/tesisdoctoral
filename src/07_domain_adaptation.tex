@@ -79,6 +79,62 @@ Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquel
 
 De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
 
-\section{Entrenamiento de modelo}
+\section{Modelo pre-entrenado sobre tweets}
+
+
+Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \emph{deacc}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para enfatizar los acentos en las palabras; por lo general, se pasan por alto en los textos sociales, por lo que queremos analizar si eliminarlos mejora el rendimiento de los modelos.
+
+Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en Rust para muchos algoritmos de tokenización.
+
+\subsection{Arquitectura y entrenamiento}
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{l|l}
+        \hline
+        Hyperparameter  & Value \\
+        \hline
+        \#Heads           & 12             \\
+        \#Layers          & 12             \\
+        Hidden Size       & 768            \\
+        Intermediate Size & 3072           \\
+        Hidden activation & GeLU           \\
+        Vocab. size       & 30,000         \\
+        \hline
+        MLM probability   & 0.15           \\
+        Max Seq length    & 128            \\
+        Batch Size        & 4,096          \\
+        Learning Rate     & $3.5 * 10^{-4}$\\
+        Decay             & $0.1$          \\
+        $\beta_1$         & 0.9            \\
+        $\beta_2$         & 0.98           \\
+        $\epsilon$        & $10^{-6}$      \\
+        Warmup steps      & 36,000 (6\%)   \\
+        \hline
+    \end{tabular}
+    \caption{Model hyperparameters of \robertuito{} architecture}
+    \label{tab:robertuito_architecture}
+\end{table}
+
+Se utilizó una arquitectura base RoBERTa en RoBERTuito, con 12 capas de auto atención, 12 cabezas de atención y tamaño oculto 768, de la misma manera que BERTweet \cite{bertweet}. Usamos un objetivo de lenguaje enmascarado, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
+
+Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de lote grande para nuestro entrenamiento. Si bien se recomienda un tamaño de lote de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k. Para comprobar la convergencia, primero entrenamos un modelo sin carcasa para 200.000 pasos. y luego procedió a ejecutarlo durante 600K pasos para los tres modelos.
+
+Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina interrumpible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por  Nuestro código base usa la biblioteca \emph{huggingface's transformers} y su implementación \emph{RoBERTa} \citet{wolf-etal-2020-transformers}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{l|l|l|l}
+        Model   & Train loss & Eval loss   & Eval ppl \\
+        \hline
+        Cased   & 1.864      & 1.753       & 5.772    \\
+        Uncased & 1.940      & 1.834       & 6.259    \\
+        Deacc   & 1.951      & 1.826       & 6.209
+    \end{tabular}
+    \caption{Training results of \robertuito{} for each of its three configurations, expressed in cross-entropy loss for the Masked-Language-Modeling task and perplexity (ppl)}
+    \label{tab:training_results}
+\end{table}
+
+
 
 \section{Adaptación de modelos pre-entrenados}
