@@ -372,11 +372,12 @@ Algo que merece cierta atención es que, lejos de empeorar el desempeño de nues
 
 Teniendo en cuenta el estado del arte de la detección de lenguaje abusivo y discurso de odio en particular y teniendo en cuenta lo visto en este capítulo, hacemos algunas observaciones de posibilidades de mejora en los recursos y técnicas de la disciplina.
 
-Una limitación que puede verse es que la mayoría de los trabajos atacan uno, dos, o a como mucho tres características protegidas. Por ejemplo, los datasets de \cite{waseem2016hateful} y \cite{hateval2019semeval} (el utilizado en esta tarea) sólo consideran racismo y sexismo, mientras que \citet{Davidson2017AutomatedHS} agrega homofobia a esta consideración. Sería deseable poder contar con un dataset que como mínimo cuente con estas tres características en conjunto a otras quizás menos utilizadas: odio de clase (a veces conocida como ``aporofobia''), discriminación por aspecto físico, o por discapacidad. Esto, desde ya, con un framework unificado de anotación y no recolectando datasets anotados individualmente.
+Una limitación que puede verse es que la mayoría de los trabajos atacan una, dos, o a como mucho tres características protegidas. Por ejemplo, los datasets de \cite{waseem2016hateful} y \cite{hateval2019semeval} (el utilizado en esta tarea) sólo consideran racismo y sexismo, mientras que \citet{Davidson2017AutomatedHS} agrega homofobia a esta consideración. Sería deseable poder contar con un dataset que como mínimo cuente con estas tres características en conjunto a otras quizás menos utilizadas: odio de clase (a veces conocida como ``aporofobia''), discriminación por aspecto físico, o por discapacidad. Esto, desde ya, con un framework unificado de anotación y no recolectando datasets anotados individualmente.
+
+\todo{Agregar un chamullín sobre la señal, varias variables, etc}
 
 \subsection{Problemas de anotación}
 
-\subsection{Granularidad de los datos}
 
 \subsection{Falta de contexto}
 
@@ -387,6 +388,9 @@ Más aún, un género no explorado en estos mensajes (usualmente aislados) son a
 En ese sentido, podemos preguntarnos sobre este punto es si el acceso a información contextual nos puede auxiliar en la detección de discurso de odio. Por ejemplo, tener acceso a una noticia, al hilo de conversación
 
 \todo{¿Quizás falta también algo más a nivel semiótico acá?}
+\subsection{Granularidad de los datos}
+
+Así mismo, otro problema que suele ocurrir relacionado al anterior es que no tenemos \textbf{información granular} de los datos anotados. Si bien algunos trabajos agregan información de la característica vulnerada, la mayoría simplemente agrega una etiqueta binaria sobre la existencia o no de discurso de odio (o bien algún nivel intermedio como si hay o no discurso ofensivo, como el caso de \citet{Davidson2017AutomatedHS}). Teniendo en cuenta lo observado en este capítulo, agregar información más detallada sobre cada caso puede ayudar a mejorar la detección del discurso de odio mediante una señal más rica a nuestros clasificadores sobre las diferentes fronteras de cada característica.
 
 \subsection{Interpretabilidad y fragilidad de clasificadores}
 
