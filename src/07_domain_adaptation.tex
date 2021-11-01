@@ -116,7 +116,7 @@ Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los t
     \label{tab:robertuito_architecture}
 \end{table}
 
-Se utilizó una arquitectura base RoBERTa en RoBERTuito, con 12 capas de auto atención, 12 cabezas de atención y tamaño oculto 768, de la misma manera que BERTweet \cite{bertweet}. Usamos un objetivo de lenguaje enmascarado, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
+Se utilizó una arquitectura base RoBERTa en RoBERTuito, con 12 capas de auto atención, 12 cabezas de atención y tamaño oculto 768, de la misma manera que BERTweet \cite{bertweet}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
 
 Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de lote grande para nuestro entrenamiento. Si bien se recomienda un tamaño de lote de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k. Para comprobar la convergencia, primero entrenamos un modelo sin carcasa para 200.000 pasos. y luego procedió a ejecutarlo durante 600K pasos para los tres modelos.
 

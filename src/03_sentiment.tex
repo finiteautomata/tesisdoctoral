@@ -19,4 +19,20 @@ Describir data augmentation como otra técnica de regularización. Comentar back
 
 \section{Librería de análisis de sentimientos}
 
+\newcommand{\pysentimiento}[0]{\textbf{pysentimiento}}
+
+Algo que suele obstaculizar la utilización de herramientas de extracción de opinión (como las que acabamos de ver en este capítulo pero así mismo las que veremos más adelante) con fines de investigación es la dificultad a su acceso. O bien estos servicios están detrás de APIs pagas con precios demasiado altos para los presupuestos académicos o están disponibles pero no en español (u otro idioma de ``bajos recursos''). En otros casos, estos recursos están disponibles pero no para ser usados de forma de ``caja negra'', lo cual para alguien que no es un experto en NLP suele complicar su utilización.
+
+Como una pequeñísima contribución de esta tesis y con el objetivo de facilitar el acceso de estos recursos para la investigación, creamos la librería \textbf{pysentimiento}\footnote{\url{https://github.com/pysentimiento/pysentimiento}}. Este paquete provee modelos pre-entrenados y herramientas de preprocesado para textos sociales. Si bien tiene soporte multilingual tanto en español como inglés, su eje original es el de proveer recursos para el español que tiene una disparidad importante en recursos.
+
+La figura XXX muestra la arquitectura de \pysentimiento{}. Utiliza el model hub de \emph{huggingface}\footnote{\url{https://huggingface.co/models}}, un repositorio de modelos pre-entrenados basados en transformers. Allí es donde colocamos todos los modelos que entrenamos, tanto de sentimientos, emociones, y los que mostraremos más adelante como detección de discurso de odio. Cada tweet que es analizado por la librería pasa primero por una etapa de preprocesamiento (siguiendo el proceso explicado en la sección zzz), y luego procesado por el modelo, quien nos brinda un output. Dependiendo el problema, puede haber una etapa de post-procesamiento.
+
+\todo{Completar las cosas que quedaron acá sin referencias}
+
+%
+% Pysentimiento architecture
+% https://www.canva.com/design/DAEufPDskMI/Gg_phzjuXgFihF1g3x9L-A/edit#
+%
+%
+
 \section{Conclusiones}
