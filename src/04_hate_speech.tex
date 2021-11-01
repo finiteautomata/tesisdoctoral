@@ -366,11 +366,13 @@ Respecto a lo relativo a la performance de los modelos presentados, los modelos 
 
 Sobre la tarea más difícil de detección múltiple de discurso de odio, propusimos varios enfoques: uno basado en predecir cada variable por separado y otro en predecir una variable que indique la combinación en cuestión. El modelo de predicción múltiple entrenado con la función de costo jerárquica \ref{eq:hierarchical_loss} obtuvo la mejor performance, sin embargo, estas diferencias no se mostraron significativas. En el caso de inglés, el modelo entrenado sobre 5 clases obtuvo la mejor performance; sin embargo, esta dista de la mejor performance de la competencia. No ahondaremos en un análisis de estos resultados en inglés debido a los posibles problemas de anotación del dataset, y porque estamos más interesados en profundizar sobre la creación de recursos en español.
 
-Algo que merece cierta atención es que, lejos de empeorar el desempeño de nuestros modelos, agregar nuevas variables a paredecir (además de la existencia de discurso de odio) pareciera mejorar levemente la performance de la detección de este fenómeno, a la vez que obteniendo salidas más ricas e interpretables.
+Algo que merece cierta atención es que, lejos de empeorar el desempeño de nuestros modelos, agregar nuevas variables a predecir (además de la existencia de discurso de odio) pareciera mejorar levemente la performance de la detección de este fenómeno, a la vez que obteniendo salidas más ricas e interpretables.
 
 \subsection{Limitaciones de los enfoques y recursos actuales}
 
 Teniendo en cuenta el estado del arte de la detección de lenguaje abusivo y discurso de odio en particular y teniendo en cuenta lo visto en este capítulo, hacemos algunas observaciones de posibilidades de mejora en los recursos y técnicas de la disciplina.
+
+Una limitación que puede verse es que la mayoría de los trabajos atacan uno, dos, o a como mucho tres características protegidas. Por ejemplo, los datasets de \cite{waseem2016hateful} y \cite{hateval2019semeval} (el utilizado en esta tarea) sólo consideran racismo y sexismo, mientras que \citet{Davidson2017AutomatedHS} agrega homofobia a esta consideración. Sería deseable poder contar con un dataset que como mínimo cuente con estas tres características en conjunto a otras quizás menos utilizadas: odio de clase (a veces conocida como ``aporofobia''), discriminación por aspecto físico, o por discapacidad. Esto, desde ya, con un framework unificado de anotación y no recolectando datasets anotados individualmente.
 
 \subsection{Problemas de anotación}
 
