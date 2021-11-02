@@ -135,7 +135,7 @@ Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8
 \end{table}
 
 
-\section{Resultados de experimentos de clasificación}
+\subsection{Resultados}
 
 \begin{table}
     \centering
@@ -151,15 +151,44 @@ Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8
         robertuito-deacc   & 0.5945 \pm 0.006  &  0.7995 \pm 0.008 &  0.7020 \pm 0.004 &  0.5448 \pm 0.013 &  0.7389 \pm 0.005 &  0.675947 \\
         robertuito-uncased & 0.5924 \pm 0.005  &  0.8002 \pm 0.008 &  0.7069 \pm 0.005 &  0.5464 \pm 0.011 &  0.7374 \pm 0.009 &  0.676655 \\
     \end{tabular}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
 
+    \label{tab:robertuito_evaluation_results}
 \end{table}
 
 
-La tabla XXX muestra los resultados de la evaluación de los distintos modelos evaluados para las tareas del benchmark, reportado por las distintas medidas de cada tarea: med
+La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los distintos modelos evaluados para las tareas del benchmark, reportado por las distintas medidas de cada tarea.
 
-reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: Multi refiere a clasificación múltiple, Jerárquica a clasificación múltiple con la función de costo jerárquica, y Combinatoria a la conversión del problema en una clasificación de 5 clases.
 
 \section{Adaptación de modelos pre-entrenados}
+
+
+\subsection{Resultados}
+
+\begin{table}
+    \centering
+    \footnotesize
+    \begin{tabular}{llllllr}
+        \toprule
+        Modelo             & CHATE                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
+        \midrule
+        beto-uncased       & $0.590 \pm 0.006$ & $0.756 \pm 0.011$ &  $0.648 \pm 0.005$ &  $0.520 \pm 0.006$ & $0.703 \pm 0.007$ &  0.643 \\
+        beto-cased         & $0.584 \pm 0.005$ & $0.765 \pm 0.010$ &  $0.665 \pm 0.003$ &  $0.526 \pm 0.008$ & $0.707 \pm 0.007$ &  0.649 \\
+        beto-cased-ft      & $0.576 \pm 0.002$ & $0.783 \pm 0.010$ &  $0.677 \pm 0.004$ &  $0.524 \pm 0.015$ & $0.723 \pm 0.008$ &  0.656 \\
+        beto-uncased-ft    & $0.589 \pm 0.003$ & $0.772 \pm 0.017$ &  $0.680 \pm 0.004$ &  $0.553 \pm 0.008$ & $0.716 \pm 0.006$ &  0.662 \\
+        robertuito-cased   & $0.590 \pm 0.005$ & $0.789 \pm 0.014$ &  $0.700 \pm 0.012$ &  $0.521 \pm 0.032$ & $0.722 \pm 0.021$ &  0.664 \\
+        robertuito-deacc   & $0.594 \pm 0.006$ & $0.800 \pm 0.008$ &  $0.702 \pm 0.004$ &  $0.545 \pm 0.013$ & $0.739 \pm 0.005$ &  0.676 \\
+        robertuito-uncased & $0.592 \pm 0.005$ & $0.800 \pm 0.008$ &  $0.707 \pm 0.005$ &  $0.546 \pm 0.011$ & $0.737 \pm 0.009$ &  0.677 \\
+        gap                & 0.05              & 0.05              & 0.05               & 0.05               & 0.05              & 0.05 \\
+        delta              & 0.05              & 0.05              &  0.05              &  0.05              &  0.05             &  0.05 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
+
+    \label{tab:domain_adaptation_evaluation_results}
+
+\end{table}
+
 
 \section{Discusión}
 
