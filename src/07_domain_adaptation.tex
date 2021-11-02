@@ -136,5 +136,36 @@ Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8
 \end{table}
 
 
+\section{Resultados de experimentos de clasificación}
+
+\begin{table}
+    \centering
+    \footnotesize
+    \begin{tabular}{llllllr}
+        \toprule
+        Modelo             & CHATE             &  HATE             &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
+        beto-uncased       & 0.5895 \pm 0.006  &  0.7556 \pm 0.011 &  0.6484 \pm 0.005 &  0.5198 \pm 0.006 &  0.7031 \pm 0.007 &  0.643285 \\
+        bertin             & 0.5579 \pm 0.008  &  0.7662 \pm 0.005 &  0.6644 \pm 0.003 &  0.5169 \pm 0.011 &  0.7152 \pm 0.008 &  0.644139 \\
+        beto-cased         & 0.5836 \pm 0.005  &  0.7647 \pm 0.010 &  0.6647 \pm 0.003 &  0.5258 \pm 0.008 &  0.7074 \pm 0.007 &  0.649226 \\
+        roberta-bne        & 0.5779 \pm 0.004  &  0.7672 \pm 0.015 &  0.6674 \pm 0.007 &  0.5351 \pm 0.012 &  0.7232 \pm 0.016 &  0.654161 \\
+        robertuito-cased   & 0.5901 \pm 0.005  &  0.7895 \pm 0.014 &  0.7000 \pm 0.012 &  0.5212 \pm 0.032 &  0.7217 \pm 0.021 &  0.664466 \\
+        robertuito-deacc   & 0.5945 \pm 0.006  &  0.7995 \pm 0.008 &  0.7020 \pm 0.004 &  0.5448 \pm 0.013 &  0.7389 \pm 0.005 &  0.675947 \\
+        robertuito-uncased & 0.5924 \pm 0.005  &  0.8002 \pm 0.008 &  0.7069 \pm 0.005 &  0.5464 \pm 0.011 &  0.7374 \pm 0.009 &  0.676655 \\
+    \end{tabular}
+
+\end{table}
+
+
+La tabla XXX muestra los resultados de la evaluación de los distintos modelos evaluados para las tareas del benchmark, reportado por las distintas medidas de cada tarea: med
+
+reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: Multi refiere a clasificación múltiple, Jerárquica a clasificación múltiple con la función de costo jerárquica, y Combinatoria a la conversión del problema en una clasificación de 5 clases.
 
 \section{Adaptación de modelos pre-entrenados}
+
+\section{Discusión}
+
+Podemos observar que \robertuito{} presenta mejoras significativas para casi todas las tareas, con picos de hasta casi 4 puntos de F1 para la tarea de Sentiment Analysis. La mejora es muy marginal en el caso de la tarea del dataset construído en el capítulo \ref{chap:dataset_creation}, y no pareciera ser significativa. Esto puede deberse a que este dataset tiene una estructura bastante diferente de la de las otras tareas: cada instancia es una composición de dos tweets, uno de los cuales (el contexto) es en la mayoría de los casos un titular de diarios (formulado como un tweet), y por otro lado el comentario efectivo que se analiza como discurso de odio. Esto puede mitigar las potenciales mejoras de \robertuito{} por dos razones: el dominio del contexto no es demasiado distinto que el dominio de entrenamiento de BETO, y el tipo de pre-entrenamiento sólo con MLMy no en pares de tweets (recordemos que sólo hacemos MLM y no Next-Sentence Prediction). Sobre la segunda posible razón, podemos observar que los modelos con pre-entrenamiento basado en RoBERTa (\emph{roberta-bne} y \emph{bertin}) tienen peor performance que las dos versiones de \emph{BETO}.
+
+Con respecto a los experimentos de adaptación de dominio, podemos observar que adaptando BETO obtenemos una mejora en todos las tareas contra la versión no ajustada. Comparado con \robertuito{}, las versiones a las que les realizamos fine-tuning logran alrededor del 50\% del performance gap entre \robertuito{} y BETO. Esta comparación, sin embargo, no es del todo justa ya que BETO fue entrenado de una manera distinta que \robertuito{}. Por cuestiones de tiempo no pudieron ser realizados sobre \emph{roberta-bne}(principalmente, ya que éste modelo y \emph{bertin} fueron lanzados mientras hacíamos estos experimentos) pero debería esto ser verificado en el futuro. Puede que este gap sea reducido aún más partiendo desde este otro modelo, y analizando algunas otras opciones que no tratamos en este capítulo: por ejemplo, agregar vocabulario en el ajuste de dominio, algo que por ejemplo fastAi realiza en su implementación de ULM-FIT.
+
+Una consideración práctica de la adaptación de dominio es que permite, en lugar de realizar un costo pre-entrenamiento desde cero (como en el caso de MedBERT y SciBERT que ya relatamos anteriormente), mejorar la performance de un modelo de lenguaje ya entrenado de una manera relativamente económica. En términos concretos, un ajuste de dominio puede realizarse utilizando una placa de GPU en uno o dos días de entrenamiento, mientras que pre-entrenar un modelo desde cero requiere acceso a un hardware más oneroso. Algunos trabajos recientes \cite{izsak2021train} muestran alternativas para hacer esto con recursos reducidos ajustando varios hiperparámetros y usando algunas técnicas de optimización reciente (como LAMB \cite{you2019large}); sin embargo, muchos de estos setups están lejos del alcance de los recursos disponibles de muchos laboratorios. En este escenario, aplicar una optimización de dominio aparece como una alternativa mucho más factible.
