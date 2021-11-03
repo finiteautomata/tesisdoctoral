@@ -356,7 +356,19 @@ Algo que puede observarse es que, lejos de dañarse la performance de la detecci
 
 \subsection{Análisis de Error}
 
-Analizamos los errores sólo para el dataset en español. Para ello, tomamos las predicciones de 10 clasificadores BERT, y observamos qué instancias son repetidamente clasificadas erróneamente por los modelos, para así sortear la alta variabilidad de estos.
+Para tener una mejor idea de lo ocurrido con nuestros clasificadores, realizamos un análisis de error. Para ello, tomamos el clasificador BETO con clasificación múltiple, y lo aplicamos sobre el dataset de test. Para intentar mitigar los efectos de la varianza de los clasificadores, tomamos las salidas de 10 clasificadores BETO entrenados con una distinta semilla y analizamos el error sobre un clasificador de ensamble por voto mayoritario; de esta manera, tratamos de buscar aquellos errores frecuentes, aquellos que la mayoría de los 10 clasificadores erran. Nos centraremos en observar los errores de la etiqueta HS.
+
+En la tabla XXX podemos observar algunos de los errores que cometen nuestros clasificadores. Por un lado, podemos observar que muchos de los errores se deben a cierto overfitting a ciertas palabras ``clave'', muchas de las cuales son producto del proceso de recolección que está fuertemente basada en keywords. Haciendo un poco de probing en los clasificadores, podemos ver que ciertas palabras como ``inmigrante'' automáticamente disparan una salida odiosa.
+
+Tampoco pueden nuestros clasificadores detectar reportes de casos de discurso de odio \todo{citar trabajo sobre ACL reported who's gonna care your children}, como se muestra en la tabla XXX.
+
+Algunos tweets clasificados erróneamente también muestran que, en algunos casos, parece faltar contexto de algunos mensajes. En algunos casos, este contexto está implícito: muchos tweets hablan de incidentes en la frontera de Ceuta (España) entre inmigrantes y la policía.
+
+Algo que observamos también es que hay una fuerte cantidad de errores de etiquetado
+Por otro lado, en la tabla YYY podemos observar que el dataset contiene
+
+
+
 
 \todo{Esto falta}
 
