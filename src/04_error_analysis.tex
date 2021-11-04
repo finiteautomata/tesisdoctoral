@@ -32,13 +32,13 @@ Para tener una mejor idea de lo ocurrido con nuestros clasificadores, realizamos
 \end{table}
 
 
-En la tabla \ref{tab:hateval_error_analysis} podemos observar algunos de los errores que cometen nuestros clasificadores. Por un lado, podemos observar que muchos de los errores se deben a cierto overfitting a ciertas palabras ``clave'', muchas de las cuales son producto del proceso de recolección que está fuertemente basada en keywords. Haciendo un poco de probing en los clasificadores, podemos ver que ciertas palabras como ``inmigrante'' automáticamente disparan una salida odiosa.
+En la tabla \ref{tab:hateval_error_analysis} podemos observar algunos de los errores que cometen nuestros clasificadores. Por un lado, podemos observar que algunos errores se deben a cierto overfitting a ciertas palabras ``clave'', muchas de las cuales son producto del proceso de recolección que está fuertemente basada en keywords (inmigrante, sudaca, por ejemplo). Haciendo un poco de probing en los clasificadores, podemos ver que ciertas palabras como ``inmigrante'' automáticamente disparan una salida odiosa.
 
-Tampoco pueden nuestros clasificadores detectar reportes de casos de discurso de odio \todo{citar trabajo sobre ACL reported who's gonna care your children}, como se muestra en la tabla XXX.
+Otros de los casos que nuestros clasificadores no parecieran detectar son los reportes de discriminación (por ejemplo...) o casos de apropiación cultural o contenido irónico (\emph{ Ayer nos fuimos a tomar algo con los cumpas: Dos españoles, un ponja, un africano y un sudaca. Estamos para campaña de United Colours of Benneton.}). Estos casos dan cuenta de la dificultad de la detección de esta tarea.
 
 Así mismo, en el proceso del análisis de error descubrimos algunos tweets a los cuales pareciera faltar contexto para poder tomar una decisión. Si bien esto a veces puede ser inferido por un humano (por ejemplo, infiriendo que un comentario habla de tal o cual suceso), un clasificador necesitaría esa información. Para el dataset en concreto, muchos de estos comentarios tienen un contexto implícito: muchos tweets hablan de incidentes en la frontera de Ceuta (España) entre inmigrantes y la policía, debido al proceso de recolección realizado. La tabla \ref{tab:hateval_lack_of_context} muestra algunos de estos ejemplos.
 
-Algo que observamos también es que hay una fuerte cantidad de errores de etiquetado
+
 Por otro lado, en la tabla YYY podemos observar que el dataset contiene
 
 
@@ -72,7 +72,7 @@ Por otro lado, en la tabla YYY podemos observar que el dataset contiene
 \end{table}
 
 
-
+Algo que observamos también es que hay una fuerte cantidad de errores de etiquetado. La tabla \ref{tab:hateval_label_errors} muestra algunos de estos ejemplos. Si bien es difícil establecer una causa específica para cada uno de estos errores, es posible que sean causados por una combinación de: confusión entre lenguaje ofensivo y discurso de odio; un mismatch cultural entre los anotadores; falta de contexto; algunos tweets que fueron mal recolectados
 
 \begin{table}
     \begin{tabularx}{\textwidth}{l X}
