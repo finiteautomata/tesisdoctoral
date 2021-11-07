@@ -160,7 +160,7 @@ Para cada tweet, aplicamos el siguiente procesamiento previo: primero, cortamos 
 Aunque no realizamos un análisis de ablación para evaluar el impacto de cada paso del preprocesamiento, el proceso general pareció mejorar el rendimiento de la clasificación en el conjunto de datos de desarrollo.
 
 \subsection{Clasificadores}
-
+\label{sec:contextualized_classifiers}
 
 %%
 %%
@@ -241,66 +241,54 @@ Realizamos el ajuste utilizando el sobrante de la recolección de datos del ante
 \end{table*}
 
 
-La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, medidos por precisión, recuperación, F1 y Macro F1 (como se acostumbra en algunas tomas compartidas de Detección de discurso de odio y lenguaje ofensivo). Podemos observar que agregar contextos parece mejorar el desempeño; en particular, el simple hecho de agregar el título parece proporcionar suficiente contexto para la tarea de detección del discurso de odio. Agregar el cuerpo mejora marginalmente el rendimiento, pero a un costo computacional más alto (recuerde que la longitud máxima con título se establece en 256, y en el otro caso es 512). La mejora en la puntuación de F1 con solo agregar el título es de aproximadamente 3 puntos; título y cuerpo suma alrededor de 3,5 puntos F1 sobre la clasificación no contextualizada. Al analizar los modelos contextuales, el cuerpo completo parece mejorar el recuerdo al tiempo que disminuye ligeramente la precisión, con una puntuación general igual de F1 que el modelo de solo título.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{img/recall_category.png}
-    \caption{Recall by characteristic for each model}
-    \label{fig:recall_by_characteristic}
-\end{figure*}
-
-La figura \ref{fig:recall_by_characteristic} muestra la recuperación de nuestros algoritmos. Usar solo el contexto del título mejora la sensibilidad para las características LGBTI y CRIMINALES (Mann Whitney U, $ p \ leq 0.01 $, Bonferroni corregido); agregar el cuerpo completo también lo mejora significativamente para la característica RACISMO y lo mejora un poco más para CRIMINAL (Mann Whitney U $ p \ leq 0.01 $, Bonferroni corregido). Sin embargo, el desempeño en POLÍTICA empeora al agregar contexto en cualquier forma ($ p \ leq 0.001 $, corregido Bonferroni). Para las otras características, el contexto no mejora ni empeora el desempeño.
-
-
-% \begin{table}
-%     \centering
-%     \begin{tabular}{ll}
-%         \toprule
-%         Model &            Mean F1 \\
-%         \midrule
-%         BERT No Context &  $0.731 \pm 0.004$ \\
-%         BERT Title      &  $0.808 \pm 0.006$ \\
-%         BERT Title+Body &  $0.824 \pm 0.006$ \\
-%         \bottomrule
-%     \end{tabular}
-%     \caption{Mean F1 scores for Task B: Offended characteristic detection}
-%     \label{tab:task_b_results}
-% \end{table}
-
-La figura \ref{fig:task_b_results} muestra los resultados de la característica ofendida y la tarea de detección de llamada a la acción. La tabla \ref{tab:task_b_results} muestra las puntuaciones F1 medias para tener una medida de resumen. Como se esperaba, la ganancia de tener contexto disponible es más evidente en este punto, con una diferencia media de puntuación F1 de $ 7,6 $ puntos entre no tener contexto y tener el título, y $ 1,5 $ puntos adicionales si el cuerpo está disponible. La detección de llamadas a la acción apenas se mejora al tener un contexto disponible. Nuevamente, las características LGBTI y CRIMINALES se benefician enormemente del contexto; La característica CLASS también parece tener alguna mejora. No hay grandes diferencias entre tener el título y el cuerpo completo.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{img/task_b_scores.png}
-    \caption{F1 scores for each characteristic in Task B: offended characteristic detection}
-    \label{fig:task_b_results}
-\end{figure*}
+La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, medidos por precisión, recall, F1 de la clase positiva y Macro F1 entre las dos clases. Podemos observar que agregar contextos parece mejorar el desempeño; en particular, agregar el texto parece proporcionar suficiente contexto para la tarea de detección del discurso de odio. Agregar el cuerpo mejora marginalmente el rendimiento, pero a un costo computacional más alto (recuerde que la longitud máxima con título se establece en 256, y en el otro caso es 512). La mejora en la puntuación de F1 con solo agregar el título es de aproximadamente 3 puntos; título y cuerpo suma alrededor de 3,5 puntos F1 sobre la clasificación no contextualizada. Al analizar los modelos contextuales, el cuerpo completo parece mejorar el recuerdo al tiempo que disminuye ligeramente la precisión, con una puntuación general igual de F1 que el modelo de solo título.
 
 \begin{table*}
     \centering
-    \begin{tabular}{llll}
+    \begin{tabular}{lrrrrrr}
         \toprule
-        {} &    BERT No Context &         BERT Title &    BERT Title+Body \\
-        \midrule
-        Calls F1       &  $0.784 \pm 0.009$ &  $0.802 \pm 0.010$ &  $0.805 \pm 0.017$ \\
-        Women F1       &  $0.652 \pm 0.011$ &  $0.672 \pm 0.015$ &  $0.708 \pm 0.017$ \\
-        Lgbti F1       &  $0.590 \pm 0.018$ &  $0.843 \pm 0.021$ &  $0.857 \pm 0.012$ \\
-        Racism F1      &  $0.863 \pm 0.005$ &  $0.943 \pm 0.004$ &  $0.939 \pm 0.007$ \\
-        Class F1       &  $0.593 \pm 0.011$ &  $0.727 \pm 0.012$ &  $0.742 \pm 0.014$ \\
-        Politics F1    &  $0.718 \pm 0.015$ &  $0.753 \pm 0.007$ &  $0.771 \pm 0.012$ \\
-        Disabled F1    &  $0.786 \pm 0.016$ &  $0.750 \pm 0.029$ &  $0.791 \pm 0.015$ \\
-        Appearance F1  &  $0.845 \pm 0.004$ &  $0.879 \pm 0.010$ &  $0.892 \pm 0.010$ \\
-        Criminal F1    &  $0.744 \pm 0.009$ &  $0.901 \pm 0.008$ &  $0.907 \pm 0.008$ \\
+        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
         \hline
-        Mean F1        &  $0.731 \pm 0.004$ &  $0.808 \pm 0.006$ &  $0.824 \pm 0.006$ \\
-        Mean Precision &  $0.786 \pm 0.004$ &  $0.853 \pm 0.007$ &  $0.851 \pm 0.006$ \\
-        Mean Recall    &  $0.687 \pm 0.006$ &  $0.770 \pm 0.008$ &  $0.800 \pm 0.007$ \\
+        Calls F1       & 0.646 &    0.651   & 0.638 &\textbf{0.685}  & 0.653 &    0.680    \\
+        Women F1       & 0.373 &    0.389   & 0.411 &\textbf{0.421}  & 0.381 &\textbf{0.421} \\
+        Lgbti F1       & 0.351 &    0.366   & 0.451 &\textbf{0.482}  & 0.427 &    0.445    \\
+        Racism F1      & 0.635 &    0.653   & 0.688 &\textbf{0.720}  & 0.691 &    0.711    \\
+        Class F1       & 0.401 &    0.433   & 0.491 &\textbf{0.511}  & 0.451 &    0.476    \\
+        Politics F1    & 0.555 &    0.611   & 0.579 &0.625           & 0.591 &\textbf{0.648} \\
+        Disabled F1    & 0.551 &    0.582   & 0.585 &\textbf{0.609}  & 0.557 &    0.578    \\
+        Appearance F1  & 0.726 &    0.742   & 0.741 &\textbf{0.766}  & 0.755 &    0.758    \\
+        Criminal F1    & 0.513 &    0.529   & 0.650 &\textbf{0.699}  & 0.654 &    0.668    \\
+        \hline
+        Macro F1       & 0.528 &    0.551   & 0.582 &\textbf{0.613}  & 0.573 &    0.598    \\
+        Macro Precision& 0.558 &    0.630   & 0.642 &\textbf{0.702}  & 0.677 &    0.678    \\
+        Macro Recall   & 0.506 &    0.499   & 0.540 &\textbf{0.551}  & 0.504 &    0.541    \\
+        \hline
+        Hate Precision & 0.679 &    0.712   & 0.722 &\textbf{0.760}  & 0.748 &    0.741    \\
+        Hate Recall    & 0.621 &    0.631   & 0.642 &\textbf{0.666}  & 0.621 &    0.658    \\
+        Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
         \bottomrule
-    \end{tabular}
-    \caption{Performance of models for Task B: offended characteristic detection. Mean and standard deviation for 15 runs are displayed. }
+        \end{tabular}
+    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
     \label{tab:task_b_results}
 \end{table*}
+
+
+
+La tabla \ref{tab:task_b_results} muestra los resultados de los experimentos de clasificación para la tarea de detección fina, medida en F1 para cada una de las características, y las medidas agrupadas de forma macro precision, recall, y F1. Se muestra en cada caso el resultado de la media de 10 corridas del experimento. Como era esperable, la ganancia de tener contexto disponible es más evidente en este punto, con una diferencia de Macro F1 aproximadamente 6 puntos de F1 entre la mejor versión sin contexto y la mejor versión con contexto (0.55 Macro F1 de la versión FT sin contexto vs 0.61 F1 de la versión FT con el contexto del tweet).
+
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/task_b_scores.pdf}
+    \caption{Métrica F1 para cada característica de la tarea Task B. Las características están ordenadas de mayor a menor de acuerdo a la diferencia de performance entre el modelo sin contexto y el modelo contextualizado. }
+    \label{fig:barplot_task_b_results}
+\end{figure*}
+
+La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por característica, esta vez ordenados de mayor a menor según el gap entre la performance contextualizada vs la no contextualizada, junto a sus intervalos de confianza 95\%, usando como modelos las versiones ajustadas al dominio. Todas las características obtienen una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por Benjamini-Hochberg\cite{benjamini1995controlling}). Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+0.17$ F1 de diferencia), LGBTI ($+0.12$), CLASE ($+0.08$), y RACISMO (casi $+0.07$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto (ver Apéndice \ref{app:manual_criterios_anotacion} para ejemplos).
+
+
+
+
 
 
 \section{Análisis de error}
