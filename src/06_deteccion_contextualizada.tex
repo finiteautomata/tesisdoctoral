@@ -293,6 +293,10 @@ La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por 
 
 \section{Análisis de error}
 
+\input{src/06_error_analysis.tex}
+
+
+
 \section{Discusión}
 
 Para analizar el impacto del contexto en la detección de discurso de odio, planteamos dos tareas de clasificación sobre el dataset construído en el capítulo \ref{chap:dataset_creation}: la tarea de detección binaria, donde respondemos si un comentario contiene discurso de odio; y una tarea de detección ``fina'', donde se debe mencionar la o las características protegidas ofendidas (si agrede a las mujeres, al colectivo LGBTI, si es racista, etc). En ambas tareas planteadas, propusimos clasificadores que consuman 3 tipos de entrada: el comentario sin contexto, el comentario con el contexto del tweet al que responden, y el comentario más el tweet al que responde y sumado el texto del artículo. Pudimos observar que el contexto parece dar una mejora moderada pero significativamente estadística en la tarea de detección del discurso de odio (alrededor de 3 puntos F1), y una mejora considerable en la tarea característica ofendida (alrededor de 6 puntos F1 medios).

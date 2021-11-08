@@ -1,0 +1,40 @@
+
+Para analizar el error de nuestros clasificadores, elegimos el que mejor performance tuvo en la tarea B: el clasificador que toma el tweet más el tweet de la noticia, ajustado a dominio. De una manera similar a la que realizamos en la sección \ref{sec:hateval_error_analysis}, entrenamos 10 clasificadores y analizamos el error sobre el ensamble de voto mayoritario para centrarnos en los errores más frecuentes.
+
+Nos centramos en aquellas clases que peor performance tienen: MUJER, LGBTI, y CLASE. Observando las matrices de confusión \todo{Mandar esto a un apéndice}, vemos que los resultados de los clasificadores son bajos en términos de recall. Observaremos entonces los casos de falsos negativos, que revisten el mayor problema.
+
+
+\begin{table}[t]
+    \centering
+    \small
+    \begin{tabularx}{\textwidth}{X X}
+        Contexto & Comentario \\
+        \hline
+        Contó que era lesbiana, su papá le confesó que era gay y ahora su madre se enamoró de una mujer, lo que inspiró su segundo film & WTF. Mucho ESI los degeneró... \\
+                                & @usuario Esta familia tiene los genes alterados \\
+        \hline
+        Oscar González Oro ya está instalado en el Uruguay: "Recuperé mi libertad" & Ahora quedate allá, y hablá mal d Macri d nuevo pa tener rating. Y opiná q los taxi boy uruguayos son mas educados q los escorts argentinos! Ano abierto! \\
+        ¿Por qué un beso entre dos hombres los vuelve tan violentos?": la vida después de haber sido víctima de ataques  homofóbicos &  Será xq va contra la naturaleza de la raza... \\
+        \hline
+        ``¿Por qué no vemos médicos trans?'': el reclamo de un prestigioso cardiólogo para que América sea más inclusiva & Es difícil ser médico con la cabeza quemada \\
+            & porque un enfermo no cura a otro enfermo \\
+        \hline
+        ``Te amo''. La emotiva dedicatoria de Luis Novaresio a su pareja en su cumpleaños & \emoji{face-vomiting}\emoji{face-vomiting}\emoji{face-vomiting} \\
+        \hline
+        Elizabeth Gómez Alcorta: "Por la pandemia, vamos a tener una suba de los femicidios y travesticidios" &  Travesticidios... Osea asesinatos de tipos con peluca y tetas \\
+        \hline
+        Mariana Genesio Peña pasa su cuarentena total con guantes, barbijo y desnuda: "Mi cuerpo es el planeta Tierra" & Coronavirus nivel pelotudo en bolas	\\
+            & Con 3 piernas cualquiera es feliz!!!	\\
+            & pasa la cuarentena rascándose las bolas \\
+        \hline
+
+        Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Cómo no saco su escopeta y aplicó la defensa propia?! \\
+        & @usuario Salió de caño... cuac!	\\
+    \end{tabularx}
+    \caption{Falsos negativos para la característica LGBTI. Ninguno de los 10 clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios }
+    \label{tab:lgbti_error_analysis}
+\end{table}
+
+La tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios falsos negativos para la característica LGBTI junto a sus contextos. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio contra LGBTI, podemos dilucidar algunas razones. En primer lugar, algunos mensajes altamente ofensivos son complejos de entender o con una alta variabilidad léxica: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (\todo{de nuevo, hacer un apéndice con esto}). Esto puede hacerse de numerosas e ``ingeniosas'' maneras, y haciendo alusiones que difícilmente pueda un modelo de lenguaje entender (pensar todas las maneras que se puede hacer referencia a la genitalidad de una mujer trans).
+
+Otros mensajes como los que mencionan a Oscar González Oro o Mariana Genesio Peña omiten información acerca de su sexualidad o género (que obviamente, no corresponde que un titular explicite). Esta información faltante no permite a los clasificadores (y tampoco a un humano) entender completamente el caracter discriminatorio de los mensajes

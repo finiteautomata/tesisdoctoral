@@ -162,8 +162,22 @@ La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la ev
 
 \section{Adaptación de modelos pre-entrenados}
 
+Acabamos de observar que \robertuito{} obtiene una mejor performance que otros modelos pre-entrenados. Ahora, ¿puede ser esta mejora replicada adaptando otro modelo de lenguaje? Esta pregunta tiene, más allá del interés teórico de si un modelo de lenguaje entrenado en un dominio distinto puede adaptarse con éxito a un dominio diferente (algo explorado en el trabajo de \citet{gururangan-etal-2020-dont}), tiene dos consideraciones prácticas: en lenguajes de recursos relativamente bajos, entrenar un modelo desde cero como realizamos en la anterior sección puede ser prohibitivo; y por otro lado, reducir los inmensos costos computacionales de entrenar modelos desde cero puede ser de interés.
+
+Para contestar esta pregunta, realizamos una adaptación de dominio a un modelo BETO sobre textos sociales, y probamos su performance sobre el benchmark de tareas sociales descripto en la sección anterior.
+
+
+\subsection{Metodología}
+
+Para realizar la adaptación de dominio, seguimos las recomendaciones de \citet{gururangan-etal-2020-dont}: tomar un gran conjunto de datos no anotado de textos sociales, y correr la tarea de Masked Language-Modeling sobre estos. Para ello, utilizamos los mismos datos recolectados para entrenar a \robertuito{}.
+
+Tomamos las versiones cased y uncased de BETO, y corrimos únicamente la tarea de MLM sobre estos datos. En lugar de correr por 12.5K pasos de optimización como es sugerido en este trabajo, probamos con 2.5K, 5K, 10K y 20K pasos de optimización, para analizar también el impacto de este hiperparámetro. Finalmente, nos quedamos con la configuración que obtuvo el mejor resultado en términos del benchmark analizado.
+
+Para entrenar estos modelos, usamos una TPU v2-8, gracias también al programa TRC de Google. Cada paso de optimización tomó alrededor de 2.5 segundos. La tabla XXX contiene los hiperparámetros utilizados para realizar la optimización.
 
 \subsection{Resultados}
+
+La
 
 \begin{table}[ht]
     \centering
