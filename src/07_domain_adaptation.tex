@@ -1,10 +1,13 @@
 
+\newcommand{\deacc}[0]{\textbf{deacc}}
+\newcommand{\cased}[0]{\textbf{cased}}
+\newcommand{\uncased}[0]{\textbf{uncased}}
 
 En este capítulo exploraremos como mejorar la detección de discurso de odio desde una perspectiva más general, analizando en general la clasificación de textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta ) generan representaciones ricas al ser entrenadas en dominios sociales. Así mismo, también observamos que en algunos modelos pre-entrenados (como AWD-LSTM usando la técnica de ULMFit) \todo{meter citas} realizar un ajuste de dominio más extenso sobre
 
 Entrenar modelos de lenguaje basados en Transformers toman una cantidad de recursos importantes, algo que puede imposibilitar que
 
-Abordaremos la pregunta ¿cómo se compara en el dominio social el ajuste de dominio de modelos pre-entrenados sobre textos formales con los modelos que fueron generados desde cero en textos sociales? Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis. Entrenamos desde cero un modelo de lenguaje basado en transformers (RoBERTa)\cite{liu2019roberta} sobre tweets, y comparamos su performance contra ajustes de dominio hechos sobre otros modelos pre-entrenados.
+Abordaremos la pregunta ¿cómo se compara en el dominio social el ajuste de dominio de modelos pre-entrenados sobre textos formales con los modelos que fueron generados desde cero en textos sociales? Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis. Entrenamos desde cero un modelo de lenguaje basado en transformers (RoBERTa)\cite{liu2019roberta} sobre tweets, al cual llamamos \robertuito{}, y comparamos su performance contra ajustes de dominio hechos sobre otros modelos pre-entrenados.
 
 Comenzamos este capítulo haciendo una pequeña recapitulación de las técnicas de adaptación de dominio.
 
@@ -57,10 +60,10 @@ Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-d
 Para analizar el impacto de la adaptación de dominio y realizar una comparación contra un modelo entrenado desde cero en dicho dominio usamos un conjunto de tareas como benchmark. Las tareas elegidas son todas las que analizamos en este trabajo hasta el momento:
 
 \begin{enumerate}
-    \item Análisis de sentimientos
-    \item Análisis de emociones
     \item Detección de discurso de odio
     \item Detección contextualizada de discurso de odio
+    \item Análisis de sentimientos
+    \item Análisis de emociones
     \item Detección de Ironía
 \end{enumerate}
 
@@ -74,16 +77,18 @@ El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es 
 
 En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019\footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.
 
-Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores.
+Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores: reemplazamos los caracteres hasta un máximo de tres, convertimos los nombres de usuarios a un token especial \verb|@usuario|, convertimos los emoji a una representación textual, y partimos los hashtag en lo posible (ver sección XXX). Esto lo realizamos a priori para bajar la carga de trabajo a la hora del pre-entrenamiento.
 
 De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
 
+
+
+
 \section{Modelo pre-entrenado sobre tweets}
 
+Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para enfatizar los acentos en las palabras; por lo general, se pasan por alto en los textos sociales, por lo que queremos analizar si eliminarlos mejora el rendimiento de los modelos.
 
-Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \emph{deacc}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para enfatizar los acentos en las palabras; por lo general, se pasan por alto en los textos sociales, por lo que queremos analizar si eliminarlos mejora el rendimiento de los modelos.
-
-Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en Rust para muchos algoritmos de tokenización.
+Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
 
 \subsection{Arquitectura y entrenamiento}
 
@@ -111,31 +116,34 @@ Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los t
         Warmup steps      & 36,000 (6\%)   \\
         \hline
     \end{tabular}
-    \caption{Model hyperparameters of \robertuito{} architecture}
+    \caption{Hiperparámetros utilizados en el entrenamiento de \robertuito{}.}
     \label{tab:robertuito_architecture}
 \end{table}
 
-Se utilizó una arquitectura base RoBERTa en RoBERTuito, con 12 capas de auto atención, 12 cabezas de atención y tamaño oculto 768, de la misma manera que BERTweet \cite{bertweet}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
+Se utilizó una arquitectura RoBERTa base para \robertuito{}, con 12 capas de auto atención, 12 cabezas de atención y tamaño intermedio 768, de la misma manera que BERTweet \cite{bertweet}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
 
-Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de lote grande para nuestro entrenamiento. Si bien se recomienda un tamaño de lote de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k. Para comprobar la convergencia, primero entrenamos un modelo sin carcasa para 200.000 pasos. y luego procedió a ejecutarlo durante 600K pasos para los tres modelos.
+Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de batch size grande para nuestro entrenamiento. Si bien se recomienda un tamaño de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k.
 
-Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina interrumpible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por  Nuestro código base usa la biblioteca \emph{huggingface's transformers} y su implementación \emph{RoBERTa} \citet{wolf-etal-2020-transformers}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
+Para comprobar la convergencia, primero entrenamos un modelo uncased para 200k pasos de optimización. Al comprobar que convergió (y obtuvo buenos resultados en las tareas del benchmark), procedimos al entrenamiento completo de los tres modelos.
 
-\begin{table}[t]
+Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina pre-emptible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por el programa Google TPU Research Cloud. Nuestro código está basado en la biblioteca \emph{huggingface's transformers}\cite{wolf-etal-2020-transformers} y su implementación de \emph{RoBERTa}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
+
+\begin{table}[h]
     \centering
-    \begin{tabular}{l|l|l|l}
+    \begin{tabular}{l|l l l|}
         Model   & Train loss & Eval loss   & Eval ppl \\
         \hline
-        Cased   & 1.864      & 1.753       & 5.772    \\
-        Uncased & 1.940      & 1.834       & 6.259    \\
-        Deacc   & 1.951      & 1.826       & 6.209
+        \cased{}   & 1.864      & 1.753       & 5.772    \\
+        \uncased{} & 1.940      & 1.834       & 6.259    \\
+        \deacc{}   & 1.951      & 1.826       & 6.209
     \end{tabular}
-    \caption{Training results of \robertuito{} for each of its three configurations, expressed in cross-entropy loss for the Masked-Language-Modeling task and perplexity (ppl)}
+    \caption{Resultados del entrenamiento para las tres versiones de \robertuito{}. La función de costo utilizada es la entropía cruzada de la tarea de Masked-Language-Modeling, y reportamos también la perplejidad (ppl)}
     \label{tab:training_results}
 \end{table}
 
 
 \subsection{Resultados}
+
 
 \begin{table}
     \centering
@@ -143,21 +151,37 @@ Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8
     \begin{tabular}{llllllr}
         \toprule
         Modelo             & CHATE             &  HATE             &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
-        beto-uncased       & 0.5895 \pm 0.006  &  0.7556 \pm 0.011 &  0.6484 \pm 0.005 &  0.5198 \pm 0.006 &  0.7031 \pm 0.007 &  0.643285 \\
-        bertin             & 0.5579 \pm 0.008  &  0.7662 \pm 0.005 &  0.6644 \pm 0.003 &  0.5169 \pm 0.011 &  0.7152 \pm 0.008 &  0.644139 \\
-        beto-cased         & 0.5836 \pm 0.005  &  0.7647 \pm 0.010 &  0.6647 \pm 0.003 &  0.5258 \pm 0.008 &  0.7074 \pm 0.007 &  0.649226 \\
-        roberta-bne        & 0.5779 \pm 0.004  &  0.7672 \pm 0.015 &  0.6674 \pm 0.007 &  0.5351 \pm 0.012 &  0.7232 \pm 0.016 &  0.654161 \\
-        robertuito-cased   & 0.5901 \pm 0.005  &  0.7895 \pm 0.014 &  0.7000 \pm 0.012 &  0.5212 \pm 0.032 &  0.7217 \pm 0.021 &  0.664466 \\
-        robertuito-deacc   & 0.5945 \pm 0.006  &  0.7995 \pm 0.008 &  0.7020 \pm 0.004 &  0.5448 \pm 0.013 &  0.7389 \pm 0.005 &  0.675947 \\
-        robertuito-uncased & 0.5924 \pm 0.005  &  0.8002 \pm 0.008 &  0.7069 \pm 0.005 &  0.5464 \pm 0.011 &  0.7374 \pm 0.009 &  0.676655 \\
+        beto-uncased       & $0.591 \pm 0.006$ &  $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.6438 \\
+        bertin             & $0.557 \pm 0.008$ &  $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.6447 \\
+        beto-cased         & $0.582 \pm 0.007$ &  $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.6485 \\
+        roberta-bne        & $0.577 \pm 0.004$ &  $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.6536 \\
+        \hline
+        robertuito-cased   & $0.590 \pm 0.005$ &  $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.6636 \\
+        robertuito-deacc   & $0.593 \pm 0.006$ &  $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.6753 \\
+        robertuito-uncased & $0.593 \pm 0.004$ &  $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.6776 \\
+        \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
-
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. El score es el promedio de los scores de todas las tareas.}
     \label{tab:robertuito_evaluation_results}
 \end{table}
 
 
-La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los distintos modelos evaluados para las tareas del benchmark, reportado por las distintas medidas de cada tarea.
+La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los modelos seleccionados para las cuatro tareas de clasificación propuestas. Los resultados se muestran como la media de quince ejecuciones de los experimentos, junto con la desviación estándar. Así mismo, calculamos un \textbf{score} promediando las puntuaciones de cada tarea de forma similar a lo hecho en GLUE. Podemos observar que en la mayoría de los casos, todas las configuraciones de \robertuito{} funcionan significativamente por encima de otros modelos, en particular para las tareas de Discurso de odio y Sentimiento. El único caso donde esto no ocurre es en la tarea de detección de discurso de odio contextualizado, donde si bien hay una mejora, es marginal y poco significativa.
+
+Respecto a la comparación entre los tres modelos, analizamos las diferencias entre estos mediante una prueba de la diferencia de medias. Para ello, realizamos un test de Kruskal-Wallis para las performances de cada tarea. Existen diferencias significativas entre el desempeño de los tres modelos de \robertuito{} ($ H (3) = 6.88, p \ leq 0.05 $ para Discurso de odio, $ H (3) = 9.90 , p <0.01 $ para Análisis de sentimiento, $ H (3) = 11.85, p <0.01 $ para Análisis de emociones, $ H (3) = 11.54, p <0.01 $ para Detección de ironía), no así para la detección de odio contextualizado ($H(3)=3.59, p > 0.15$).
+
+Para verificar las diferencias significativas entre las performances de los tres modelos para las 4 tareas mencionadas, realizamos un análisis post-hoc con un test de Dunn (con corrección de Benjamini-Hochberg). \todo{Mandar tablas a un apéndice}. Exceptuando la tarea de análisis de sentimientos, la versión \emph{cased} muestra siempre diferencias significativas contra las versiones \emph{uncased} o \emph{deacc}. Sin embargo, no se encuentran diferencias significativas entre \emph{uncased} y \emph{deacc}.
+
+Este resultado puede leerse de dos maneras: una, que una normalización más fuerte (remover las tildes) del texto de entrada en español no produce una mejora significativa en el rendimiento de los modelos, y dos, que mantener los acentos en el texto de entrada no es beneficioso ni perjudicial para el rendimiento del modelo.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/robertuito/length_tokens.pdf}
+    \caption{Distribución de la cantidad de tokens por instancia para los tokenizadores de cada modelo. Las barras están agrupadas por tarea y muestran la media de la distribución junto a su intervalo de confianza a 95\%.}
+    \label{fig:length_tokens}
+\end{figure}
+
+La figura \ref{fig:length_tokens} muestra la distribución del número de tokens en el texto de entrada, agrupados por tarea. Podemos observar que los modelos de \robertuito{} tienen representaciones más compactas que BETO  y \emph {RoBERTa-BNE} ; sin embargo, \emph{bertin} parece tener representaciones iguales o más compactas que él, a pesar de su menor rendimiento en general. Además, entre los modelos de \robertuito{}, podemos observar que la versión \deacc{} tiene una longitud media ligeramente menor en comparación con la versión \uncased{}.
 
 
 \section{Adaptación de modelos pre-entrenados}
