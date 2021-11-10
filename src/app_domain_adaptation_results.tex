@@ -1,0 +1,35 @@
+\chapter{Resultados completos de Adaptación de dominio}
+
+En la tabla \ref{tab:full_domain_adaptation_evaluation_results} tenemos los resultados para todos los modelos considerados en el benchmark de adaptación de dominio, referidos en la sección \ref{sec:domain_adaptation_results}. Notamos, para compacidad, con subíndice \emph{U, C, D} a las versiones  \emph{uncased}, \emph{cased} y \emph{deacc}. Así mismo, notamos con $10K$ (por ejemplo) a aquel modelo con adaptación de dominio por 10,000 pasos según descripto en la sección \ref{sec:domain_adaptation_vs_robertuito}.
+
+Podemos observar que, observando el score general, el mejor modelo adaptado a dominio para las versiones \emph{uncased} es beto$_{U10K}$, y para las versiones \emph{cased} es \beto{}$_{C5K}$; si bien en este último caso tiene una performance muy similar al de 20K pasos (de hecho, omitiendo la tarea de discurso de odio contextualizado gana por mínimo margen el de 20K).
+
+\begin{sidewaystable}
+    \centering
+    \large
+    \begin{tabular}{llllllr}
+        \toprule
+        Modelo             & CHATE                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
+        \midrule
+        beto$_{U5K}$   & $0.557 \pm 0.007$ & $0.756 \pm 0.012$ & $0.654 \pm 0.005$ & $0.509 \pm 0.014$ & $0.684 \pm 0.007$ &  0.632 \\
+        beto$_U$        & $0.591 \pm 0.006$ & $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.644 \\
+        bertin          & $0.557 \pm 0.008$ & $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.645 \\
+        beto-cased      & $0.582 \pm 0.007$ & $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.648 \\
+        roberta-bne     & $0.577 \pm 0.004$ & $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.653 \\
+        beto$_{C2.5K}$  & $0.580 \pm 0.005$ & $0.771 \pm 0.007$ & $0.677 \pm 0.006$ & $0.525 \pm 0.010$ & $0.717 \pm 0.008$ &  0.654 \\
+        beto$_{C10K}$   & $0.574 \pm 0.008$ & $0.782 \pm 0.009$ & $0.680 \pm 0.006$ & $0.524 \pm 0.006$ & $0.720 \pm 0.007$ &  0.656 \\
+        beto$_{C20K}$   & $0.572 \pm 0.006$ & $0.777 \pm 0.009$ & $0.686 \pm 0.005$ & $0.517 \pm 0.009$ & $0.730 \pm 0.004$ &  0.656 \\
+        beto$_{C5K}$    & $0.576 \pm 0.002$ & $0.781 \pm 0.010$ & $0.677 \pm 0.004$ & $0.525 \pm 0.016$ & $0.724 \pm 0.009$ &  0.657 \\
+        beto$_{U20K}$   & $0.588 \pm 0.007$ & $0.768 \pm 0.012$ & $0.684 \pm 0.005$ & $0.533 \pm 0.016$ & $0.712 \pm 0.009$ &  0.657 \\
+        beto$_{U2.5K}$  & $0.588 \pm 0.004$ & $0.784 \pm 0.011$ & $0.676 \pm 0.005$ & $0.533 \pm 0.008$ & $0.715 \pm 0.007$ &  0.659 \\
+        beto$_{U10K}$   & $0.588 \pm 0.003$ & $0.775 \pm 0.015$ & $0.680 \pm 0.004$ & $0.553 \pm 0.009$ & $0.717 \pm 0.005$ &  0.663 \\
+        robertuito$_C$  & $0.590 \pm 0.005$ & $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.664 \\
+        robertuito$_{D}$& $0.593 \pm 0.006$ & $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.675 \\
+        robertuito$_U$  & $0.593 \pm 0.004$ & $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.678 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
+
+    \label{tab:full_domain_adaptation_evaluation_results}
+
+\end{sidewaystable}

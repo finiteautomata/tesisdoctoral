@@ -185,6 +185,7 @@ La figura \ref{fig:length_tokens} muestra la distribución del número de tokens
 
 
 \section{Adaptación de modelos pre-entrenados}
+\label{sec:domain_adaptation_vs_robertuito}
 
 Acabamos de observar que \robertuito{} obtiene una mejor performance que otros modelos pre-entrenados. Ahora, ¿puede ser esta mejora replicada adaptando otro modelo de lenguaje? Esta pregunta tiene, más allá del interés teórico de si un modelo de lenguaje entrenado en un dominio distinto puede adaptarse con éxito a un dominio diferente (algo explorado en el trabajo de \citet{gururangan-etal-2020-dont}), tiene dos consideraciones prácticas: en lenguajes de recursos relativamente bajos, entrenar un modelo desde cero como realizamos en la anterior sección puede ser prohibitivo; y por otro lado, reducir los inmensos costos computacionales de entrenar modelos desde cero puede ser de interés.
 
@@ -193,15 +194,33 @@ Para contestar esta pregunta, realizamos una adaptación de dominio a un modelo 
 
 \subsection{Metodología}
 
-Para realizar la adaptación de dominio, seguimos las recomendaciones de \citet{gururangan-etal-2020-dont}: tomar un gran conjunto de datos no anotado de textos sociales, y correr la tarea de Masked Language-Modeling sobre estos. Para ello, utilizamos los mismos datos recolectados para entrenar a \robertuito{}.
+Para realizar la adaptación de dominio, seguimos las recomendaciones de \citet{gururangan-etal-2020-dont}: tomar un gran conjunto de datos no anotado de textos sociales, y correr la tarea de Masked Language-Modeling sobre estos. En términos de ese trabajo, estaríamos realizando \emph{Domain Adaptation Pre-training} (\emph{DAPT}). Para ello, utilizamos los mismos datos recolectados para entrenar a \robertuito{}.
 
 Tomamos las versiones cased y uncased de BETO, y corrimos únicamente la tarea de MLM sobre estos datos. En lugar de correr por 12.5K pasos de optimización como es sugerido en este trabajo, probamos con 2.5K, 5K, 10K y 20K pasos de optimización, para analizar también el impacto de este hiperparámetro. Finalmente, nos quedamos con la configuración que obtuvo el mejor resultado en términos del benchmark analizado.
 
-Para entrenar estos modelos, usamos una TPU v2-8, gracias también al programa TRC de Google. Cada paso de optimización tomó alrededor de 2.5 segundos. La tabla XXX contiene los hiperparámetros utilizados para realizar la optimización.
+Para entrenar estos modelos, usamos una TPU v2-8, gracias también al programa TRC de Google. Cada paso de optimización tomó alrededor de 2.5 segundos. Usamos una configuración similar a la descripta para el entrenamiento de \robertuito{} (ver tabla \ref{tab:robertuito_architecture}), con un learning rate levemente superior ($5 * 10^-4$) y limitando también la longitud de secuencia a 128 tokens.
 
 \subsection{Resultados}
+\label{sec:domain_adaptation_results}
 
-La
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/robertuito/results_cased_models.pdf}
+    \includegraphics[width=\textwidth]{img/robertuito/results_uncased_models.pdf}
+
+    \caption{Resultados sobre el benchmark de los modelos BETO y \robertuito{} (en versiones cased y uncased). Las barras están agrupadas por tarea y muestran la media de la performance sobre 15 corridas, junto a su intervalo 95\%. En tonalidad de rojo oscuro a amarillo están los modelos ajustados a dominio (más claro, más ajuste de dominio). En tonos azules las variantes de \robertuito{}}
+    \label{fig:robertuito_vs_domain_barplot_results}
+\end{figure}
+
+
+En la figura \ref{fig:robertuito_vs_domain_barplot_results} podemos observar la performance para los modelos de lenguaje (\beto{} y \robertuito{}) así como también para las versiones con ajuste de dominio de \beto{}. Marcamos, por ejemplo, \emph{beto-cased-5000} a aquel modelo \beto{} ajustado a dominio por 5,000 pasos de optimización. Podemos observar que, para los modelos \emph{cased}, aumentar el pre-entrenamiento pareciera coincidir con una mejor performance; salvo para el caso de la tarea de detección de odio contextualizado. Una posible razón detrás de esto es que la tarea planteada en esta tesis tiene diferencias con el dominio sobre el cual ajustamos: utilizamos pares de tweets, uno de ellos (el contexto) proveniente de un medio periodístico.
+
+En el caso de los modelos \emph{uncased}, esta mejora es un poco menos clara: por ejemplo, podemos observar que a los 5,000 pasos de optimización la performance sufre una caída con respecto a otras tareas. Esto puede deberse a problemas en la recolección de datos en los cuales entrenamos \robertuito{}, que se magnifican al realizar pocas actualizaciones. Sin embargo, salvando este caso puntual, observamos mejoras en todas las tareas, otra vez salvando el caso de la detección de odio contextualizada.
+
+La tabla \ref{tab:domain_adaptation_evaluation_results} muestra las medias de los resultados junto a sus desviaciones estándar para los modelos \emph{uncased}, que tienen los mejores resultados (ver en apéndice ZZZZ la tabla completa). Seleccionamos como modelos ajustados a dominio
+
+
 
 \begin{table}[ht]
     \centering
@@ -210,15 +229,16 @@ La
         \toprule
         Modelo             & CHATE                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
         \midrule
-        beto-uncased       & $0.590 \pm 0.006$ & $0.756 \pm 0.011$ &  $0.648 \pm 0.005$ &  $0.520 \pm 0.006$ & $0.703 \pm 0.007$ &  0.643 \\
-        beto-cased         & $0.584 \pm 0.005$ & $0.765 \pm 0.010$ &  $0.665 \pm 0.003$ &  $0.526 \pm 0.008$ & $0.707 \pm 0.007$ &  0.649 \\
-        beto-cased-ft      & $0.576 \pm 0.002$ & $0.783 \pm 0.010$ &  $0.677 \pm 0.004$ &  $0.524 \pm 0.015$ & $0.723 \pm 0.008$ &  0.656 \\
-        beto-uncased-ft    & $0.589 \pm 0.003$ & $0.772 \pm 0.017$ &  $0.680 \pm 0.004$ &  $0.553 \pm 0.008$ & $0.716 \pm 0.006$ &  0.662 \\
-        robertuito-cased   & $0.590 \pm 0.005$ & $0.789 \pm 0.014$ &  $0.700 \pm 0.012$ &  $0.521 \pm 0.032$ & $0.722 \pm 0.021$ &  0.664 \\
-        robertuito-deacc   & $0.594 \pm 0.006$ & $0.800 \pm 0.008$ &  $0.702 \pm 0.004$ &  $0.545 \pm 0.013$ & $0.739 \pm 0.005$ &  0.676 \\
-        robertuito-uncased & $0.592 \pm 0.005$ & $0.800 \pm 0.008$ &  $0.707 \pm 0.005$ &  $0.546 \pm 0.011$ & $0.737 \pm 0.009$ &  0.677 \\
-        gap                & 0.05              & 0.05              & 0.05               & 0.05               & 0.05              & 0.05 \\
-        delta              & 0.05              & 0.05              &  0.05              &  0.05              &  0.05             &  0.05 \\
+        beto-uncased       & $0.591 \pm 0.006$ & $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$& $0.702 \pm 0.008$& 0.644 \\
+%       bertin             & $0.557 \pm 0.008$ & $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$& $0.716 \pm 0.008$& 0.644702 \\
+        beto-cased         & $0.582 \pm 0.007$ & $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$& $0.706 \pm 0.007$& 0.648 \\
+%       roberta-bne        & $0.577 \pm 0.004$ & $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$& $0.723 \pm 0.017$& 0.653565 \\
+        beto-cased$_{FT}$   & $0.572 \pm 0.006$ & $0.777 \pm 0.009$ & $0.686 \pm 0.005$ & $0.517 \pm 0.009$& $0.730 \pm 0.004$& 0.656 \\
+        beto-uncased$_{FT}$ & $0.588 \pm 0.003$ & $0.775 \pm 0.015$ & $0.680 \pm 0.004$ & $0.553 \pm 0.009$& $0.717 \pm 0.005$& 0.663 \\
+        \hline
+        robertuito-cased   & $0.590 \pm 0.005$ & $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$& $0.719 \pm 0.023$& 0.665 \\
+        robertuito-deacc   & $0.593 \pm 0.006$ & $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$& $0.740 \pm 0.006$& 0.675 \\
+        robertuito-uncased & $0.593 \pm 0.004$ & $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$& $0.736 \pm 0.008$& 0.678 \\
         \bottomrule
     \end{tabular}
     \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
