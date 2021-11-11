@@ -37,4 +37,41 @@ Nos centramos en aquellas clases que peor performance tienen: MUJER, LGBTI, y CL
 
 La tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios falsos negativos para la característica LGBTI junto a sus contextos. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio contra LGBTI, podemos dilucidar algunas razones. En primer lugar, algunos mensajes altamente ofensivos son complejos de entender o con una alta variabilidad léxica: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (\todo{de nuevo, hacer un apéndice con esto}). Esto puede hacerse de numerosas e ``ingeniosas'' maneras, y haciendo alusiones que difícilmente pueda un modelo de lenguaje entender (pensar todas las maneras que se puede hacer referencia a la genitalidad de una mujer trans).
 
-Otros mensajes como los que mencionan a Oscar González Oro o Mariana Genesio Peña omiten información acerca de su sexualidad o género (que obviamente, no corresponde que un titular explicite). Esta información faltante no permite a los clasificadores (y tampoco a un humano) entender completamente el caracter discriminatorio de los mensajes
+Otros contextos --como los que mencionan a Oscar González Oro o Mariana Genesio Peña-- omiten información acerca de la sexualidad o género sobre quienes versa la nota(que obviamente, no corresponde que un titular explicite). Esta información faltante no permite a los clasificadores (y tampoco a un humano que carezca de esta información) entender completamente el caracter discriminatorio de los mensajes.
+
+
+\begin{table}[t]
+    \centering
+    \small
+    \begin{tabularx}{\textwidth}{X X}
+        Contexto & Comentario \\
+        \hline
+        Martha Rosenberg: ``En situación de pandemia, legalizar el aborto es más urgente que nunca'' & Quien es esta vieja?. No debería estar tejiendo? \\
+        \hline
+        Mara Gómez: la historia de la primera futbolista trans en el torneo argentino  &  Feminismo pierde de nuevo... ya le metieron un tipo... jaja punto para el patriarcado...	 \\
+        \hline|
+        Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Las feministas en modo error 404 al no saber si celebrar o ofenderse  \\
+        \hline
+         El desesperado pedido de Actrices Argentinas ante la violencia de género en cuarentena: ``Es urgente'' & Que risa me dan las feministas!!! Ignorantes.	 \\
+        \hline
+        Leche de cucaracha, la nueva bebida nutritiva: ¿quién se anima a probarla? & No me digas q la hija de CFK está embarazada y ya sale leche por esos senos	 \\
+        \hline
+        Los fans de Florencia Kirchner le piden casamiento por Instagram & Zoofilia \\
+                                & Hdp tienen que tener estomago para querer casarse con terrible adefesio \\
+        \hline
+         Rosario: para sacar una licencia de conducir habrá que hacer un curso de perspectiva de género & Te quieren adoctrinar desde cualquier ámbito, y se están metiendo en todo para que empieces a hablar como el orto, como a ellas les gusta.	\\
+            & El que choca más feministas le dan más años de licencia	\\
+        \hline
+        Por qué los países liderados por mujeres parecen haber respondido mejor a la crisis del coronavirus & Son mujeres inteligentes que se dejan asesorar de sus esposos \\
+         Joe Biden presentó su nuevo equipo de comunicación compuesto enteramente por mujeres & Será equipe conche seque?	\\
+         \hline
+    \end{tabularx}
+    \caption{Falsos negativos para la característica MUJER. Ninguno de los 10 clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios }
+    \label{tab:women_error_analysis}
+\end{table}
+
+
+
+
+En el caso de la clase MUJER, podemos observar que de nuevo el principal problema es un bajo recall. Sin embargo, observando que hay muchos casos que pueden mezclarse con otras características como APARIENCIA, buscamos aquellos ejemplos que no son detectados por otras características. La tabla \ref{tab:women_error_analysis} muestra una selección de estos falsos negativos. Podemos observar que algunos ejemplos están muy en el borde de ser simplemente ofensivos, o algunos mensajes irónicos complejos de descifrar (que las feministas celebren por la muerte de una mujer trans, o hablar de chocar mujeres en un curso de manejo).
+

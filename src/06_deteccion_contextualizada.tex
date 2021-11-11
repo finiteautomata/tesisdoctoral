@@ -221,9 +221,9 @@ La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, 
 
 \begin{table*}
     \centering
-    \begin{tabular}{lrrrrrr}
-        \toprule
+    \begin{tabular}{l |ll  | ll | ll}
         Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
+                       & $\neg$FT&    FT    & $\neg$FT   &    FT     & $\neg$ FT&    FT     \\
         \hline
         Calls F1       & 0.646 &    0.651   & 0.638 &\textbf{0.685}  & 0.653 &    0.680    \\
         Women F1       & 0.373 &    0.389   & 0.411 &\textbf{0.421}  & 0.381 &\textbf{0.421} \\
@@ -244,7 +244,7 @@ La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, 
         Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
         \bottomrule
         \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
+    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
     \label{tab:task_b_results}
 \end{table*}
 
@@ -260,7 +260,41 @@ La tabla \ref{tab:task_b_results} muestra los resultados de los experimentos de 
     \label{fig:barplot_task_b_results}
 \end{figure*}
 
-La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por característica, esta vez ordenados de mayor a menor según el gap entre la performance contextualizada vs la no contextualizada, junto a sus intervalos de confianza 95\%, usando como modelos las versiones ajustadas al dominio. Todas las características obtienen una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por Benjamini-Hochberg\cite{benjamini1995controlling}). Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+0.17$ F1 de diferencia), LGBTI ($+0.12$), CLASE ($+0.08$), y RACISMO (casi $+0.07$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto (ver Apéndice \ref{app:manual_criterios_anotacion} para ejemplos).
+La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por característica, esta vez ordenados de mayor a menor según el gap entre la performance contextualizada vs la no contextualizada, junto a sus intervalos de confianza 95\%, usando como modelos las versiones ajustadas al dominio. Todas las características obtienen una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por Benjamini-Hochberg\cite{benjamini1995controlling}). \todo{Mandar esto a un apéndice} Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+0.17$ F1 de diferencia), LGBTI ($+0.12$), CLASE ($+0.08$), y RACISMO (casi $+0.07$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto (ver Apéndice \ref{app:manual_criterios_anotacion} para ejemplos).
+
+Los modelos con contexto simple (que consumen sólo el tweet) son los que mejor performance tienen, en general y para cada característica, con la excepción de POLITICA.
+
+
+\begin{table*}
+    \centering
+    \begin{tabular}{l |ll  | ll | ll}
+        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
+                       & $\neg$FT&    FT    & $\neg$FT   &    FT     & $\neg$ FT&    FT     \\
+        \hline
+        Calls F1       & 0.646 &    0.651   & 0.638 &\textbf{0.685}  & 0.653 &    0.680    \\
+        Women F1       & 0.373 &    0.389   & 0.411 &\textbf{0.421}  & 0.381 &\textbf{0.421} \\
+        Lgbti F1       & 0.351 &    0.366   & 0.451 &\textbf{0.482}  & 0.427 &    0.445    \\
+        Racism F1      & 0.635 &    0.653   & 0.688 &\textbf{0.720}  & 0.691 &    0.711    \\
+        Class F1       & 0.401 &    0.433   & 0.491 &\textbf{0.511}  & 0.451 &    0.476    \\
+        Politics F1    & 0.555 &    0.611   & 0.579 &0.625           & 0.591 &\textbf{0.648} \\
+        Disabled F1    & 0.551 &    0.582   & 0.585 &\textbf{0.609}  & 0.557 &    0.578    \\
+        Appearance F1  & 0.726 &    0.742   & 0.741 &\textbf{0.766}  & 0.755 &    0.758    \\
+        Criminal F1    & 0.513 &    0.529   & 0.650 &\textbf{0.699}  & 0.654 &    0.668    \\
+        \hline
+        Macro F1       & 0.528 &    0.551   & 0.582 &\textbf{0.613}  & 0.573 &    0.598    \\
+        Macro Precision& 0.558 &    0.630   & 0.642 &\textbf{0.702}  & 0.677 &    0.678    \\
+        Macro Recall   & 0.506 &    0.499   & 0.540 &\textbf{0.551}  & 0.504 &    0.541    \\
+        \hline
+        Hate Precision & 0.679 &    0.712   & 0.722 &\textbf{0.760}  & 0.748 &    0.741    \\
+        Hate Recall    & 0.621 &    0.631   & 0.642 &\textbf{0.666}  & 0.621 &    0.658    \\
+        Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
+        \bottomrule
+        \end{tabular}
+    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
+    \label{tab:task_b_results}
+\end{table*}
+
+
 
 
 \begin{figure}[t]
@@ -287,7 +321,27 @@ La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por 
     \label{fig:precision_recall}
 \end{figure}
 
-La tabla \ref{fig:precision_recall} muestra la precisión y sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados.
+La tabla \ref{fig:precision_recall} muestra la precisión y sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados. Análogamente la categoría CLASE obtiene una mejora sustancial en su sensibilidad, otra que es esperable que tenga cierta mezcla con otras características como RACISMO y posiblemente CRIMINAL.
+
+
+\todo{Actualizar esto con última corrida}
+
+\begin{table*}
+    \centering
+    \begin{tabular}{l |ll  | ll | ll}
+        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
+                       & Plano &    Granular    & Plano   &    Granular     & Plano &   Granular     \\
+        \hline
+        Precision & 0.718 & 0.711 & 0.748 & 0.759 &      0.727 & 0.740 \\
+        Recall    & 0.602 & 0.636 & 0.653 & 0.667 &      0.641 & 0.660 \\
+        F1        & 0.655 & 0.671 & 0.697 & 0.710 &      0.681 & 0.697 \\
+        Macro F1  & 0.798 & 0.806 & 0.822 & 0.830 &      0.812 & 0.822 \\
+        \bottomrule
+        \end{tabular}
+    \caption{Performance de los modelos para la tarea de detección de discurso de odio. Los modelos son BERT ajustados a dominio, consumiendo los 3 tipos de contexto: sin contexto, con contexto de tweet, y con contexto completo (tweet+cuerpo). A su vez, comparamos la performance entre los clasificadores que fueron entrenados sobre la tarea \textbf{plana} y la tarea \textbf{granular}, esta última luego relajándose para obtener un clasificador binario.}
+    \label{tab:task_b_results}
+\end{table*}
+
 
 
 
