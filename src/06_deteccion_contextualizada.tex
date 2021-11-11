@@ -1,7 +1,7 @@
 
-En este capítulo abordaremos una de las preguntas centrales de la tesis: ¿puede ayudar el contexto a mejorar la performance de métodos automáticos de lenguaje de odio? Para intentar contestar esta pregunta, utilizaremos el dataset que construímos en el capítulo \ref{chap:dataset_creation}, y aplicaremos técnicas del estado del arte basadas en transformers. Exploraremos dos versiones de clasificadores: descontextualizadas, donde sólo observamos el comentario analizado; y contextualizadas, donde podemos consumir el título o el título y el cuerpo del artículo.
+En base a las discusiones del capítulo anterior, abordaremos una de las preguntas centrales de la tesis: ¿puede ayudar el contexto a mejorar la performance de métodos automáticos de lenguaje de odio? Para intentar contestar esta pregunta, utilizaremos el dataset que construímos en el capítulo \ref{chap:dataset_creation}, y aplicaremos técnicas del estado del arte basadas en transformers. Exploraremos dos versiones de clasificadores: descontextualizadas, donde sólo observamos el comentario analizado; y contextualizadas, donde podemos consumir el título o el título y el cuerpo del artículo.
 
-Proponemos en este capítulo dos tareas: detección ``plana'', donde sólo predecimos la característica de si hay o no discurso de odio; y la detección ``granular'', donde además predecimos todas las características ofendidas (potencialmente más de una). Analizaremos el impacto de agregar contexto para cada una de estos problemas de clasificación.
+Proponemos en este capítulo dos tareas: detección ``plana'', donde sólo predecimos la característica de si hay o no discurso de odio; y la detección ``granular'', donde además predecimos todas las características ofendidas (potencialmente más de una). Analizaremos el impacto de agregar contexto para cada una de estos problemas de clasificación, y también si tener información granular nos ayuda a poder detectar mejor el discurso de odio, con mejores ``fronteras'' entre cada una de las características ofendidas.
 
 
 \section{Trabajos previos}
@@ -60,16 +60,13 @@ En \citet{xenos-2021-context}, continuación de este trabajo, reetiquetaron el d
 Ahora que tenemos este corpus especialmente diseñado que contiene el contexto, ahora dirigimos nuestra atención a responder nuestra pregunta original: ¿pueden los clasificadores aprovechar el contexto para mejorar su desempeño en la tarea de detección del discurso discriminatorio? Para ello, proponemos las siguientes tareas de clasificación:
 
 \begin{enumerate}
-    \item \textbf{Detección ``plain''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
-    \item \textbf{Detección ``fine-grained''}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción
+    \item \textbf{Detección ``plana''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
+    \item \textbf{Detección ``granular''}\footnote{En inglés usamos la denominación \emph{fine-grained}, aunque no hay una traducción precisa para este término en español}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción
 \end{enumerate}
 
 
-Puede pensarse la tarea de detección plana (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos pide información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
+Puede pensarse la tarea de detección plana (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
 
-La tarea en su versión fine-grained nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores, principalmente los falsos positivos. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea plana sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea fine-grained necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
-
-Planteándolos como problemas de clasificación, la detección plana consta de predecir una sola etiqueta binaria, mientras que la tarea fine-grained consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea fine-grained podemos construir un clasificador para la tarea plana tomando la disyunción lógica de sus salidas. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
 
 %%
 %%
@@ -77,7 +74,6 @@ Planteándolos como problemas de clasificación, la detección plana consta de p
 %% https://docs.google.com/drawings/d/11sAaOuGJlU0P61mkrPxKduFwnNOuPV31tXUFJWEwbVU/edit?usp=drive_web&ouid=117313784631536396179
 %%
 %%
-
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{img/hate_detection_tasks.pdf}
@@ -85,56 +81,28 @@ Planteándolos como problemas de clasificación, la detección plana consta de p
     \label{fig:hate_detection_tasks}
 \end{figure}
 
-To test our hypothesis, for each task we trained classifiers having as input the following comibinations:
+La tarea en su versión fina nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea plana sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
 
-\begin{enumerate}
-    \item The comment
-    \item The title and the comment
-    \item The title, the body and the comment
-\end{enumerate}
+Planteándolos como problemas de clasificación, la detección plana consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea granular podemos construir un clasificador para la tarea plana tomando la disyunción lógica de sus salidas; o dicho más coloquialmente, poniendo una compuerta OR sobre la salida del clasificador granular. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
 
 
-\subsection{Cotas a la performance}
 
-\begin{table}
-    \centering
-    \begin{tabular}{lll|ll}
-        \hline
-                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Contra gold} \\
-        {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
-        \hline
-        HATEFUL    &  0.6525 &   0.6751    & 0.8285   &   0.8515   \\
-        CALLS      &  0.6042 &   0.7037    & 0.7741   &   0.9148   \\
-        WOMEN      &  0.7258 &   0.7368    & 0.8371   &   0.8275   \\
-        LGBTI      &  0.8939 &   0.9600    & 0.9660   &   0.9743   \\
-        RACISM     &  0.9458 &   0.9592    & 0.9667   &   0.9731   \\
-        CLASS      &  0.7310 &   0.7500    & 0.8058   &   0.8391   \\
-        POLITICS   &  0.7370 &   0.7777    & 0.8920   &   0.9189   \\
-        DISABLED   &  0.7973 &   0.8800    & 0.8976   &   0.9392   \\
-        APPEARANCE &  0.8033 &   0.9024    & 0.9026   &   0.9493   \\
-        CRIMINAL   &  0.8180 &   0.9473    & 0.9614   &   0.9788   \\
-        \hline
-    \end{tabular}
-    \caption{Estadísticos de los cálculos de F1 entre anotadores - modo jerárquico}
-    \label{tab:ia_f1_scores}
-\end{table}
 
-Como observamos en la anterior sección, la tarea de detección de lenguaje discriminatorio contiene una alta cantidad de ruido, y el acuerdo entre humanos es moderado. En este contexto, cabe preguntarse cuál es la máxima performance que puede lograr un clasificador para esta tarea. Por la misma naturaleza del problema, claramente no puede ser perfecta.
+\subsection{Performance humana de la tarea}
 
-Para obtener algunas medidas de esto, calculamos en primer lugar las F1 usando todos los posibles pares de anotadores. Como la F1 es simétrica (invirtiendo roles se invierten la precisión y la sensibilidad) no necesitamos hacer ninguna asunción sobre cuál sus roles.
+
+Como observamos en la anterior sección, la tarea de detección de lenguaje discriminatorio contiene una alta cantidad de ruido, y el acuerdo entre humanos es moderado. En este contexto, cabe preguntarse una cota a la performance que puede lograr un clasificador para esta tarea. Por la misma naturaleza del problema, claramente no puede ser perfecta. Para obtener algunas medidas de esto, calculamos en primer lugar las F1 usando todos los posibles pares de anotadores. Como la F1 es simétrica (invirtiendo roles se invierten la precisión y la sensibilidad) no necesitamos hacer ninguna asunción sobre cuál sus roles.
 
 Algo a tener en cuenta es que nuestra métrica final será contra la etiqueta resultante del (nuestro \emph{gold standard}). Una cota que seguro está por arriba de nuestra performance es el acuerdo que haya entre los anotadores y este \emph{gold standard}; hay que también observar que cada etiqueta ``de oro'' codifica información de sus anotaciones, con lo cual éste número es una cota superior sin dudas pero también pueden ser demasiado ``gruesa''.
 
-La tabla \ref{tab:ia_f1_scores} contiene estadísticos de estos cálculos, tanto entre anotadores como contra el \emph{gold-standard}. Como podemos observar, la mediana entre anotadores de la F1 (usada para obviar outliers) es relativamente baja para la detección de odio ($\sim 0.67$), mientras que contra el gold standard es de $0.85$. De esto entendemos que la performance máxima en la detección está entre esos dos números.
-
-Por otro lado, para el resto de las características observamos números más elevados, pero hay que recordar que estos cálculos están hecho \textbf{solamente} entre tweets etiquetados como odiosos. Si obviamos esta restricción (lo que llamamos ``modo libre''), la performance esperada baja sustancialmente. La tabla \ref{tab:ia_f1_scores_free_mode} muestra estos números, tanto calculado entre anotadores como contra el \emph{gold standard}.
-
 \begin{table}
     \centering
     \begin{tabular}{lll|ll}
         \hline
-                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Contra gold} \\
+                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Gold} \\
         {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
+        \hline
+        HATEFUL    &  0.6525 &   0.6751    & 0.8285   &   0.8515   \\
         \hline
         CALLS      &  0.4341 &   0.4950   &  0.7042   &   0.8424  \\
         WOMEN      &  0.4896 &   0.4676   &  0.7406   &   0.7593  \\
@@ -145,17 +113,21 @@ Por otro lado, para el resto de las características observamos números más el
         DISABLED   &  0.5502 &   0.6000   &  0.8127   &   0.8421  \\
         APPEARANCE &  0.6485 &   0.7428   &  0.8314   &   0.9146  \\
         CRIMINAL   &  0.5265 &   0.5801   &  0.8415   &   0.9292  \\
+        \hline
+        Macro F1   &  0.5336 &   0.5541   &  0.7961   &   0.8477  \\
         \bottomrule
     \end{tabular}
 
-    \caption{Estadísticos de los cálculos de F1 entre anotadores - modo libre. Cada característica es tomada como una etiqueta binaria independientemente del cálculo de odio}
-    \label{tab:ia_f1_scores_free_mode}
+    \caption{Estadísticos de los cálculos de F1 entre anotadores. Cada característica es tomada como una etiqueta binaria independientemente del cálculo de la métrica para discurso de odio. La Macro F1 es el promedio de los F1 todas las características y la F1 de la llamada a la acción (CALLS). Las dos primeras columnas marcan las métricas medidas entre anotadores, y las dos últimas la de los anotadores contra la etiqueta gold}
+    \label{tab:ia_f1_scores}
 \end{table}
 
 
-\subsection{Preprocessing}
+La tabla \ref{tab:ia_f1_scores} contiene estadísticos de estos cálculos, tanto entre anotadores como contra el \emph{gold-standard}. Como podemos observar, la mediana entre anotadores de la F1 (usada para obviar outliers) es relativamente baja para la detección de odio ($\sim 0.67$), mientras que contra el gold standard es de $0.85$. De esto entendemos que la performance máxima en la detección está entre esos dos números.
 
-Para cada tweet, aplicamos el siguiente procesamiento previo: primero, cortamos las repeticiones de caracteres hasta tres ocurrencias; risas normalizadas; los identificadores de usuario (\emph{@user}) se reemplazan por un token especial \emph{[USER]}; convertimos emojis en una representación de texto usando la biblioteca de python \emph{emoji} \footnote {\url{https://github.com/carpedm20/emoji/}}. Los hashtags se eliminan, están rodeados por una ficha especial \emph{[HASHTAG]} y se dividen en palabras si están en mayúsculas.
+\subsection{Preprocesamiento}
+
+Para cada tweet, aplicamos el mismo procesamiento descripto en secciones anteriores: primero, cortamos las repeticiones de caracteres hasta tres ocurrencias; normalizamos las risas; convertimos los identificadores de usuario en un token especial \verb|@usuario| ; convertimos emojis en una representación textual usando la biblioteca de python \emph{emoji} \footnote {\url{https://github.com/carpedm20/emoji/}}. Los hashtags se eliminan, están rodeados por una ficha especial \emph{hashtag } y se dividen en palabras si están en mayúsculas.
 
 Aunque no realizamos un análisis de ablación para evaluar el impacto de cada paso del preprocesamiento, el proceso general pareció mejorar el rendimiento de la clasificación en el conjunto de datos de desarrollo.
 
@@ -169,6 +141,12 @@ Aunque no realizamos un análisis de ablación para evaluar el impacto de cada p
 %%
 %%
 
+
+
+Proponemos varios clasificadores, todos basados en \beto{}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}. Para cada tarea, proponemos tres tipos de entrada por instancia: el comentario sin ningún tipo de contexto, con contexto simple (el tweet al que responde), y con contexto largo (el tweet al que responde + el texto del artículo periodístico).
+
+
+
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{img/bert_multioutput.pdf}
@@ -176,10 +154,8 @@ Aunque no realizamos un análisis de ablación para evaluar el impacto de cada p
     \label{fig:bert_classifier}
 \end{figure}
 
-
-Los clasificadores propuestos se basan en \emph{BETO}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}; para más referencias sobre BERT ver sección XXX.
-
 Para la tarea de detección del discurso de odio, presentamos versiones sin contexto y conscientes del contexto, utilizando el título y el cuerpo completo como posibles contextos. Usamos el token especial BERT \emph {[SEP]} para codificar el contexto y el texto analizado. Recuerde que el token \emph {[SEP]} se usa para la tarea de predicción de la siguiente oración (tarea NSP) en el preentrenamiento al estilo BERT.
+
 
 En cuanto a la detección de características ofendidas, consideramos este problema como una tarea de clasificación multibinaria; es decir, dado un texto odioso y una característica protegida, lo consideramos como una tarea de clasificación binaria para predecir si el texto ofende la característica respectiva. En lugar de entrenar un clasificador diferente para cada característica, entrenamos un BERT de múltiples salidas, compartiendo todos sus pesos con la excepción de 9 capas lineales diferentes para cada salida. La pérdida utilizada es
 
@@ -287,7 +263,31 @@ La tabla \ref{tab:task_b_results} muestra los resultados de los experimentos de 
 La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por característica, esta vez ordenados de mayor a menor según el gap entre la performance contextualizada vs la no contextualizada, junto a sus intervalos de confianza 95\%, usando como modelos las versiones ajustadas al dominio. Todas las características obtienen una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por Benjamini-Hochberg\cite{benjamini1995controlling}). Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+0.17$ F1 de diferencia), LGBTI ($+0.12$), CLASE ($+0.08$), y RACISMO (casi $+0.07$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto (ver Apéndice \ref{app:manual_criterios_anotacion} para ejemplos).
 
 
+\begin{figure}[t]
+    \centering
+    \small
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=0.85\textwidth]{img/context_classification/precision_barplot.pdf}
+        \caption{Precisión}
+    \end{subfigure}
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=0.85\textwidth]{img/context_classification/exact_recall_barplot.pdf}
+        \caption{Recall exacto}
+        \label{subfig:exact_recall}
+    \end{subfigure}
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=0.85\textwidth]{img/context_classification/hate_recall_barplot.pdf}
+        \caption{Recall por categoría}
+        \label{subfig:total_recall}
+    \end{subfigure}
+    \caption{Precision y Recall para cada característica de la tarea Task B. Las diferentes barras marcan el tipo de entrada que recibe el clasificador basado en \beto{}. Recall exacto (Figura \ref{subfig:exact_recall}) cuenta el recall sobre la salida de cada categoría (es decir, sólo cuenta como recuperado un tweet marcado como MUJER si la salida del clasificador es MUJER). Recall total cuenta como recuperado un tweet si al menos alguna característica del clasificador lo marca como discurso de odio.}
+    \label{fig:precision_recall}
+\end{figure}
 
+La tabla \ref{fig:precision_recall} muestra la precisión y sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados.
 
 
 
