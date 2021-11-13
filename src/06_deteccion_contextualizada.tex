@@ -1,7 +1,7 @@
 
 En base a las discusiones del capítulo anterior, abordaremos una de las preguntas centrales de la tesis: ¿puede ayudar el contexto a mejorar la performance de métodos automáticos de lenguaje de odio? Para intentar contestar esta pregunta, utilizaremos el dataset que construímos en el capítulo \ref{chap:dataset_creation}, y aplicaremos técnicas del estado del arte basadas en transformers. Exploraremos dos versiones de clasificadores: descontextualizadas, donde sólo observamos el comentario analizado; y contextualizadas, donde podemos consumir el título o el título y el cuerpo del artículo.
 
-Proponemos en este capítulo dos tareas: detección ``plana'', donde sólo predecimos la característica de si hay o no discurso de odio; y la detección ``granular'', donde además predecimos todas las características ofendidas (potencialmente más de una). Analizaremos el impacto de agregar contexto para cada una de estos problemas de clasificación, y también si tener información granular nos ayuda a poder detectar mejor el discurso de odio, con mejores ``fronteras'' entre cada una de las características ofendidas.
+Proponemos en este capítulo dos tareas: detección ``binaria'', donde sólo predecimos la característica de si hay o no discurso de odio; y la detección ``granular'', donde además predecimos todas las características ofendidas (potencialmente más de una). Analizaremos el impacto de agregar contexto para cada una de estos problemas de clasificación, y también si tener información granular nos ayuda a poder detectar mejor el discurso de odio, con mejores ``fronteras'' entre cada una de las características ofendidas.
 
 
 \section{Trabajos previos}
@@ -60,12 +60,12 @@ En \citet{xenos-2021-context}, continuación de este trabajo, reetiquetaron el d
 Ahora que tenemos este corpus especialmente diseñado que contiene el contexto, ahora dirigimos nuestra atención a responder nuestra pregunta original: ¿pueden los clasificadores aprovechar el contexto para mejorar su desempeño en la tarea de detección del discurso discriminatorio? Para ello, proponemos las siguientes tareas de clasificación:
 
 \begin{enumerate}
-    \item \textbf{Detección ``plana''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
+    \item \textbf{Detección ``binaria''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
     \item \textbf{Detección ``granular''}\footnote{En inglés usamos la denominación \emph{fine-grained}, aunque no hay una traducción precisa para este término en español}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción
 \end{enumerate}
 
 
-Puede pensarse la tarea de detección plana (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
+Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
 
 
 %%
@@ -81,9 +81,9 @@ Puede pensarse la tarea de detección plana (la que usualmente se aborda en la l
     \label{fig:hate_detection_tasks}
 \end{figure}
 
-La tarea en su versión fina nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea plana sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
+La tarea en su versión fina nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea binaria sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
 
-Planteándolos como problemas de clasificación, la detección plana consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea granular podemos construir un clasificador para la tarea plana tomando la disyunción lógica de sus salidas; o dicho más coloquialmente, poniendo una compuerta OR sobre la salida del clasificador granular. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
+Planteándolos como problemas de clasificación, la detección binaria consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea granular podemos construir un clasificador para la tarea binaria tomando la disyunción lógica de sus salidas; o dicho más coloquialmente, poniendo una compuerta OR sobre la salida del clasificador granular. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
 
 
 
@@ -199,25 +199,30 @@ Realizamos el ajuste utilizando el sobrante de la recolección de datos del ante
 \section{Resultados}
 
 
-\begin{table*}[ht!]
+\begin{table*}
     \centering
-    \begin{tabular}{lllll}
-        \toprule
-        Model &          Precision &             Recall &                 F1 &           Macro F1 \\
-        \midrule
-        BERT No Context &  $0.682 \pm 0.020$ &  $0.593 \pm 0.018$ &  $0.634 \pm 0.006$ &  $0.785 \pm 0.003$ \\
-        BERT Title      &  $0.751 \pm 0.012$ &  $0.603 \pm 0.011$ &  $0.669 \pm 0.007$ &  $0.807 \pm 0.004$ \\
-        BERT Title+Body &  $0.738 \pm 0.008$ &  $0.616 \pm 0.005$ &  $0.671 \pm 0.004$ &  $0.808 \pm 0.002$ \\
+    \begin{tabular}{l |ll  | ll | ll}
+        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
+                                 & $\neg$FT&  FT    & $\neg$FT&    FT  & $\neg$ FT&    FT \\
+                       accuracy  & 0.889   &  0.899 & 0.902 &\textbf{0.910} & 0.904 &    0.905 \\
+                       precision & 0.678   &  0.718 & 0.731 &\textbf{0.748} & 0.739 &    0.728 \\
+                       recall    & 0.568   &  0.602 & 0.601 &\textbf{0.653} & 0.611 &    0.641 \\
+                       F1        & 0.618   &  0.655 & 0.660 &\textbf{0.697} & 0.669 &    0.681 \\
+                       Macro  f1 & 0.776   &  0.798 & 0.801 &\textbf{0.822} & 0.806 &    0.813 \\
         \bottomrule
     \end{tabular}
 
 
-    \caption{Task A: Hate speech detection classification results. Each row contains the performance of the models in complexity order: from the model having no context to the model having full context (title and body). }
+    \caption{Resultados de los experimentos de clasificación para la tarea \emph{binaria} de detección de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}}
     \label{tab:task_a_results}
 \end{table*}
 
 
-La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, medidos por precisión, recall, F1 de la clase positiva y Macro F1 entre las dos clases. Podemos observar que agregar contextos parece mejorar el desempeño; en particular, agregar el texto parece proporcionar suficiente contexto para la tarea de detección del discurso de odio. Agregar el cuerpo mejora marginalmente el rendimiento, pero a un costo computacional más alto (recuerde que la longitud máxima con título se establece en 256, y en el otro caso es 512). La mejora en la puntuación de F1 con solo agregar el título es de aproximadamente 3 puntos; título y cuerpo suma alrededor de 3,5 puntos F1 sobre la clasificación no contextualizada. Al analizar los modelos contextuales, el cuerpo completo parece mejorar el recuerdo al tiempo que disminuye ligeramente la precisión, con una puntuación general igual de F1 que el modelo de solo título.
+La tabla \ref{tab:task_a_results} contiene los resultados de la tarea de clasificación binaria, medidos por accuracy, precisión, recall, F1 de la clase positiva y Macro F1 entre las dos clases. Tenemos 3 posibles modelos dependiendo del contexto utilizado, y para cada uno dos posibilidades de acuerdo si ajustamos al dominio o no. Podemos observar que, en todos los casos, la adaptación de dominio (las columnas marcadas con FT) obtienen mejor performance que los modelos que no están adaptados ($\neg$FT), resultando en los casos sin contexto y con contexto de tweet en una mejora de alrededor de 4 puntos de F1. Entre los modelos sin ajustar a dominio, el modelo que consume el contexto completo (tweet + cuerpo de la noticia) obtiene el mejor desempeño; sin embargo, el contexto simple mejora esta performance cuando es adaptado.
+
+Con respecto al contexto, el modelo que consume el contexto simple y está ajustado a dominio (columna Tweet y FT) obtiene la mejor performance. La mejora contra el modelo que no consume contexto es de 4.2 puntos de F1. El modelo con el contexto completo, si bien mejora la performance general contra no tener contexto, pierde precisión al ser adaptado al dominio.
+
+que agregar contexto parece mejorar el desempeño; en particular, agregar el texto parece proporcionar suficiente contexto para la tarea de detección del discurso de odio. Agregar el cuerpo mejora marginalmente el rendimiento, pero a un costo computacional más alto (recuerde que la longitud máxima con título se establece en 256, y en el otro caso es 512). La mejora en la puntuación de F1 con solo agregar el título es de aproximadamente 3 puntos; título y cuerpo suma alrededor de 3,5 puntos F1 sobre la clasificación no contextualizada. Al analizar los modelos contextuales, el cuerpo completo parece mejorar el recuerdo al tiempo que disminuye ligeramente la precisión, con una puntuación general igual de F1 que el modelo de solo título.
 
 \begin{table*}
     \centering
@@ -244,7 +249,7 @@ La tabla \ref{tab:task_a_results} contiene los resultados de la clasificación, 
         Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
         \bottomrule
         \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
+    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección binaria}
     \label{tab:task_b_results}
 \end{table*}
 
@@ -264,35 +269,6 @@ La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por 
 
 Los modelos con contexto simple (que consumen sólo el tweet) son los que mejor performance tienen, en general y para cada característica, con la excepción de POLITICA.
 
-
-\begin{table*}
-    \centering
-    \begin{tabular}{l |ll  | ll | ll}
-        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
-                       & $\neg$FT&    FT    & $\neg$FT   &    FT     & $\neg$ FT&    FT     \\
-        \hline
-        Calls F1       & 0.646 &    0.651   & 0.638 &\textbf{0.685}  & 0.653 &    0.680    \\
-        Women F1       & 0.373 &    0.389   & 0.411 &\textbf{0.421}  & 0.381 &\textbf{0.421} \\
-        Lgbti F1       & 0.351 &    0.366   & 0.451 &\textbf{0.482}  & 0.427 &    0.445    \\
-        Racism F1      & 0.635 &    0.653   & 0.688 &\textbf{0.720}  & 0.691 &    0.711    \\
-        Class F1       & 0.401 &    0.433   & 0.491 &\textbf{0.511}  & 0.451 &    0.476    \\
-        Politics F1    & 0.555 &    0.611   & 0.579 &0.625           & 0.591 &\textbf{0.648} \\
-        Disabled F1    & 0.551 &    0.582   & 0.585 &\textbf{0.609}  & 0.557 &    0.578    \\
-        Appearance F1  & 0.726 &    0.742   & 0.741 &\textbf{0.766}  & 0.755 &    0.758    \\
-        Criminal F1    & 0.513 &    0.529   & 0.650 &\textbf{0.699}  & 0.654 &    0.668    \\
-        \hline
-        Macro F1       & 0.528 &    0.551   & 0.582 &\textbf{0.613}  & 0.573 &    0.598    \\
-        Macro Precision& 0.558 &    0.630   & 0.642 &\textbf{0.702}  & 0.677 &    0.678    \\
-        Macro Recall   & 0.506 &    0.499   & 0.540 &\textbf{0.551}  & 0.504 &    0.541    \\
-        \hline
-        Hate Precision & 0.679 &    0.712   & 0.722 &\textbf{0.760}  & 0.748 &    0.741    \\
-        Hate Recall    & 0.621 &    0.631   & 0.642 &\textbf{0.666}  & 0.621 &    0.658    \\
-        Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
-        \bottomrule
-        \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección plana}
-    \label{tab:task_b_results}
-\end{table*}
 
 
 
@@ -338,9 +314,11 @@ La tabla \ref{fig:precision_recall} muestra la precisión y sensibilidad de los 
         Macro F1  & 0.798 & 0.806 & 0.822 & 0.830 &      0.812 & 0.822 \\
         \bottomrule
         \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección de discurso de odio. Los modelos son BERT ajustados a dominio, consumiendo los 3 tipos de contexto: sin contexto, con contexto de tweet, y con contexto completo (tweet+cuerpo). A su vez, comparamos la performance entre los clasificadores que fueron entrenados sobre la tarea \textbf{plana} y la tarea \textbf{granular}, esta última luego relajándose para obtener un clasificador binario.}
-    \label{tab:task_b_results}
+    \caption{Performance de los modelos para la tarea de detección de discurso de odio. Los modelos son BERT ajustados a dominio, consumiendo los 3 tipos de contexto: sin contexto, con contexto de tweet, y con contexto completo (tweet+cuerpo). A su vez, comparamos la performance entre los clasificadores que fueron entrenados sobre la tarea \textbf{binaria} y la tarea \textbf{granular}, esta última luego relajándose para obtener un clasificador binario.}
+    \label{tab:plain_vs_granular_hate_detection}
 \end{table*}
+
+La tabla \ref{tab:plain_vs_granular_hate_detection} compara la tarea de detección de discurso de odio binaria para dos tipos de clasificadores: aquellos que fueron entrenados sobre la detección binaria
 
 
 
@@ -371,4 +349,12 @@ Una limitación de aplicación de este resultado es que no siempre tenemos un co
 
 \section{Conclusiones}
 
-En este capítulo hemos explorado diversos experimentos para responder nuestra pregunta original: ¿Puede el contexto de un mensaje ser usado para mejorar la detección de discurso de odio? Utilizando el dataset especialmente construído a tal fin en el capítulo anterior y planteando tareas de clasificación sobre éste, obtuvimos evidencia que indicaría que, para el dominio específico de los comentarios en redes sociales sobre noticias periodísticas, el contexto mejora de manera estadísticamente significativa la performance de los algoritmos de detección.
+En este capítulo hemos realizado experimentos de clasificación sobre el dataset construído en el capítulo anterior, focalizándonos en analizar el impacto de la utilización del contexto en la performance de los modelos. Planteamos dos tareas: una tarea binaria --detectar si existe discurso de odio no-- y una tarea granular --definir qué categorías son atacadas en un tweet, si es que las hay--. Para ambas tareas, los modelos contextualizados obtienen mejoras significativas en la performance, dando algún indicio de que información adicional al comentario analizado puede ayudar a detectar discurso de odio. Si bien en nuestros experimentos el contexto más pequeño (el tweet del artículo de la noticia) fue el que mejor resultados obtuvo, una línea de trabajo futuro podría explorar otras formas de integrar el contexto más largo -- en este caso, el artículo de la noticia.
+
+Así mismo, observamos una pequeña mejora --aunque estadísticamente significativa-- en la detección de discurso de odio al entrenar un clasificador granular pero evaluándolo de manera binaria. En este caso, obtenemos una ventaja al obtener una salida más interpretable de las características ofendidas, y que además que no sólo no empeora la performance de nuestro clasificador sino que hasta incluso mejora levemente.
+
+Del análisis de error, observamos que algunas categorías del discurso de odio se muestran elusivas para nuestros clasificadores. Uno de estos casos son los mensajes abusivos contra la comunidad LGBTI+. Algunos mensajes son realmente muy complejos, velados, y conteniendo metáforas que son esquivas para los modelos actuales. A pesar de esto, esta característica fue una de las más beneficiadas por la adición de contexto, aunque su desempeño sigue siendo bajo, teniendo una sensibilidad de alrededor de 0.5. \todo{Fijarse si no vale chamuyar un poco con el estado actual de AI}
+
+Podemos concluir que los datasets de discurso de odio deberían --en la medida de lo posible-- contener \textbf{información contextual} sobre los comentarios analizados. Esta información puede darse en forma de artículos de noticias, como un hilo de conversación, o incluso como otras formas (como una base de conocimiento, por ejemplo). Sobre esto, trabajo futuro debería explorar el impacto de utilizar esta información adicional para detectar discurso de odio. La evidencia de estos experimentos indica que los modelos del estado del arte pueden aprovecharlo para mejorar su performance. En segundo lugar, los datasets de discurso de odio deberían incluir \textbf{información granular} acerca de las características atacadas --y no sólo una etiqueta binaria-- mejoran la interpretabilidad de los modelos, y hasta indicarían que mejoran marginalmente el desempeño de estos.
+
+Finalmente, un aspecto que introdujimos en este capítulo fue el de adaptar un modelo de lenguaje pre-entrenado a su dominio, siendo en nuestro caso los comentarios sobre notas periodísticas en Twitter. Las mejoras que reportó la utilización de estas técnicas fue significativa, en consonancia con otros trabajos recientes. Pasaremos a continuación a estudiar estas técnicas en el marco más general de la clasificación de textos sociales.
