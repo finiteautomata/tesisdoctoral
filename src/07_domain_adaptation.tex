@@ -3,11 +3,13 @@
 \newcommand{\cased}[0]{\textbf{cased}}
 \newcommand{\uncased}[0]{\textbf{uncased}}
 
-En este capítulo exploraremos como mejorar la detección de discurso de odio desde una perspectiva más general, analizando en general la clasificación de textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta los modelos de lenguajes pre-entrenados) generan representaciones ricas al ser entrenadas en dominios sociales. Así mismo, también observamos que en algunos modelos pre-entrenados (como AWD-LSTM usando la técnica de ULMFit) \todo{meter citas} continuar el entrenamiento sobre un conjunto de datos similar al de la tarea objetivo ayuda a mejorar la performance
+En este capítulo exploraremos cómo mejorar la detección de discurso de odio desde una perspectiva más general, mediante \textbf{técnicas de adaptación de dominio} y entrenando modelos de lenguaje en textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta los modelos de lenguajes pre-entrenados) generan, por un lado, representaciones ricas al ser entrenadas en dominios sociales; y, así mismo, también observamos que en algunos modelos pre-entrenados (como AWD-LSTM usando la técnica de ULMFit) \todo{meter citas} continuar el entrenamiento sobre un conjunto de datos similar al de la tarea objetivo ayuda a mejorar la performance.
 
-Intentaremos mejorar la performance de nuestros modelos de dos formas: la primera, entrenando desde cero un modelo de lenguaje basado en transformers (RoBERTa)\cite{liu2019roberta} sobre tweets, al cual llamamos \robertuito{}; la segunda, tomando un modelo \beto{}, y continuando el pre-entrenamiento sobre un gran conjunto de tweets. Compararemos estos dos enfoques, algo que no se ha realizado en otros trabajos \footnote{O al menos seguro no se hizo en español}, algo de interés dado el gran costo que tiene por detrás entrenar modelos basados en transformers. Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis.
+Los modelos de lenguaje suelen ser entrenados sobre cierto conjunto de datos que se suponen suficientemente generales, como Wikipedia que comprende textos de carácter enciclopédico, o como Common Crawl, que es una recopilación de datos de distintos sitios web\footnote{[\url{https://commoncrawl.org/}]}. El uso del lenguaje en estas fuentes suele tener cierta discordancia con el lenguaje de muchas tareas; por ejemplo, tareas en textos médicos, textos científicos, o --lo que es de interés en esta tesis-- las tareas sobre textos sociales tienen un uso del lenguaje muy particular, con mucha jerga, expresiones particulares, y otros usos que se diferencian de los textos fuentes en los que están entrenados BERT, RoBERTa, \beto{} y otros. A cada uno de estos grupos de textos con cierta relación se los denomina --de manera poco concisa-- \textbf{dominios}, y al conjunto de técnicas utilizadas para adaptar distintos modelos a estos \textbf{adaptación de dominio}.
 
-Comenzamos este capítulo haciendo una pequeña recapitulación de las técnicas de adaptación de dominio.
+Teniendo estas consideraciones en cuenta, intentaremos  usando técnicas del estado del arte. En primer lugar, entrenando desde cero un modelo de lenguaje basado en transformers (RoBERTa)\cite{liu2019roberta} sobre tweets, al cual llamamos \robertuito{}; la segunda, tomando un modelo \beto{}, y continuando el pre-entrenamiento sobre un gran conjunto de tweets. Trabajo previo ha demostrado que ambas estrategias mejoran la performance de los modelos de clasificación del estado del arte cuando trabajamos en dominios especializados; sin embargo, ninguna comparación se ha realizado entre estas dos formas de abordar el problema \footnote{O al menos seguro no se hizo en español}. de interés dado el gran costo que tiene por detrás entrenar modelos basados en transformers. Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis, introducidas en los capítulos \ref{chap:03_social_text_classification}, \ref{chap:04_hate_speech} y \ref{chap:06_contextualized_hate_speech}.
+
+Comenzamos en la sección \ref{sec:domain_adaptation_previous_work} haciendo un racconto de las técnicas de adaptación de dominio y modelos pre-entrenados sobre distintos dominios. En la sección \ref{sec:robertuito_pretrained_model} describimos la construcción y el entrenamiento de \robertuito{}, y en la sección \ref{sec:domain_adaptation_vs_robertuito} describimos la adaptación de dominio de \beto{} al dominio social y comparamos la performance de estos modelos contra \robertuito{}.
 
 \section{Trabajo previo}
 \label{sec:domain_adaptation_previous_work}
@@ -70,7 +72,18 @@ Para analizar el impacto de la adaptación de dominio y realizar una comparació
 
 La única tarea que no estudiamos hasta el momento es la de detección de ironía, que es básicamente una tarea de detección binaria sobre textos sociales para distintos. Todas las tareas (con la excepción de la detección contextualizada explicada en los capítulos anteriores) forman parte de IberLEF.
 
-\section{Recolección de tweets}
+
+
+
+\section{Modelo pre-entrenado sobre tweets}
+\label{sec:robertuito_pretrained_model}
+
+Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para enfatizar los acentos en las palabras; por lo general, se pasan por alto en los textos sociales, por lo que queremos analizar si eliminarlos mejora el rendimiento de los modelos.
+
+Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
+
+
+\subsection{Recolección de tweets}
 
 A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}.
 
@@ -82,14 +95,6 @@ Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquel
 
 De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
 
-
-
-
-\section{Modelo pre-entrenado sobre tweets}
-
-Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para enfatizar los acentos en las palabras; por lo general, se pasan por alto en los textos sociales, por lo que queremos analizar si eliminarlos mejora el rendimiento de los modelos.
-
-Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
 
 \subsection{Arquitectura y entrenamiento}
 
