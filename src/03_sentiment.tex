@@ -26,7 +26,18 @@ Con la explosión de las redes sociales, otros horizontes de preguntas se abrier
 
 entre otras. Estos tópicos son de gran interés para investigadores y políticos. Usualmente, la forma más estandarizada de acceder a la opinión de distintos actores sociales ha sido la de encuestas; sin embargo, la recolección y extracción automática de opiniones de medios virtuales brinda una alternativa (a veces) más económica y masiva aunque con un sesgo poblacional distinto al de otras metodologías.
 
-\section{Cómo atacamos este problema desde Procesamiento de Lenguaje Natural}
+\todo{Contar algo de Cambridge Analytica?}
+
+\section{Clasificación de textos sociales}
+
+Muchos de estos problemas de extracción de opiniones se pueden plantear como problemas de clasificación\cite{pang2008opinion}: dado un contenido social, queremos predecir una clase $c \in \mathcal{C}$, con $\mathcal{C}$ un conjunto finito de clases. El análisis de polaridad, por ejemplo, se puede plantear como un problema de clasificación en el que dado un texto en una red social, predecir si tiene un sentimiento positivo, negativo, o neutro. El problema de análisis de emociones se puede plantear como, dado un texto, seleccionar la emoción predominante en él de un conjunto de 6 emociones y una neutral.
+
+Algunas variantes de estos problemas se pueden dar en el contenido analizado. Por ejemplo, el \emph{Análisis de Sentimiento basado en aspectos} (usualmente denominada \emph{ABSA} en la literatura por sus siglas en inglés) es una variante de la clasificación de polaridad en la que queremos predecir el sentimiento de un texto para cierto aspecto\cite{pavlopoulos2014aspect}; por ejemplo, en la oración ``lindo lugar, la comida está muy bien pero la cerveza es horrible'' (en una posible reseña de un restaurant) podemos identificar dos sentimientos distintos: uno positivo para la comida y otro negativo para la cerveza.
+
+Dentro de estos problemas que complejizan la entrada, podemos contar algunos de carácter multimodal.  En \citet{sharma-etal-2020-semeval} se plantea un problema de análisis de emociones para memes donde la entrada (el contenido social) consta de imágenes y texto, y se intenta predecir la emoción predominante.
+
+Análogamente, se puede agregar cierta complejidad en la salida. Por ejemplo, el Stanford Sentiment Treebank (SST) \cite{socher-etal-2013-recursive} plantea una tarea de análisis de polaridad asignando ésta mediante algo similar a una escala de Likert \cite{likert1932technique}: muy negativo, algo negativo, neutral, algo positivo, muy positivo.
+
 
 
 
@@ -40,6 +51,8 @@ Describir data augmentation como otra técnica de regularización. Comentar back
 
 Español
 - Citar nuestro trabajo
+
+\section{Dificultades}
 
 \section{Tareas analizadas}
 \subsection{Análisis de Sentimiento}
@@ -55,7 +68,26 @@ Español
 
 \section{Resultados}
 
-\section{Discusión}
+\begin{table*}[t]
+    \centering
+    \large
+    \begin{tabular}{l lll}
+        \toprule
+        Modelo              & sentiment macro\_f1 & emotion macro\_f1 &  irony macro\_f1\\
+        \hline
+        beto-uncased        &     $0.649 \pm 0.005$ &   $0.521 \pm 0.006$ &  $0.702 \pm 0.008$   \\
+        bertin              &     $0.665 \pm 0.003$ &   $0.518 \pm 0.012$ &  $0.716 \pm 0.008$   \\
+        beto-cased          &     $0.665 \pm 0.004$ &   $0.521 \pm 0.012$ &  $0.706 \pm 0.007$   \\
+        roberta-bne         &     $0.669 \pm 0.006$ &   $0.533 \pm 0.011$ &  $0.723 \pm 0.017$   \\
+        \hline
+    \end{tabular}
+    \caption{Resultados de la evaluación de los distintos modelos para las 3 tareas analizadas (Análisis de Polaridad, Análisis de Emociones, Detección de Ironía). Los 3 resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar}
+    \label{tab:03_classification_results}
+\end{table*}
+
+La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos de clasificación. Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las 3 tareas, aunque las diferencias son pequeñas. Todos los modelos basados en transformers obtienen mejor performance que los basados en redes neuronales recurrentes, algo totalmente esperable.
+
+Dentro de los modelos basados en redes recurrentes, aquellos que consumen embeddings entrenados en textos sociales obtienen mejor performance que aquellos que consumen embeddings entrenados en Wikipedia. Esta diferencia es estadísticamente significativa corriendo un test Mann-Whitney (...\todo{correr este test!}).
 
 \section{Librería de análisis de sentimientos}
 
