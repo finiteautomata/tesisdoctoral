@@ -1,23 +1,61 @@
 \label{chap:03_social_text_classification}
 
-La extracción de opiniones (opinion mining) de usuarios en redes sociales ha atraído mucho interés desde los inicios de estos espacios virtuales. Con fines comerciales, políticos, sociológicos (como el análisis de discurso de odio o las reacciones a la pandemia), numerosos trabajos han analizado . Debido a la cantidad de contenido generado (se estima que en el mundo se generan XXX tweets por segundo) esta tarea es difícil de realizar sin algún tipo de automatización. Para ello, muchísimo esfuerzo se ha volcado en utilizar técnicas de inteligencia artificial para este fin.
+La extracción de opiniones en distintos espacios virtuales ha atraído mucho interés desde los comienzos de la World Wide Web. Inicialmente motivados por fines puramente comerciales, diferentes motivaciones han surgido debido al desarrollo de la técnica y la proliferación de las redes sociales: desde intereses sociológicos (como el análisis de discurso de odio o las reacciones a la pandemia) hasta políticos (como observar cuál es la opinión general sobre tal o cual candidato o sobre un tema candente). Desde principios de los años 2000, y debido a la combinación del desarrollo de métodos de aprendizaje estadístico y la cantidad creciente de datos disponibles generados por usuarios en Internet, numerosos trabajos han analizado este tipo de textos para poder extraer conocimiento \textbf{subjetivo} de estos.
 
-En este capítulo haremos una breve introducción a la clasificación de textos sociales. Esto es, dado un texto generado por un usuario (un post en Facebook, Instagram, un tweet, etc) predecir alguna característica discreta de éste, como por ejemplo si es un texto positivo o negativo, si tiene algún tipo de emoción de ira, alegría, u otra; si contiene discurso de odio contra algún grupo o no; si es irónico; entre otras. En base a datasets en español para distintas tareas, presentaremos modelos de clasificación basados en técnicas del estado del arte.
+Debido a la inmensa cantidad de contenido generado en diversos sitios y redes sociales (se estima que en el mundo se generan XXX tweets por segundo), hace ya muchos años esta tarea es difícil de realizar sin algún tipo de automatización. Para ello, muchísimo esfuerzo se ha volcado en utilizar técnicas de aprendizaje automático para atacarla. El avance de las técnicas de NLP --como hemos descrito en el capítulo anterior-- han permitido avanzar sobre este terreno; sin embargo, muchas de las limitaciones actuales del área \todo{citar paper Climbing towards NLU} en conjunto a las dificultades particulares de las interacciones en medios sociales hacen esta tarea difícil.
+
+En este capítulo haremos una breve introducción a clasificación de textos sociales. Esto es, dado un texto generado por un usuario (un post en Facebook, Instagram, un tweet, etc) predecir alguna característica discreta de éste, como por ejemplo si es un texto positivo o negativo, si tiene algún tipo de emoción de ira, alegría, u otra; si contiene discurso de odio contra algún grupo o no; si es irónico; entre otras. En base a datasets en español para distintas tareas, presentaremos modelos de clasificación basados en técnicas del estado del arte.
 
 Finalmente, analizaremos algunas cuestiones relacionadas a la adaptación de dominio y representaciones generadas sobre dominios sociales. Analizaremos para técnicas de representación no contextualizadas \footnote{Que al día de la fecha, en pocos años, han quedado obsoletas} y algunas técnicas más recientes el impacto de entrenar desde cero o realizar cierta adaptación sobre la performance de las técnicas de clasificación.
 
+
+\section{Motivación}
+
+Las motivaciones para extraer opiniones subjetivas de usuarios en Internet son múltiples, aunque intentaremos categorizarlas en algunos grupos de notable interés. Dado el aumento considerable de contenido generado por usuarios desde el comienzo de la WWW --y subsiguientemente con la explosión de las Redes Sociales-- una de las motivaciones es netamente comercial: ¿qué opinan los usuarios sobre este nuevo producto? ¿cuáles creen que son sus falencias? ¿qué tal es el servicio en el Restaurant X? Desde ya más de 20 años, numerosos sitios de e-commerce brindan la posibilidad de que los clientes vuelquen sus opiniones al respecto de los productos que consumen en sus plataformas, como así también pueden incorporarse en otras aplicaciones que brindan esta posibilidad de expresar comentarios sobre productos, servicios u otros lugares. Para citar unos ejemplos, IMDb permite agregar comentarios sobre películas, Google Maps sobre distintos sitios --tanto turísticos como locales comerciales--, o los distintos sitios de venta minorista como MercadoLibre, eBay, o Amazon.
+
+Con la explosión de las redes sociales, otros horizontes de preguntas se abrieron\footnote{Si bien algunas preguntas de carácter sociológico tuvieron lugar con anterioridad, podemos marcar el uso intensivo de Facebook y Twitter como el comienzo de un estudio más sistemático de ellas}. Uno de estos horizontes, que es de interés particular para esta tesis, es el de las preguntas de carácter sociológico. Preguntas que pueden suscitar interés dentro de este punto pueden ser:
+
+\begin{itemize}
+    \item ¿cuál es la opinión de los usuarios acerca de la legalización del aborto?
+    \item ¿cuál es el sentimiento que tienen ciertos usuarios hacia los inmigrantes subsaharianos en España?
+    \item ¿cómo se ha modificado el ``humor social'' de acuerdo a crisis económicas o pandemias como la del COVID-19?
+    \item ¿quiénes generan discurso de odio contra la comunidad LGBTI en Argentina?
+    \item ¿qué artículos periodísticos suscitan la mayor cantidad de discurso discriminatorio en las redes sociales?
+    \item ¿cuáles son las principales preocupaciones de ciertos sectores de la población?
+\end{itemize}
+
+entre otras. Estos tópicos son de gran interés para investigadores y políticos. Usualmente, la forma más estandarizada de acceder a la opinión de distintos actores sociales ha sido la de encuestas; sin embargo, la recolección y extracción automática de opiniones de medios virtuales brinda una alternativa (a veces) más económica y masiva aunque con un sesgo poblacional distinto al de otras metodologías.
+
+\section{Cómo atacamos este problema desde Procesamiento de Lenguaje Natural}
+
+
+
 \section{Trabajo previo}
+
+Talleres
+datasets
+
 
 Describir data augmentation como otra técnica de regularización. Comentar backtranslation
 
-\section{Análisis de Sentimiento}
+Español
+- Citar nuestro trabajo
 
-\section{Análisis de Emociones}
+\section{Tareas analizadas}
+\subsection{Análisis de Sentimiento}
 
-\section{Modelos de clasificación}
-\subsection{Preprocesamiento}
+\subsection{Análisis de Emociones}
+
+
+\section{Preprocesamiento}
+
+\section{Técnicas de clasificación}
+
 \subsection{Embeddings}
 
+\section{Resultados}
+
+\section{Discusión}
 
 \section{Librería de análisis de sentimientos}
 
@@ -31,6 +69,8 @@ La figura XXX muestra la arquitectura de \pysentimiento{}. Utiliza el model hub 
 
 \todo{Completar las cosas que quedaron acá sin referencias}
 
+
+
 %
 % Pysentimiento architecture
 % https://www.canva.com/design/DAEufPDskMI/Gg_phzjuXgFihF1g3x9L-A/edit#
@@ -38,3 +78,7 @@ La figura XXX muestra la arquitectura de \pysentimiento{}. Utiliza el model hub 
 %
 
 \section{Conclusiones}
+
+\section{Notas adicionales}
+
+Comentar acá nuestro trabajo en TASS 2020

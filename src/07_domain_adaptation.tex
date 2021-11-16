@@ -22,6 +22,8 @@ Para lo que nos concierne en NLP solemos querer, dado un modelo de lenguaje (tan
 
 Dentro de la última ola que sacudió NLP de modelos pre-entrenados, ULMFit \citet{howard-ruder-2018-universal} contempla una etapa de adaptación de dominio utilizando de manera no-supervisada el texto del dataset supervisado de la tarea atacada.
 
+Concretamente, dentro de las tareas de extracción de opiniones en redes sociales --lo que nos concierne en esta tesis-- la adaptación de dominio resulta importante ya que expresiones en distintos ámbitos pueden tener sentidos distintos: citando un ejemplo de \citet{pang2008opinion}, decir ``leé el libro'' en una reseña de un libro Amazon puede ser algo positivo, mientras que en el comentario de una película puede ser considerado negativo.
+
 Recientemente, \citet{gururangan-etal-2020-dont} analizan el impacto de los ajustes de dominio. Para ello, consideran varios dominios como ser biomédico, reviews de películas, papers de cs. de la computación (CS), y noticias. Plantean dos configuraciones de adaptación de dominio:
 
 \begin{itemize}
