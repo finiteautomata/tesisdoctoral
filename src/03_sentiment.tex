@@ -52,12 +52,40 @@ Describir data augmentation como otra técnica de regularización. Comentar back
 Español
 - Citar nuestro trabajo
 
-\section{Dificultades}
+\subsection{Dificultades}
 
 \section{Tareas analizadas}
-\subsection{Análisis de Sentimiento}
 
-\subsection{Análisis de Emociones}
+\begin{table}[t]
+    \centering
+    \begin{tabular}{l ll ll}
+        Tarea                     &  Dataset                   & Tamaño         & Clases   &\\
+        \mr{3}{Análisis de Sentimientos}  &  \mr{3}{TASS 2020} & \mr{3}{14,509} & Neg      & (39.80\%)\\
+                                          &                    &                & Neu      & (29.52\%)\\
+                                          &                    &                & Pos      & (30.68\%)\\
+        \hline
+        \mr{7}{Análisis de emociones}&\mr{7}{TASS 2020/EmoEvent}&\mr{7}{8,409}  & Otra     & (49.08\%)  \\
+                                          &                    &                & Alegría  & (21.58\%)  \\
+                                          &                    &                & Tristeza & (12.00\%)  \\
+                                          &                    &                & Ira      & (10.19\%)  \\
+                                          &                    &                & Sorpresa & (4.10\%)  \\
+                                          &                    &                & Disgusto & (1.91\%)  \\
+                                          &                    &                & Miedo    & (1.14\%)  \\
+        \hline
+        \mr{2}{Detección de ironía}  & \mr{2}{IroSVa 2019}     & \mr{2}{9,000}  & No irónico   & (66.68\%)\\
+                                          &                    &                & Irónico      & (33.32\%)\\
+        %Análisis de Emociones     &  TASS 2020/EmoEvent\cite{plaza-del-arco-etal-2020-emoevent} & 7 & 1,879 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Analizamos 3 tareas de extracción de opiniones sobre redes sociales, y las usamos como benchmark para las diferentes técnicas de clasificación. Una de las tareas analizadas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Para ello, utilizamos el dataset de TASS 2020\cite{garcia2020overview}, anotados con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las 3 particiones correspondientes de entrenamiento, validación, y test).
+
+
+Para el análisis de emociones, también usamos el conjunto de datos de TASS 2020/\emph{EmoEvent} \cite{plaza-del-arco-etal-2020-emoevent}. Este dataset multilingual (español e inglés) contiene tweets etiquetados con las seis emociones básicas de Ekman \cite{ekman1992argument} (\emph {ira}, \emph {disgusto}, \emph {miedo}, \emph {alegría}, \emph {tristeza}, \emph {sorpresa}) y también una emoción ``neutral''. Se ha construido recuperando tweets asociados a ocho eventos globales diferentes de diferentes dominios (políticos, entretenimiento, catástrofes o incidentes, conmemoraciones globales, etc.), por lo que las emociones siempre están relacionadas con un fenómeno en particular. Solo conservamos la parte en español, que contiene 8.409 tweets.
+
+
+ La \textbf{detección de ironía} también es una tarea que ha ganado popularidad recientemente. Muchos trabajos muestran que tiene importantes implicaciones en otras tareas de procesamiento del lenguaje natural que requieren procesamiento semántico. \citet{gupta-yang-2017-crystalnest} muestran que el uso de funciones derivadas de la detección de sarcasmo mejora el rendimiento en la tarea de análisis de sentimientos. Además de esto, el contenido generado por los usuarios es una rica y vasta fuente de ironía, por lo que esta tarea es de particular importancia para el dominio de las redes sociales. IroSVa \cite {ortega2019overview} es un dataset reciente publicado en 2019, que tiene la particularidad de considerar los mensajes no como textos aislados sino con un contexto dado (un titular o un tema). Consta de 7.200 instancias y 1.800 ejemplos de prueba divididos en tres variantes geográficas de Cuba, España y México, cada una con una etiqueta binaria que indica si el comentario contiene ironía o no. A diferencia de las tres tareas anteriores mencionadas aquí, este conjunto de datos contiene no solo mensajes de Twitter, sino también de comentarios de noticias y foros de debate como 4forums.com y Reddit.
 
 
 \section{Preprocesamiento}
@@ -74,6 +102,8 @@ Español
         \caption{Clasificador basado en redes recurrentes}
         \label{subfig:rnn_classifier}
     \end{subfigure}
+    % Link a draw
+    % https://docs.google.com/drawings/d/1KWz2NJGVoTO-pAAhhLjoX4AT-kSbK3yapLKLuQ2E9zw/edit
     \begin{subfigure}[t]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/03/bert_classifier.pdf}
@@ -82,6 +112,7 @@ Español
     \end{subfigure}
 
     \caption{Clasificadores propuestos para las tareas de Análisis de Polaridad, Análisis de Emociones y Detección de Ironía. La subfigura \ref{subfig:rnn_classifier} muestra la arquitectura del modelo recurrente, que usa una capa de embeddings basados en \emph{fasttext} y codifica el tweet como el promedio de las salidas de la capa recurrente. La subfigura \ref{subfig:bert_classifier} muestra un clasificador basado en BERT, donde tomamos la salida del token \emph{[CLS]} como la codificación del tweet. Ambos usan un decodificador softmax}
+    \label{fig:03_classifiers}
 \end{figure}
 
 Describimos a continuación los clasificadores utilizados para las tareas. Podemos, a grandes rasgos, describir a todos nuestros clasificadores como compuestos de dos partes: un \emph{codificador} (o \emph{encoder} en inglés) que genera una representación contínua de longitud fija del texto de entrada, y un \emph{decodificador} que toma esa codificación y la convierte a la salida deseada.
@@ -96,8 +127,9 @@ Nuestros modelos diferirán entonces en los codificadores. Proponemos las siguie
     \item \textbf{BETO|mBERT|RoBERTa|BERTin}: un modelo pre-entrenado de lenguaje basado en transformers.
 \end{itemize}
 
-En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de los modelos basados en transformers, la codificación se da tomando \footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}
+En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de los modelos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\textbf{[CLS]} en el caso de BERT pero puede variar para RoBERTa u otros modelos)\footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}. La figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
 
+Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet. Para los dos primeros modelos, los entrenamos usando Adam con un learning rate de 0.001 con un decay de 0.01. Para los modelos basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
 
 \section{Resultados}
 
