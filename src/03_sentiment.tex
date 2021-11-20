@@ -62,32 +62,77 @@ Español
 
 \section{Preprocesamiento}
 
-\section{Técnicas de clasificación}
+\section{Algoritmos de clasificación}
 
-\subsection{Embeddings}
+\begin{figure}
+    \centering
+    % Link a draw
+    % https://docs.google.com/drawings/d/1bSCMXkAF12gK4GFYL8tyIAPCMq4kj8JXovrf2lx5w_g/edit
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/03/recurrent_classifier.pdf}
+        \caption{Clasificador basado en redes recurrentes}
+        \label{subfig:rnn_classifier}
+    \end{subfigure}
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/03/bert_classifier.pdf}
+        \caption{Modelos de clasificación basado en BERT y símiles}
+        \label{subfig:bert_classifier}
+    \end{subfigure}
+
+    \caption{Clasificadores propuestos para las tareas de Análisis de Polaridad, Análisis de Emociones y Detección de Ironía. La subfigura \ref{subfig:rnn_classifier} muestra la arquitectura del modelo recurrente, que usa una capa de embeddings basados en \emph{fasttext} y codifica el tweet como el promedio de las salidas de la capa recurrente. La subfigura \ref{subfig:bert_classifier} muestra un clasificador basado en BERT, donde tomamos la salida del token \emph{[CLS]} como la codificación del tweet. Ambos usan un decodificador softmax}
+\end{figure}
+
+Describimos a continuación los clasificadores utilizados para las tareas. Podemos, a grandes rasgos, describir a todos nuestros clasificadores como compuestos de dos partes: un \emph{codificador} (o \emph{encoder} en inglés) que genera una representación contínua de longitud fija del texto de entrada, y un \emph{decodificador} que toma esa codificación y la convierte a la salida deseada.
+
+Todos nuestros problemas analizados son de clasificación multiclase: elegir exactamente una clase entre varias. Para ello, nuestro decodificador será de la forma $\text{softmax}(Wx + b)$, donde $W$ es una matriz de pesos y $b$ un vector de bias, ambos parámetros de nuestra red neuronal.
+
+Nuestros modelos diferirán entonces en los codificadores. Proponemos las siguientes variantes:
+
+\begin{itemize}
+    \item \textbf{FFN}: Un perceptrón multicapa (feed-forward network) con una función de activación intermedia \emph{ReLU}
+    \item \textbf{GRU/biGRU}: Una red neuronal recurrente. La capa oculta es una Gated Recurrent Unit (GRU) unidireccional o bidireccional.
+    \item \textbf{BETO|mBERT|RoBERTa|BERTin}: un modelo pre-entrenado de lenguaje basado en transformers.
+\end{itemize}
+
+En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de los modelos basados en transformers, la codificación se da tomando \footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}
+
 
 \section{Resultados}
 
 \begin{table*}[t]
     \centering
     \large
-    \begin{tabular}{l lll}
+    \begin{tabular}{l ccc l}
         \toprule
-        Modelo              & sentiment macro\_f1 & emotion macro\_f1 &  irony macro\_f1\\
+        Modelo         &  Polaridad         & Emociones         &   Ironía        &  Puntaje \\
         \hline
-        beto-uncased        &     $0.649 \pm 0.005$ &   $0.521 \pm 0.006$ &  $0.702 \pm 0.008$   \\
-        bertin              &     $0.665 \pm 0.003$ &   $0.518 \pm 0.012$ &  $0.716 \pm 0.008$   \\
-        beto-cased          &     $0.665 \pm 0.004$ &   $0.521 \pm 0.012$ &  $0.706 \pm 0.007$   \\
-        roberta-bne         &     $0.669 \pm 0.006$ &   $0.533 \pm 0.011$ &  $0.723 \pm 0.017$   \\
+        RoBERTa        &  $0.670 \pm 0.006$ &  $0.527 \pm 0.015$& $0.721 \pm 0.008$ &  0.665 \\
+        BERTin         &  $0.666 \pm 0.005$ &  $0.524 \pm 0.007$& $0.713 \pm 0.012$ &  0.660 \\
+        BETO$_U$       &  $0.651 \pm 0.006$ &  $0.532 \pm 0.012$& $0.701 \pm 0.007$ &  0.653 \\
+        BETO$_C$       &  $0.662 \pm 0.005$ &  $0.516 \pm 0.012$& $0.705 \pm 0.009$ &  0.652 \\
+        mBERT          &  $0.617 \pm 0.003$ &  $0.493 \pm 0.010$& $0.681 \pm 0.010$ &  0.627 \\
+        \hline
+        biGRU$_{TW}$   &  $0.585 \pm 0.011$ &  $0.264 \pm 0.007$& $0.631 \pm 0.011$ &  0.518 \\
+        biGRU$_{CC}$   &  $0.553 \pm 0.008$ &  $0.231 \pm 0.006$& $0.625 \pm 0.009$ &  0.486 \\
+        GRU$_{TW}$     &  $0.602 \pm 0.004$ &  $0.269 \pm 0.003$& $0.628 \pm 0.014$ &  0.509 \\
+        GRU$_{CC}$     &  $0.564 \pm 0.004$ &  $0.237 \pm 0.005$& $0.581 \pm 0.016$ &  0.474 \\
+        ffn$_{TW}$     &  $0.516 \pm 0.004$ &  $0.203 \pm 0.003$& $0.627 \pm 0.004$ &  0.433 \\
+        ffn$_{CC}$     &  $0.509 \pm 0.003$ &  $0.179 \pm 0.001$& $0.481 \pm 0.003$ &  0.393 \\
+        %robertuito     &  0.560 \pm 0.010 &  0.759 \pm 0.007 &  0.739 \pm 0.005 &  0.705 \pm 0.003 &  0.691 \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de los distintos modelos para las 3 tareas analizadas (Análisis de Polaridad, Análisis de Emociones, Detección de Ironía). Los 3 resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar}
+    \caption{Resultados de la evaluación de los distintos modelos para las 3 tareas analizadas (Análisis de Emociones, Análisis de Emociones, Detección de Ironía). Los 3 resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar. El puntaje de cada modelo es el promedio de las métricas para las 3 tareas}
     \label{tab:03_classification_results}
 \end{table*}
 
-La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos de clasificación. Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las 3 tareas, aunque las diferencias son pequeñas. Todos los modelos basados en transformers obtienen mejor performance que los basados en redes neuronales recurrentes, algo totalmente esperable.
+La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos de clasificación, expresados como la media de diez corridas de los experimentos de clasificación junto a sus desviaciones estándar; esto lo realizamos con motivo de que el entrenamiento es estocástico a diferencia de otros modelos clásicos de Machine Learning.Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las 3 tareas, aunque las diferencias son pequeñas. Todos los modelos basados en modelos pre-entrenados de transformers obtienen mejor performance que los basados en redes neuronales recurrentes.
 
-Dentro de los modelos basados en redes recurrentes, aquellos que consumen embeddings entrenados en textos sociales obtienen mejor performance que aquellos que consumen embeddings entrenados en Wikipedia. Esta diferencia es estadísticamente significativa corriendo un test Mann-Whitney (...\todo{correr este test!}).
+Dentro de los modelos basados en redes recurrentes y feed-forward, aquellos que consumen embeddings entrenados en textos sociales (marcadas como $_{TW}$) obtienen mejor performance que aquellos que consumen embeddings entrenados en Common Crawl (marcados como $_{CC}$). Esta diferencia, en todos los casos, es estadísticamente significa corriendo un test U de Mann-Whitney ( $p \leq 0.05$ para el caso de ironía y \emph{biGRU}, para todas las demás comparaciones $p \leq 0.001$ ).
+
+
+
 
 \section{Librería de análisis de sentimientos}
 
@@ -109,8 +154,20 @@ La figura XXX muestra la arquitectura de \pysentimiento{}. Utiliza el model hub 
 %
 %
 
+\section{Discusión}
+
+Para las 3 tareas planteadas, los clasificadores basados en modelos pre-entrenados de transformers obtuvieron mejores resultados que los basados en redes recurrentes y feed-forward. Como es esperable (y se observa en la literatura) los modelos monolinguales (\roberta{}, BERTin y \beto{}) tienen una performance sensiblemente mejor el modelo multilingual \emph{mBERT} \todo{citation needed de esto}. Dentro de los modelos de mejor performance, \roberta{} obtiene la mejor performance, aunque su mejora es pequeña respecto de \beto{}.
+
+Algo que observamos es que, entre los modelos recurrentes y feed-forward que consumen word-embeddings, la utilización de representaciones entrenadas directamente sobre textos generados por usuario generan una mejor performance de los clasificadores. Si bien puede pensarse que el entorno pequeño o el texto ruidoso de los textos podrían ser un problema a la hora de construir representaciones
+
+Retomaremos esta idea en el capítulo \ref{chap:07_domain_adaptation}, donde por un lado generaremos un modelo basado en RoBERTa entrenado sobre tweets, y por otro lado observaremos si podemos replicar su performance intentando ``adaptar'' un modelo \beto{} a este nuevo dominio.
+
+Finalmente, como un pequeño aporte -- principalmente a la comunidad académica, y puntualmente aquella hispanoparlante -- creamos una librería de análisis de sentimientos \textbf{pysentimiento} que provee modelos pre-entrenados y herramientas de preprocesado para textos sociales. En esta herramienta quedarán volcados todos los modelos entrenados de esta tesis.
+
 \section{Conclusiones}
 
-\section{Notas adicionales}
+En este capítulo hemos hecho una introducción a la extracción de opiniones usando técnicas de clasificación basadas en redes neuronales. Analizamos tres problemas de extracción de opiniones en Español --análisis de polaridad, análisis de emociones y detección de ironía-- y utilizamos modelos basados en redes neuronales y otros basados en modelos pre-entrenados. Presentamos el andamiaje básico para tareas de clasificación que utilizaremos en el resto de la presente tesis. En los siguientes capítulos centraremos nuestra atención en una tarea particular: la detección de discurso de odio.
 
-Comentar acá nuestro trabajo en TASS 2020
+\section{Notas}
+
+Gran parte de este trabajo está basado en nuestra participación en TASS 2018\cite{overview_tass2018} resumida en \citet{atalaya_tass2018}. Los resultados en esta sección no son comparables con los de ese trabajo ya que decidimos utilizar la versión del dataset de TASS 2020\cite{garcia2020overview}, que por un lado unifica las dos posibles clases neutrales de TASS 2018 y además brinda el nuevo dataset de análisis de emociones. Omitimos el análisis de data augmentation y nos centramos en dar una breve introducción al tema y a analizar el impacto de los word-embeddings generados en textos sociales.
