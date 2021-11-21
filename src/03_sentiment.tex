@@ -44,9 +44,8 @@ Análogamente, se puede agregar cierta complejidad en la salida. Por ejemplo, el
 \section{Trabajo previo}
 
 
-Dentro de los recursos y tareas en español, uno de los principales polos de esto es el Taller de Análisis de Sentimientos (TASS) \cite{overview_tass2018,garcia2020overview,cumbreras2016overview} organizado por la Sociedad Española de Procesamiento Natural (SEPLN) y en sus últimas dos ediciones (2020 y 2021) organizadas en el marco del evento Iberian Languages Evaluation Forum (IberLEF). En él se presentan tareas y datasets de análisis de sentimiento, de emociones, de toxicidad, sexismo, entre otras.
+Dentro de los recursos y tareas en español, uno de los principales polos de esto es el Taller de Análisis de Sentimientos (TASS) \cite{overview_tass2018,garcia2020overview,cumbreras2016overview} organizado por la Sociedad Española de Procesamiento Natural (SEPLN) y en sus últimas dos ediciones (2020 y 2021) organizadas en el marco del evento Iberian Languages Evaluation Forum (IberLEF). En él se presentan tareas y datasets de análisis de sentimiento, de emociones, de toxicidad, sexismo, entre otras. \todo{agregar citas}
 
-\subsection{Dificultades}
 
 \section{Tareas analizadas}
 
@@ -71,6 +70,8 @@ Dentro de los recursos y tareas en español, uno de los principales polos de est
         %Análisis de Emociones     &  TASS 2020/EmoEvent\cite{plaza-del-arco-etal-2020-emoevent} & 7 & 1,879 \\
         \hline
     \end{tabular}
+    \caption{Tareas evaluadas en este capítulo, junto a datos estadísticos de los datasets utilizados}
+    \label{tab:03_tasks}
 \end{table}
 
 Analizamos 3 tareas de extracción de opiniones sobre redes sociales, y las usamos como benchmark para las diferentes técnicas de clasificación. Una de las tareas analizadas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Para ello, utilizamos el dataset de TASS 2020\cite{garcia2020overview}, anotados con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las 3 particiones correspondientes de entrenamiento, validación, y test).
@@ -81,8 +82,26 @@ Para el análisis de emociones, también usamos el conjunto de datos de TASS 202
 
  La \textbf{detección de ironía} también es una tarea que ha ganado popularidad recientemente. Muchos trabajos muestran que tiene importantes implicaciones en otras tareas de procesamiento del lenguaje natural que requieren procesamiento semántico. \citet{gupta-yang-2017-crystalnest} muestran que el uso de funciones derivadas de la detección de sarcasmo mejora el rendimiento en la tarea de análisis de sentimientos. Además de esto, el contenido generado por los usuarios es una rica y vasta fuente de ironía, por lo que esta tarea es de particular importancia para el dominio de las redes sociales. IroSVa \cite {ortega2019overview} es un dataset para esta tarea en Español (publicado en el contexto de TASS 2019) que tiene la particularidad de considerar los mensajes no como textos aislados sino con un contexto dado (un titular o un tema). Consta de 7.200 instancias y 1.800 ejemplos de prueba divididos en tres variantes geográficas de Cuba, España y México, cada una con una etiqueta binaria que indica si el comentario contiene ironía o no. A diferencia de las tres tareas anteriores mencionadas aquí, este conjunto de datos contiene no solo mensajes de Twitter, sino también de comentarios de noticias y foros de debate como 4forums.com y Reddit.
 
+ La tabla \ref{tab:03_tasks} resume los datos de cada uno de los corpus utilizados en este capítulo.
+
 
 \section{Preprocesamiento}
+
+Una de los pasos más importantes para la manipulación de texto social es el preprocesamiento. Con esto nos referimos al conjunto de técnicas dedicadas a disminuir la variabilidad del texto social, usualmente bastante más irregular que el texto proveniente de fuentes más formales, con errores ortográficos y usos coloquiales que hacen difícil el tratamiento por algoritmos de NLP. Para poner un ejemplo, la frase ``¡qué lindo día, loco!'' puede ser representada de las siguientes maneras:
+
+\begin{itemize}
+    \item q lindo día loco
+    \item k lindo diaaaaaaaa loco
+    \item ke lindo diaa lk
+\end{itemize}
+
+\citet{han2011lexical} es uno de los primeros trabajos que aborda sistemáticamente este problema, al menos para Twitter, ya habiendo sido abordado previamente para SMS. En base a observaciones sobre un dataset recolectado por los autores, observaron las palabras fuera de vocabulario (OOV en inglés) en Twitter tienen una alta frecuencia de incidencia, usando un diccionario estándar de GNU. Ejemplos de estas palabras son neologismos, errores ortográficos, typos, contracciones típicas de esta red social (lk), sustituciones fonéticas (wacho en vez de guacho), entre otras. Esto es un problema grave para los métodos del estado del arte de ese entonces basados en bolsas de palabras o representaciones sobre palabras aisladas \footnote{Recordemos que para el momento de la publicación de este trabajo aún no se usaban redes neuronales, word embeddings, ni mucho menos métodos más avanzados como \emph{fasttext}, que ayuda mucho en las palabras OOV}. Para mitigar el problema de la alta dimensionalidad que generan estas palabras fuera de vocabulario, los autores proponen diversas estrategias para normalizar las palabras y testean sus métodos sobre datasets de Twitter y SMS.
+
+Con el advenimiento de las redes neuronales y los word-embeddings como GloVe o word2Vec, esto siguió siendo un problema ya que cada representación se calcula sobre cada una de estas palabras. En el caso de una palabra fuera de vocabulario, un mecanismo habitual es asignarles un token especial que se llama ``<unk>''. Sin embargo, esto puede ser problemático ya que elimina muchas palabras similares a otras que sí tenemos en el vocabulario. \citet{bojanowski16} propuso una solución a esto al permitir formar la representación de cada palabra mediante una combinación lineal de las representaciones de las ``subpalabras'' de cada una: cada palabra se separa en una lista de substrings y cada una de estas son los que se calculan los embeddings (ver sección XXX para más detalles).
+
+Con el advenimiento de los modelos basados en transformers, otros tipos de tokenización fueron propuestos
+
+En el caso de modelos basados en transformers, \citet{bertweet} plantearon dos formas de normalización del texto...
 
 \section{Algoritmos de clasificación}
 
