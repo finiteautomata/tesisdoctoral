@@ -143,8 +143,8 @@ siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que
 
 \section{Método}
 
-\subsection {Preprocesamiento}
-
+\subsection{Preprocesamiento}
+\label{sec:04_preprocessing}
 
 \newcommand{\elmo}[0]{ELMo}
 \newcommand{\elmomodel}[0]{\emph{LSTM-\elmo{}}}
@@ -158,9 +158,7 @@ siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que
 
 El preprocesamiento es crucial en las aplicaciones de PNL, especialmente cuando se trabaja con datos ruidosos generados por el usuario. Aquí, seguimos \citet{atalaya_tass2018}, definiendo dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos. Usamos uno u otro, dependiendo de la configuración.
 
-El preprocesamiento básico de tweets incluye tokenización, reemplazo de identificadores, URL y correos electrónicos, y acortamiento de letras repetidas.
-
-El preprocesamiento orientado a sentimientos incluye minúsculas, eliminación de puntuación, palabras vacías y números, lematización (usando TreeTagger \cite{schmid95}) y manejo de negación.
+El preprocesamiento básico de tweets es el mismo que describimos en la sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales. El preprocesamiento orientado a sentimientos incluye además lematización (usando TreeTagger \cite{schmid95}) y manejo de negación.
 Para el manejo de la negación, seguimos un enfoque simple:
 % \cite {das01, pang02}:
 Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra.
