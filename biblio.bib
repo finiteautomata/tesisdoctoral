@@ -1310,3 +1310,53 @@ numpages = {135}
   pages={368--378},
   year={2011}
 }
+
+@inproceedings{hendrycks-etal-2020-pretrained,
+    title = "Pretrained Transformers Improve Out-of-Distribution Robustness",
+    author = "Hendrycks, Dan  and
+      Liu, Xiaoyuan  and
+      Wallace, Eric  and
+      Dziedzic, Adam  and
+      Krishnan, Rishabh  and
+      Song, Dawn",
+    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.acl-main.244",
+    doi = "10.18653/v1/2020.acl-main.244",
+    pages = "2744--2751",
+    abstract = "Although pretrained Transformers such as BERT achieve high accuracy on in-distribution examples, do they generalize to new distributions? We systematically measure out-of-distribution (OOD) generalization for seven NLP datasets by constructing a new robustness benchmark with realistic distribution shifts. We measure the generalization of previous models including bag-of-words models, ConvNets, and LSTMs, and we show that pretrained Transformers{'} performance declines are substantially smaller. Pretrained transformers are also more effective at detecting anomalous or OOD examples, while many previous models are frequently worse than chance. We examine which factors affect robustness, finding that larger models are not necessarily more robust, distillation can be harmful, and more diverse pretraining data can enhance robustness. Finally, we show where future work can improve OOD robustness.",
+}
+
+
+@misc{ruder2021lmfine-tuning,
+  author = {Ruder, Sebastian},
+  title = {{Recent Advances in Language Model Fine-tuning}},
+  year = {2021},
+  howpublished = {\url{http://ruder.io/recent-advances-lm-fine-tuning}},
+}
+
+@inproceedings{strubell2019energy,
+  title={Energy and Policy Considerations for Deep Learning in NLP},
+  author={Strubell, Emma and Ganesh, Ananya and McCallum, Andrew},
+  booktitle={Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics},
+  pages={3645--3650},
+  year={2019}
+}
+
+@inproceedings{kudo-richardson-2018-sentencepiece,
+    title = "{S}entence{P}iece: A simple and language independent subword tokenizer and detokenizer for Neural Text Processing",
+    author = "Kudo, Taku  and
+      Richardson, John",
+    booktitle = "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing: System Demonstrations",
+    month = nov,
+    year = "2018",
+    address = "Brussels, Belgium",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D18-2012",
+    doi = "10.18653/v1/D18-2012",
+    pages = "66--71",
+    abstract = "This paper describes SentencePiece, a language-independent subword tokenizer and detokenizer designed for Neural-based text processing, including Neural Machine Translation. It provides open-source C++ and Python implementations for subword units. While existing subword segmentation tools assume that the input is pre-tokenized into word sequences, SentencePiece can train subword models directly from raw sentences, which allows us to make a purely end-to-end and language independent system. We perform a validation experiment of NMT on English-Japanese machine translation, and find that it is possible to achieve comparable accuracy to direct subword training from raw sentences. We also compare the performance of subword training and segmentation with various configurations. SentencePiece is available under the Apache 2 license at \url{https://github.com/google/sentencepiece}.",
+}
