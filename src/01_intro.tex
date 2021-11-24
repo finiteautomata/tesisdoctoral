@@ -62,25 +62,32 @@ Si bien el sometimiento de este pueblo tiene lugar hace décadas, tuvo un recrud
 
 
 
+\section{Avances en IA y NLP}
 
+En los últimos 10 años, el área en general de la Inteligencia Artificial ha sido sacudida por la irrupción de las redes neuronales en el centro de la escena. Desde la disciplina de Visión por Computadora, la conjunción de datasets de gran tamaño como ImageNet \cite{imagenet2009deng} y la utilización de dispositivos de gran poder de cómputo como las GPUs, además del desarrollo de mejores algoritmos (como la utilización de distintas funciones de activación) posibilitaron que las redes neuronales obtengan mejoras considerables en el desempeño de tareas de reconocimiento de imágenes. \todo{agregar citas}
 
+Este boom inicial en el área de CV tuvo su primera repercusión cerca del año 2013, con el desarrollo de los word-embeddings. La técnica de \emph{word2vec}\cite{mikolov2013distributed} permitió generar representaciones de palabras de manera eficiente sobre grandes cantidades de datos no etiquetados. Estas representaciones de cada palabra (podemos pensarlas como vectores de largo fijo asignadas a cada token) han sido la ``salsa secreta'' que permitió el éxito de las redes neuronales en NLP, permitiendo una mejora en las tareas de reconocimiento de entidades nombradas (NER), POS tagging, parsing, clasificación de textos, entre otras. Otro componente de este éxito de las redes neuronales ha sido el uso de redes recurrentes como las Long Short-Term memory (LSTM) \cite{hochreiter1997long} o las Gated Recurrent Units (GRU) \cite{cho-etal-2014-learning}, que codifican las representaciones de una manera autorregresiva.
 
+Un caso de éxito particular ha sido el de la traducción automática. La arquitectura sequence-to-sequence (seq2seq) \cite{sutskever2014sequence} permitió que una red neuronal compuesta de un codificador y un decodificador pudiera traducir una secuencia de tokens a otra secuencia de tokens, mejorando el desempeño de tareas de traducción automática. Más aún, permitiendo reemplazar sistemas realmente complejos de Statistical Machine Translations (SMT) por sistemas bastante más simples y con mucha mejor performance.
 
+Las arquitecturas recurrentes, sin embargo, adolecen algunos problemas. En primer lugar, su caracter autorregresivo inhibe la paralelización: necesitamos primero calcular el paso anterior para poder computar el siguiente. Otro problema a mencionar es que sufren de \emph{locality bias}: tienden a favorecer relaciones con entidades cercanas del texto debido a su estructura Markoviana. Estas dos cuestiones, por un lado, ponen cierta cota a la performance en algunas tareas, y por otro, hacen complejo el entrenamiento de redes neuronales verdaderamente profundas, como son utilizadas en el campo de Computer Vision. A su vez, otra limitación del enfoque de utilización de redes neuronales + embeddings es que reutilizamos muy poco entre problemas: sólo la capa de embeddings, el resto debe ser re-entrenado.
 
+En 2017, \citet{vaswani2017attention} propusieron una arquitectura que elimina la estructura recurrente: los \emph{Transformers}. Este modelo utiliza únicamente múltiples capas de auto-atención para el problema de traducción, pudiendo superar el estado del arte y con un entrenamiento más eficiente.
 
+Utilizando esta arquitectura, GPT y BERT
+\footnote{Ver las slides de Jacob Devlin, uno de los creadores de BERT acerca de los problemas de las RNN\url{https://nlp.stanford.edu/seminar/details/jdevlin.pdf}} supusieron un cambio rotundo en el modo en que hacemos NLP hoy día: en lugar de entrenar una red neuronal casi desde cero (quizás sólo con una capa de embeddings con pesos iniciales pre-calculados) sólo ajustamos (\emph{fine-tune}) una gran red neuronal pre-entrenada sobre un dataset de entrenamiento. Estos modelos supusieron un breakthrough en el área de NLP, mejorando la performance sensiblemente en benchmarks de tareas como GLUE.
 
+Estos avances han permitido atacar numerosas tareas que quizás parecían fuera de alcance para el área de NLP o bien tenían performances muy decepcionantes. Entre ellas, la detección de discurso de odio.
 
-
-
-\section{Revolución de NLP en los últimos años}
-\section{NLP aplicado a redes sociales}
 
 \section{Aportes de este trabajo}
 
-Agrego algunas referencias para ir teniendo en cuenta:
+En esta tesis nos proponemos hacer un aporte en el sentido de desarrollar mejores mecanismos automáticos de detección de discurso de odio. Si bien el área de NLP ha avanzado enormemente en los últimos años, y ésta subdisciplina ha recibido numeroso interés, creemos que muchos de los enfoques actuales inhiben
 
-\begin{itemize}
-    \item Manifesto of Computational Social Sciences \cite{conte2012manifesto}
-    \item Text Analysis in Python for Social Scientists: Discovery and Exploration \cite{hovy2020text} (Leer intro nada más)
-    \item Computational social science and sociology (2020): \cite{edelmann2020computational}
-\end{itemize}
+Para ello, en primer lugar estudiamos técnicas de detección sobre datasets ya existentes, utilizando técnicas del estado del arte. En base a la observación de algunos datasets y la literatura en general, plantearemos un nuevo problema: la detección \emph{contextualizada} de discurso de odio. Para ello, construimos un dataset de comentarios de discurso de odio sobre comentarios de redes sociales en noticias de medios gráficos argentinos, y lo etiquetamos con hablantes nativos. Este dataset es un aporte importante en sí ya que es uno de los primeros datasets que incluyen información contextual, y es el único a nuestro conocimiento en español que tiene esta información, y el primero en la variedad dialectal rioplatense. \todo{Decir algo que lo recolectamos durante la pandemia del COVID-19}
+
+Con este dataset, exploramos la siguiente pregunta: ¿pueden los métodos actuales basados en modelos pre-entrenados aprovechar información adicional de contexto para mejorar la clasificación de discurso de odio? Este punto ha sido poco estudiado en la literatura, y consideramos que es una pregunta de interés para atravesar los límites de la clasificación basada en una única fuente de información (el comentario analizado). En base a los experimentos realizados, encontramos evidencia que el contexto puede brindar información útil para detectar este fenómeno. Particularmente, observamos que para los mensajes de odio contra ciertos grupos --por ejemplo, contra la comunidad LGBTI-- el contexto puede brindar información aún más útil para su detección.
+
+Finalmente, realizamos un estudio más en general sobre la \emph{adaptación de dominio} en tareas de clasificación de redes sociales. Para ello, generamos un modelo de lenguaje pre-entrenado sobre textos sociales en español al que bautizamos \robertuito{}, el primero disponible y a gran escala en este idioma. Comparamos la performance de este modelo contra otros modelos pre-entrenados sobre textos formales, y contra modelos ajustados al dominio social. Esta comparación es de interés ya que el ajuste de dominio es relativamente económico frente al enorme costo de entrenamiento que tienen construir modelos como \robertuito{}. Observamos que para todas las tareas, \robertuito{} obtiene una performance del estado del arte, pero el ajuste de dominio recorta considerablemente el gap de performance contra otros modelos.
+
+Un aporte en general de esta tesis es que todos los estudios y recursos han sido realizados en español. Vista la enorme asimetría que hay con otros idiomas, y teniendo en cuenta que el español es el segundo idioma en hablantes nativos del mundo, consideramos necesario mitigar este desbalance de recursos.
