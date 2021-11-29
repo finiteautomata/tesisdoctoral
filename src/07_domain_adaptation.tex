@@ -41,7 +41,7 @@ En todos los casos, usando modelos del estado del arte como RoBERTa muestran que
         SciBERT\cite{beltagy-etal-2019-scibert} & Inglés            & Papers científicos               & BERT        \\
         BERT-CT                                 &                   &                                  &             \\
         ClinicalBERT\cite{huang2019clinicalbert}& Inglés            &                                  & BERT        \\
-        BERTweet\cite{bertweet}                 & Inglés            & Tweets, algunos COVID-related    & RoBERTa     \\
+        BERTweet\cite{dat2020bertweet}          & Inglés            & Tweets, algunos COVID-related    & RoBERTa     \\
         TwilBERT                                &                   &                                  &             \\
         AlBERTo                                 &                   &                                  &             \\
     \end{tabular}
@@ -51,7 +51,7 @@ En todos los casos, usando modelos del estado del arte como RoBERTa muestran que
 \end{table}
 
 
-Luego del estallido de los modelos de lenguaje basados en transformers, algunos trabajos se han basado en directamente entrenar estos modelos ya no en textos formales como Wikipedia o noticias sino directamente en el dominio en cuestión. Por ejemplo, SciBERT \cite{beltagy-etal-2019-scibert} es un modelo BERT entrenado directamente en textos científicos, BERTweet \cite{bertweet} entrena un modelo RoBERTa\cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. La tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos.
+Luego del estallido de los modelos de lenguaje basados en transformers, algunos trabajos se han basado en directamente entrenar estos modelos ya no en textos formales como Wikipedia o noticias sino directamente en el dominio en cuestión. Por ejemplo, SciBERT \cite{beltagy-etal-2019-scibert} es un modelo BERT entrenado directamente en textos científicos, BERTweet \cite{dat2020bertweet} entrena un modelo RoBERTa\cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. La tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos.
 
 En español tenemos el modelo TwilBERT \cite{gonzalez2021twilbert}; sin embargo, tiene algunas limitaciones: en primer lugar, no queda claro cuánto tiempo de entrenamiento recibió ni si los datos fueron suficientes; en segundo, usaron un modo de entrenamiento basado en una variante de la tarea NSP (ver subsección XXX) \todo{poner sección bien} cuando numerosos trabajos muestran que el tipo de entrenamiento basado en RoBERTa (sólo tarea MLM) mejora el desempeño. Finalmente, su modelo no es accesible mediante el hub de huggingface\todo{agregar URL o cita}, que usamos para este trabajo.
 
@@ -125,7 +125,7 @@ De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para f
     \label{tab:robertuito_architecture}
 \end{table}
 
-Se utilizó una arquitectura RoBERTa base para \robertuito{}, con 12 capas de auto atención, 12 cabezas de atención y tamaño intermedio 768, de la misma manera que BERTweet \cite{bertweet}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
+Se utilizó una arquitectura RoBERTa base para \robertuito{}, con 12 capas de auto atención, 12 cabezas de atención y tamaño intermedio 768, de la misma manera que \bertweet{}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
 
 Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de batch size grande para nuestro entrenamiento. Si bien se recomienda un tamaño de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k.
 

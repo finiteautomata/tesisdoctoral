@@ -45,9 +45,9 @@ Dentro de los trabajos en español, \citet{plaza2021pretrained} evalua distintos
     \label{tab:hateval_dataset}
 \end{table}
 
-El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estará centrado en el dataset en español.
+El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estará centrado en el dataset en español, aunque también propondremos modelos de clasificación para el problema en inglés.
 
-Posee las siguientes etiquetas:
+Las instancias del dataset poseen las siguientes etiquetas:
 
 \begin{itemize}
     \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio (0 si no lo tiene, 1 si hay discurso de odio)
@@ -68,13 +68,12 @@ Posee las siguientes etiquetas:
         @elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
         \hline
     \end{tabularx}
-    \label{tab:hateval_dataset_examples}
     \caption{Ejemplos del dataset de SemEval 2019 Task 5: HatEval. HS indice la presencia de discurso de odio, TR la presencia de discriminación individualizada, y AG la presencia de discriminación agresiva}
-
+    \label{tab:hateval_dataset_examples}
 \end{table}
 
 
-La tabla \ref{tab:hateval_dataset} posee los números del dataset. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar en ambos idiomas (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los datasets. La tabla ZZZ posee algunos ejemplos para cada una de las características en cuestión.
+La tabla \ref{tab:hateval_dataset} posee los números del dataset. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar en ambos idiomas (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los datasets. La tabla \ref{tab:hateval_dataset_examples} posee algunos ejemplos para cada una de las características en cuestión.
 
 \section{Tareas de clasificación propuestas}
 
@@ -89,15 +88,15 @@ Sobre el dataset de hatEval, los autores propusieron dos tareas:
 \end{itemize}
 
 
-La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno.
+La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno: por ejemplo, si es agresivo y si es individualizado, lo que puede indicar alguna incitación a un ataque.
 
-La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiva y negativa. En el caso de \subtaskb{}, se mide por la Macro F1 de las 3 clases (HS, TR, AG) y también por la medida Exact Match Ratio
+La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiva y negativa. En el caso de \subtaskb{}, se mide por la Macro F1 de las 3 clases (HS, TR, AG) y también por la medida Exact Match Ratio:
 
 \begin{equation*}
     EMR = \frac{1}{n} \sum\limits_{i=1}^{n} I(Y_i, Y_i^*)
 \end{equation*}
 
-siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$; $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como se usa en \citet{zhang-2014-multilabel} para referirse a esta métrica.
+siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$; $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como \citet{zhang-2014-multilabel} para referirse a esta métrica.
 
 \section{Método}
 
@@ -113,7 +112,7 @@ Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes 
 
 \subsection{Modelos}
 
-Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{atalaya_tass2018}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de BERT\cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, BETO}. Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
+Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{atalaya_tass2018}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de BERT\cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, \beto{}}. Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
 
 \begin{itemize}
     \item Modelos lineales: regresiones logísticas y SVM con kernel lineales, consumiendo como entrada bolsas de palabras, bolsas de caracteres, y tweet embeddings (
@@ -121,7 +120,7 @@ Para las tareas propuestas, analizamos el desempeño de diversos modelos de clas
     \item Modelos pre-entrenados basados en LM: ídem sección \ref{sec:03_classification}.
 \end{itemize}
 
-Para los modelos lineales, utilizamos tweets embeddings calculados con SIF ver sección \ref{sec:02_tweet_embeddings}) para más detalles). Utilizamos como base embeddings de \fasttext{} entrenados sobre tweets utilizando el preprocesado orientado a sentimientos descripto en la sección \ref{sec:04_preprocessing}. Para el resto de los modelos, utilizamos el preprocesado básico.
+Para los modelos lineales, utilizamos tweets embeddings calculados con SIF (ver sección \ref{sec:02_tweet_embeddings}) para más detalles). Utilizamos como base embeddings de \fasttext{} entrenados sobre tweets utilizando el preprocesado orientado a sentimientos descripto en la sección \ref{sec:04_preprocessing}. Para el resto de los modelos, utilizamos el preprocesado básico.
 
 Para el caso de la tarea de multidetección (\subtaskb{}), podemos pensar este problema de dos maneras:
 
@@ -130,7 +129,7 @@ Para el caso de la tarea de multidetección (\subtaskb{}), podemos pensar este p
     \item Un problema de clasificación de 5 clases
 \end{enumerate}
 
-En el primer caso, el enfoque sería predecir por separado HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
+En el primer caso, el enfoque es el de predecir por separado HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
 
 Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en SVM (consumiendo la misma entrada que detallamos anteriormente). No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí, considerando que evaluaremos modelos que han demostrado tener mejor performance para numerosas tareas de clasificación de texto.
 
@@ -142,9 +141,9 @@ Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo 
 \end{figure}
 
 
-Así mismo, proponemos para esta subtarea modelos basados en transformers basado en multi-clasificación. La arquitectura usual de modelos basados en BERT para clasificación constan de poner como última capa una  ``cabeza'' que consume la salida del token \verb|[CLS]|. En términos concretos, esto agrega una matriz de parámetros $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers, y usando softmax como función de activación.
+Así mismo, proponemos para esta subtarea modelos basados en transformers basado en multi-clasificación. La arquitectura usual de modelos basados en BERT para clasificación constan de poner como última capa una  ``cabeza'' que consume la salida del token \verb|[CLS]|. Esto agrega una matriz de parámetros $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers, y usando softmax como función de activación.
 
-Para construir un modelo de multi-clasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, $softmax(W x + b)$ nos da para el elemento i-ésimo el score de que la instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)$ nos da el score de predecir la etiqueta positiva para el (en nuestro caso,  $\sigma(W x + b)_1$ nos da $P( HS = 1 \mid x)$,  $\sigma(W x + b)_2$ nos da  $P(TR = 1 \mid x)$, etc). La figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
+Para construir un modelo de multi-clasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, $softmax(W x + b)$ nos da para el elemento i-ésimo el score de que la instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)$\footnote{Esta expresión es elemento a elemento} nos da el score de predecir la etiqueta positiva para el (en nuestro caso,  $\sigma(W x + b)_1$ nos da $P( HS = 1 \mid x)$,  $\sigma(W x + b)_2$ nos da  $P(TR = 1 \mid x)$, etc). La figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
 
 Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma o promedio\footnote{Es equivalente optimizar una u otra} de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la función de costo es:
 
@@ -170,18 +169,19 @@ Las evaluaciones de los modelos las realizamos poniendo una máscara por encima 
 \newcommand{\esrow}[1]{\multirow{#1}{*}{es}}
 \newcommand{\enrow}[1]{\multirow{#1}{*}{en}}
 
-\begin{table}
+\begin{table}[ht]
     \centering
     \begin{tabular}{l l| l l l}
         Modelo       & Idioma              & Recall     & Precision & Macro-F1 \\
         \hline
         SVM$^*$          & \mr{3}{es}          & 0.741          & 0.665         & 0.730    \\
-        ELMO-RNN$^*$     &                     & 0.753          & 0.669         & 0.735    \\
-        BETO             &                     & \textbf{0.839} & \textbf{0.674}&\textbf{0.764}\\
+        ELMO-RNN        &                     & 0.753          & 0.669         & 0.735    \\
+        \beto{}             &                     & \textbf{0.839} & \textbf{0.674}&\textbf{0.764}\\
         \hline
         BERT            & \mr{3}{en}          & 0.968      & 0.474     & 0.496   \\
         RoBERTa         &                     & 0.967      & 0.470     & 0.485   \\
-        BERTweet        &                     & 0.958      & 0.495     & 0.546
+        \bertweet{}        &                     & 0.958      & 0.495     & 0.546 \\
+        \hline
     \end{tabular}
     \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por precisión y sensitividad sobre la clase positiva (discurso de odio) y por la métrica macro F1. Con $^*$ están marcados los resultados presentados en \citet{atalaya_tass2018}. En negrita, el mejor resultado.}
     \label{tab:hateval_task_a}
@@ -189,55 +189,59 @@ Las evaluaciones de los modelos las realizamos poniendo una máscara por encima 
 
 
 
-La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos para la detección de discurso de odio binaria (\subtaska{}). Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, podemos observar que entre los presentados para aquella competencia, el modelo basado en SVMs obtiene la mejor performance, aún contra aquel basado en embeddings contextualizados, obteniendo el mejor desempeño en dicha con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal pre-entrenamiento del modelo base\footnote{No queda claro que en entrenar este modelo sobre 20M palabras sea suficiente, ni que sea un dataset suficientemente general} y puede que también debido al cambio de dominio, a los cuales modelos pre-entrenados previos a BERT son sumamente sensibles \cite{hendrycks-etal-2020-pretrained}.
+La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos para la detección de discurso de odio binaria (\subtaska{}). Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, el modelo basado en SVMs obtiene una buena performance, aún contra aquel basado en embeddings contextualizados, habiendo obtenido el mejor desempeño en la competencia con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal pre-entrenamiento del modelo base\footnote{No queda claro que en entrenar este modelo sobre 20M palabras sea suficiente, ni que sea un dataset suficientemente general} y puede que también debido al cambio de dominio, a los cuales modelos pre-entrenados previos a BERT son sumamente sensibles \cite{hendrycks-etal-2020-pretrained}.
 
-Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs. Particularmente, en el caso del inglés, BERTweet \cite{bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a BERTweet para español que mejora la performance sobre BETO, a la vez que evaluaremos sobre versiones de BETO ajustadas al dominio social\footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
+Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs. Particularmente, en el caso del inglés, \bertweet{} \cite{dat2020bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a \bertweet{} para español que mejora la performance sobre \beto{}, a la vez que evaluaremos sobre versiones de \beto{} ajustadas al dominio social\footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
 
 
-\begin{table}
+\begin{table}[t]
     \centering
     \small
-    \begin{tabular}{lll rrr rrr}
-        Modelo            &        & Idioma      &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       &  HS Macro-F1 \\
+    \begin{tabular}{lll rrr rr}
+        Modelo            &        & Idioma      &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       \\
         \hline
-        \mr{3}{beto}      & multi  & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} &  0.771      \\
-                          & hier   &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722       &  0.776      \\
-                          & combi  &             &  \tbf{742} &  0.763       &  0.668        & 0.698       &     0.724       &  0.776      \\
+        \mr{3}{\beto{}}      & multi  & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} \\
+                          & hier   &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722          \\
+                          & combi  &             &  \tbf{0.742} &  0.763       &  0.668        & 0.698       &     0.724          \\
         \hline
-        \mr{3}{BERT}      & multi  & \mr{6}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       &  0.512      \\
-                          & hier   &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       &  0.521      \\
-                          & combi  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       &  0.531      \\
-        \mr{3}{RoBERTa}   & multi  &             &  0.634     &  0.578       &  0.454        & 0.365       &     0.555       &  0.487      \\
-                          & hier   &             &  0.637     &  0.572       &  0.456        & 0.370       &     0.555       &  0.490      \\
-                          & combi  &             &  0.636     &  0.576       &  0.442        & 0.377       &     0.551       &  0.500      \\
-        \mr{3}{BERTweet}  & multi  &\mr{3}{en}   &  0.658     &  0.629       &\tbf{0.462}    & 0.426       & \tbf{0.583}     &  0.567      \\
-                          & hier   &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       &  0.555      \\
-                          & combi  &             & \tbf{0.666}&\tbf{0.637}   &  0.444        & \tbf{0.449} &     0.582       &  \tbf{0.589}\\
+        \hline
+        \mr{3}{BERT}      & multi  & \mr{3}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       \\
+                          & hier   &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       \\
+                          & combi  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       \\
+        \hline
+        \mr{3}{RoBERTa}   & multi  & \mr{3}{en}  &  0.634     &  0.578       &  0.454        & 0.365       &     0.555       \\
+                          & hier   &             &  0.637     &  0.572       &  0.456        & 0.370       &     0.555       \\
+                          & combi  &             &  0.636     &  0.576       &  0.442        & 0.377       &     0.551       \\
+        \hline
+        \mr{3}{\bertweet{}}  & multi  &\mr{3}{en}   &  0.658     &  0.629       &\tbf{0.462}    & 0.426       & \tbf{0.583}     \\
+                          & hier   &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       \\
+                          & combi  &             & \tbf{0.666}&\tbf{0.637}   &  0.444        & \tbf{0.449} &     0.582       \\
         \hline
     \end{tabular}
 
-    \caption{Resultados de la evaluación para para \subtaskb{} en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS. Las 3 variaciones de los modelos son: \emph{multi} es la salida de multiclasificación estándar, \emph{hier} es la salida de multiclasificación con una jerarquía de clasificación, y \emph{combi} es la salida de multiclasificación con una combinación de clasificaciones.}
+    \caption{Resultados de la evaluación para para \subtaskb{} en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS. Las 3 variaciones de los modelos son: \emph{multi} es la salida de multiclasificación estándar, \emph{hier} es la salida de multiclasificación con una jerarquía de clasificación, y \emph{combi} es la salida de multiclasificación con una combinación de clasificaciones. Los resultados están expresados como las medias de 10 corridas independientes.}
     \label{tab:hateval_task_b}
 \end{table}
 
 
-La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: Multi refiere a clasificación múltiple, Jerárquica a clasificación múltiple con la función de costo jerárquica, y Combinatoria a la conversión del problema en una clasificación de 5 clases.
+La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: \emph{multi} refiere a clasificación múltiple, \emph{hier} a clasificación múltiple con la función de costo jerárquica, y \emph{combi} a la conversión del problema en una clasificación de 5 clases.
 
-Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, esta diferencia la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro-F1, la mejor performance es de BETO con el problema de clasificación múltiple y sin la función de costo jerárquica, pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
+Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, esta diferencia la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro-F1, la mejor performance es de \beto{} con el problema de clasificación múltiple y sin la función de costo jerárquica, pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
 
-Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con BERTweet con la salida de 5 clases en el caso del EMR, y con la salida múltiple (sin pérdida jerárquica) para la Macro-F1. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y cercano en términos de Macro F1 a los mejores resultados de la competencia. En \citet{gertner-etal-2019-mitre}, se basaron en un ensemble de modelos entrenados con BERT y usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuidas. \footnote{En\citet{gertner-etal-2019-mitre} dan evidencia de esto en su trabajo algo que perjudica el desempeño de estos modelos}
+Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con \bertweet{} con la salida de 5 clases en el caso del EMR, y con la salida múltiple (sin pérdida jerárquica) para la Macro-F1. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y cercano en términos de Macro F1 a los mejores resultados de la competencia. En \citet{gertner-etal-2019-mitre}, se basaron en un ensemble de modelos entrenados con BERT y usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuidas. \footnote{En\citet{gertner-etal-2019-mitre} dan evidencia de esto en su trabajo algo que perjudica el desempeño de estos modelos}
 
 
 
-\begin{table}[h]
+\begin{table}[b]
     \centering
+    \small
     \begin{tabular}{l  l l | c c c c}
         \toprule
-        Modelo           & Idioma        &  Tarea  &     precision     &          recall    &              f1    &        macro\_f1 \\
-        \mr{2}{bertweet} & \mr{2}{en}    &  A      & 0.495 $\pm$ 0.012 &  0.959 $\pm$ 0.012 &  0.653 $\pm$ 0.009 &  0.546 $\pm$ 0.027 \\
+        Modelo           & Idioma        &  Tarea  &     precision     &          recall    &              F1    &        Macro F1    \\
+        \mr{2}{\bertweet{}} & \mr{2}{en}    &  A      & 0.495 $\pm$ 0.012 &  0.959 $\pm$ 0.012 &  0.653 $\pm$ 0.009 &  0.546 $\pm$ 0.027 \\
                          &               &  B      & 0.505 $\pm$ 0.011 &  0.948 $\pm$ 0.018 &  0.658 $\pm$ 0.005 &  0.567 $\pm$ 0.022 \\
 
-        \mr{2}{beto}     & \mr{2}{es}    &  A      & 0.674 $\pm$ 0.021 &  0.839 $\pm$ 0.026 &  0.747 $\pm$ 0.007 &  0.764 $\pm$ 0.011 \\
+        \mr{2}{\beto{}}     & \mr{2}{es}    &  A      & 0.674 $\pm$ 0.021 &  0.839 $\pm$ 0.026 &  0.747 $\pm$ 0.007 &  0.764 $\pm$ 0.011 \\
                          &               &  B      & 0.713 $\pm$ 0.042 &  0.778 $\pm$ 0.054 &  0.741 $\pm$ 0.013 &  0.771 $\pm$ 0.015 \\
         \bottomrule
     \end{tabular}
@@ -245,7 +249,7 @@ Respecto al inglés, los mejores resultados pueden observarse en el modelo entre
     \label{tab:hateval_task_a_vs_b}
 \end{table}
 
-Lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir más de una variable pareciera mantener el desempeño. La tabla \ref{tab:hateval_task_a_vs_b} muestra la comparativa para la detección de discurso de odio (HS) para aquellos clasificadores que obtuvieron mejores resultados para \subtaska{} y \subtaskb{} (en ambos casos, BETO y BERTweet). En ambos casos, hay ligeras diferencias para a favor de uno u otro clasificador pero no parecieran ser significativas.
+Lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir más de una variable pareciera mantener el desempeño. La tabla \ref{tab:hateval_task_a_vs_b} muestra la comparativa para la detección de discurso de odio (HS) para aquellos clasificadores que obtuvieron mejores resultados para \subtaska{} y \subtaskb{} (en ambos casos, \beto{} y \bertweet{}). En ambos casos, hay ligeras diferencias para a favor de uno u otro clasificador pero no parecieran ser significativas.
 
 
 
@@ -258,7 +262,7 @@ Lejos de dañarse la performance de la detección de lenguaje discriminatorio (l
 
 \section{Discusión}
 
-Respecto a lo relativo a la performance de los modelos presentados, los modelos basados en transformers son notoriamente superiores a los demás modelos. Particularmente, en inglés, podemos observar que aquellos directamentre pre-entrenados sobre tweets (BERTweet) tienen mejor performance que aquellos que son pre-entrenados sobre wikipedia como BERT o RoBERTa.
+Respecto a lo relativo a la performance de los modelos presentados, los modelos basados en transformers son notoriamente superiores a los demás modelos. Particularmente, en inglés, podemos observar que aquellos directamentre pre-entrenados sobre tweets (\bertweet{}) tienen mejor performance que aquellos que son pre-entrenados sobre wikipedia como BERT o RoBERTa.
 
 Sobre la tarea más difícil de detección múltiple de discurso de odio (\subtaskb{}), propusimos varios enfoques: uno basado en predecir cada variable por separado y otro en predecir una variable que indique la combinación en cuestión. El modelo de predicción múltiple entrenado con la función de costo jerárquica \ref{eq:hierarchical_loss} obtuvo la mejor performance, sin embargo, estas diferencias no se mostraron significativas. En el caso de inglés, el modelo entrenado sobre 5 clases obtuvo la mejor performance; sin embargo, esta dista de la mejor performance de la competencia. No ahondaremos en un análisis de estos resultados en inglés debido a los posibles problemas de anotación del dataset, y porque estamos más interesados en profundizar sobre la creación de recursos en español.
 
