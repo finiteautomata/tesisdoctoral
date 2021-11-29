@@ -1,22 +1,21 @@
 \label{chap:04_hate_speech}
 
-Los Discursos de odio contra mujeres, inmigrantes y muchos otros grupos es un fenómeno generalizado en la Internet. En los primeros días de la World Wide Web, algunos académicos se aventuraron a decir a que los prejuicios y el odio sería eliminado en este espacio por la disolución de identidades \cite{levy2001cyberculture, rheingold1993virtual}. Veinte años después de esta hipótesis, podemos
-decir que no ha sido el caso. La prevalencia del racismo en la ``World White Web'' se ha estudiado en una serie de trabajos \cite{adams2005white, kettrey2014staking}, como así también la misoginia en el mundo virtual \cite{filipovic2007blogging, mantilla2013gendertrolling}.
+El discurso de odio contra mujeres, inmigrantes y otros grupos protegidos es un fenómeno generalizado en la Internet, y que resulta importante monitorear dada su potencial relación con actos violentos como hemos comentado en la introducción de esta tesis. En los primeros días de la World Wide Web, algunos académicos se aventuraron a decir a que los prejuicios y el odio serían removidos en este espacio mediante la disolución de identidades en el ámbito virtual \cite{levy2001cyberculture, rheingold1993virtual,calderon2020topic}. Veinte años después de esta hipótesis, podemos decir que no ha sido el caso. La prevalencia del racismo en la ``World White Web''  y la explosión de esta en las redes sociales ha sido estudiada en numerosos trabajos \cite{adams2005white, kettrey2014staking}, como así también la misoginia en el mundo virtual \cite{filipovic2007blogging, mantilla2013gendertrolling}, entre otros ataques discriminatorios.
 
-El discurso racista y sexista es una constante en las redes sociales, pero los picos se documentan después de eventos ``detonantes'', como asesinatos con motivos religiosos o políticos \cite{burnap2015cyber}. Las empresas de redes sociales están preocupadas por esto y toman acciones en su contra; sin embargo, la mayoría de los esfuerzos todavía necesitan la intervención humana, lo que hace que esta tarea sea muy costosa. Reducir la intervención humana es vital para tener herramientas efectivas para evitar la escalada del discurso de odio.
-
-
-En este capítulo haremos una introducción a este problema, que a su vez trataremos en los capítulos subsiguientes. Definiremos el discurso de odio y haremos una breve reseña de este fenómeno desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. En base al dataset de la competencia hatEval\cite{hateval2019semeval}, propondremos técnicas de detección de discurso de odio para las tareas propuestas, algunas de ellas presentadas en \citet{atalaya_tass2018}. Finalmente, marcaremos algunos problemas actuales en los enfoques actuales de la detección de discurso discriminatorio y algunas oportunidades de mejora que abordaremos en capítulos subsiguientes.
+El discurso racista y sexista es una constante en las redes sociales, pero muchos picos se documentan después de eventos detonantes como asesinatos con motivos religiosos o políticos \cite{burnap2015cyber}. Debido a esto, algunos estados y organizaciones supranacionales han tomado cartas en el asunto instando a las empresas de redes sociales a que tomen medidas para bajar la incidencia de este fenómeno. Debido a la enorme cantidad de contenido generado por usuarios en las redes sociales, es necesario desarrollar herramientas que faciliten la labor humana en la detección y prevención del discurso de odio, con particular foco de aquel que incita a la violencia física.
 
 
-\section{Definición de discurso de odio}
+En este capítulo haremos una introducción a este problema desde varias ópticas. Analizaremos las diversas definiciones de discurso de odio y haremos una breve reseña de este fenómeno desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. En base al dataset de la competencia hatEval \cite{hateval2019semeval}, propondremos técnicas de detección de discurso de odio para las tareas propuestas, algunas de ellas presentadas en \citet{atalaya_tass2018}. Finalmente, marcaremos algunos problemas actuales en los enfoques actuales de la detección de discurso discriminatorio y algunas oportunidades de mejora que abordaremos en capítulos subsiguientes.
+
+
+\section{¿Qué es el discurso de odio?}
 \label{sec:hate_speech_definitions}
 
 \input{src/04_hate_speech_definitions.tex}
 
 \section{Trabajo previo}
 
-En esta sección haremos una breve reseña de algunos trabajos destacados del área. Un análisis extensivo de esta disciplina escapa totalmente al alcance de este trabajo. Referimos a quien esté interesado a \citet{schmidt2017survey} y a \citet{fortuna2018survey}. Más recientemente, \citet{poletto2021resources} hace un análisis pormenorizado y actualizado de los recursos para la tarea de detección de discurso de odio.
+En esta sección haremos una reseña de la literatura de la detección de discurso de odio y otros fenómenos similares. Un análisis extensivo de esta disciplina escapa totalmente al alcance de esta tesis debido a la enorme cantidad de trabajo del área, que ha explotado . Referimos a quien esté interesado a \citet{schmidt2017survey} y a \citet{fortuna2018survey}. Más recientemente, \citet{poletto2021resources} hace un análisis pormenorizado y actualizado de los recursos para la tarea de detección de discurso de odio.
 
 La detección del discurso del odio es una tarea de clasificación de oraciones bastante relacionada con el análisis de sentimientos y ha sido estudiada para varias redes sociales \cite{thelwall2008social, pak2010twitter, saleem2017web}. Uno de los primeros trabajos al respecto es \citet{greevy2004classifying} usando bolsas de palabras y SMVs para detectar contenido racista en páginas web. Construyeron su dataset de manera semi-supervisada buscando sitios mediante keywords y sus links en motores de búsqueda. Siguiendo un enfoque similar, \citet{warner2012detecting} usó unigrams y clusters Brown con SVM para detectar mensajes antisemitas en Twitter.
 
@@ -26,68 +25,10 @@ La detección del discurso del odio es una tarea de clasificación de oraciones 
 
 En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un shared task en la detección de misoginia en Twitter, tanto en español como en inglés, mientras que \citet{fersini2018evalitaoverview} planteó un desafío similar pero en italiano e inglés. \citet{bosco2018overview} propuso un concurso de detección automática sobre publicaciones de Twitter y comentarios de Facebook, que incluía discursos de odio en general.
 
+Dentro de los trabajos en español, \citet{plaza2021pretrained} evalua distintos modelos pre-entrenados de lenguaje sobre la tarea de detección de discriminación usando dos datasets: el primero, \citet{pereira2019detecting} que consta de 6000 tweets, recolectado por el Estado Español para monitorear el discurso de odio en redes sociales; y el segundo, el dataset de SemEval 2019 Task 5 (hatEval) \cite{hateval2019semeval}, presentado en contexto de una shared-task y que comprende ataques contra inmigrantes y mujeres.
 
 
-\section{Recursos}
-
-En esta sección haremos un recuento de los conjuntos de datos para la detección de lenguaje odioso.
-\citet{nobata2016abusive} fue uno de los primeros datasets => mencionar sus criterios, y su experimento (muy interesante) de Turkers vs anotadores in-house
-
-% \begin{table*}
-%     \centering
-%     \begin{tabular*}
-
-%     \end{tabular*}
-% \end{table*}
-
-\citet{gao2018detecting}
-
-% \subsection{Criterios de anotación}
-
-% \begin{table*}[t]
-%     \centering
-%     \begin{tabular}{p{0.20\linewidth}  p{0.80\linewidth}}
-%         \textbf{Hate Speech} & Language which attacks or demeans a group based on race, ethnic origin, religion, disability, gender, age, disability,
-%         or sexual orientation/gender identity. Some examples:
-%         \begin{itemize}
-%             \item The JEWZ are Market Manipulators Hate them freaking Jews !! To bad Hitler did not finish them off !!!
-%             \item  I hate the mall because there are too many unemployed apefricans and mudsharks.
-%             \item 300 missiles are cool! Love to see um launched into TelAviv! Kill all the gays there!
-%             \item EGYPTIANS ARE DESCENDED FROM APES AND PIGS. NUKE EGYPT NOW Ah me tu se ku sh
-%         \end{itemize} \\
-
-%         \hline
-
-%         \textbf{Derogatory} & Language which attacks an individual or a group, but which is not hate speech. Some examples:
-%         \begin{itemize}
-%             \item All you perverts (other than me) who posted today, needs to leave the O Board. Dfasdfdasfadfs
-%             \item yikes...another republiCUNT weighs in....
-%         \end{itemize} \\
-
-%         \hline
-
-%         \textbf{Profanity} & Language which contains sexual remarks or profanity. Some examples:
-
-%         \begin{itemize}
-%             \item T.Boone Pickens needs to take a minimum wage job in FL for a week. I guarantee he shuts the f up after that.
-%             \item Somebody told me that Little Debbie likes to take it up the A.\$.\$.
-%             \item So if the pre market is any indication Kind of like the bloody red tampons that you to suck on all day??
-%         \end{itemize}
-%          \\
-%     \end{tabular}
-%     \caption{Annotation guidelines used in \cite{nobata2016abusive}}
-
-%     \label{tab:nobata_guidelines}
-% \end{table*}
-
-\todo{Mandar esto al siguiente capítulo}
-
-
-\section{Dataset utilizado}
-
-
-
-
+\section{Descripción del dataset}
 \begin{table}[t]
     \centering
     \small
@@ -114,6 +55,24 @@ Posee las siguientes etiquetas:
     \item \textbf{Agresividad}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
 \end{itemize}
 
+\begin{table}
+    \centering
+    \footnotesize
+    \begin{tabularx}{\textwidth}{X c c c}
+        Texto & HS & TR & AG \\
+        \hline
+        Los tomas asi puro como si fuera jugo y cuando te querés rescatar estas hablando en árabe URL & 0 & 0 & 0 \\
+        Como son españoles nada... sin fueran refugiados...GLORIA \# migrates \# refugiados \# EspañaLoPrimero URL & 1 & 0 & 0 \\
+        @OmarPrietoGob ``Extranjero sin identificación será puesto en la frontera'' ENVÍA AL EJERCITO A TOMAR CONTROL DE LAS PULGAS PLATANEROS Y CURVA DE AHÍ PARA QUE VEAS COMO HAY COLOMBIANOS INDOCUMENTADOS COMO MONTE AHÍ DE BUHONERS PORQUE LA POLICÍA & 1 & 0 & 1 \\
+        Inmigrante da una brutal paliza a una joven por no dejarse besar en Ciudad Real.\#stopinvasion \#YoSiTeCreo \#NoesNo lo peor que no han salido a la calle las feminas del Twitter que tanto se indignaron con la salida de La Manda a la calle. & 1 & 1 & 0 \\
+        @elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
+        \hline
+    \end{tabularx}
+    \label{tab:hateval_dataset_examples}
+    \caption{Ejemplos del dataset de SemEval 2019 Task 5: HatEval. HS indice la presencia de discurso de odio, TR la presencia de discriminación individualizada, y AG la presencia de discriminación agresiva}
+
+\end{table}
+
 
 La tabla \ref{tab:hateval_dataset} posee los números del dataset. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar en ambos idiomas (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los datasets. La tabla ZZZ posee algunos ejemplos para cada una de las características en cuestión.
 
@@ -129,7 +88,6 @@ Sobre el dataset de hatEval, los autores propusieron dos tareas:
     \item \subtaskb{}: Dado un tweet, predecir si contiene discurso de odio (HS), si está dirigido contra un individuo o un grupo (TR), y si es agresivo o no (AG)
 \end{itemize}
 
-\todo{Pensar algún nombre mejor?}
 
 La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno.
 
@@ -139,106 +97,31 @@ La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiv
     EMR = \frac{1}{n} \sum\limits_{i=1}^{n} I(Y_i, Y_i^*)
 \end{equation*}
 
-siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$, $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como se usa en \citet{zhang-2014-multilabel} para referirse a esta métrica (a diferencia del Hamming Score).
+siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$; $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como se usa en \citet{zhang-2014-multilabel} para referirse a esta métrica.
 
 \section{Método}
 
 \subsection{Preprocesamiento}
 \label{sec:04_preprocessing}
 
-\newcommand{\elmo}[0]{ELMo}
-\newcommand{\elmomodel}[0]{\emph{LSTM-\elmo{}}}
-\newcommand{\bow}[0]{BoW}
-\newcommand{\boc}[0]{BoC}
-\newcommand{\elmobowmodel}[0]{\emph{LSTM-\elmo{}+\bow{}}}
-\newcommand{\svmmodel}[0]{$\mathrm{SVM}_0$}
-\newcommand{\hateval}[0]{HatEval}
-\newcommand{\semeval}[0]{SemEval-2019}
-\newcommand{\fasttext}[0]{\emph{fastText}}
+Definimos dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos, dependiendo el modelo a utilizar. El preprocesamiento básico de tweets es el mismo que describimos en la sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales.
 
-El preprocesamiento es crucial en las aplicaciones de PNL, especialmente cuando se trabaja con datos ruidosos generados por el usuario. Aquí, seguimos \citet{atalaya_tass2018}, definiendo dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos. Usamos uno u otro, dependiendo de la configuración.
-
-El preprocesamiento básico de tweets es el mismo que describimos en la sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales. El preprocesamiento orientado a sentimientos incluye además lematización (usando TreeTagger \cite{schmid95}) y manejo de negación.
+El preprocesamiento orientado a sentimientos incluye además lematización (usando TreeTagger \cite{schmid95}) y manejo de negación.
 Para el manejo de la negación, seguimos un enfoque simple:
 % \cite {das01, pang02}:
 Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra.
 
-\section{Técnicas de clasificación}
-
-Para capturar esta información, consideramos una representación de bolsa de caracteres que codifica recuentos de caracteres $n$ -gramas para algunos valores de $ n $. Estos vectores se calculan a partir de textos originales de tweets, sin ningún procesamiento previo. \boc {} s tienen las mismas variantes y parámetros que \bow {} s.
-
-
-\subsection {Word-embeddings}
-
-Usamos \fasttext{}, una biblioteca de embeddings basada en combinaciones lineales de sub n-gramas \cite{bojanowski16} para obtener representaciones de palabras independientes del contexto.
-
-
-De la misma manera que en la anterior sección, en lugar de usar vectores previamente entrenados disponibles públicamente, entrenamos nuestras propias incrustaciones en un conjunto de datos de $ \sim90 $ millones de tweets de varios países de habla hispana.
-Preparamos dos versiones de los datos: una usando solo preprocesamiento básico y la otra usando preprocesamiento orientado a sentimientos (con la excepción de la lematización). Para estos dos conjuntos de datos, las incrustaciones de omisión de gramática se entrenaron utilizando diferentes configuraciones de parámetros, incluyendo una serie de dimensiones, tamaño de n-gramas de palabras y subpalabras, y tamaño de la ventana de contexto.
-
-\subsection{Tweet Embeddings}
-\label{sec:sif}
-
-%%
-%%
-%%
-%%  https://docs.google.com/drawings/d/1BU3ulBiqU0NojpW6Fkb4xFlMCDigSWwfjN7z9smO6nY/edit
-%%
-%%
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{img/tweet_embeddings.pdf}
-    \caption{Muestra de la recolección de datos}
-    \label{fig:tweet_embeddings}
-\end{figure}
-
-Una forma relativamente simple de obtener una representación de una oración es realizar una combinación lineal de las representaciones obtenidas para cada palabra. Es decir, dada una oración $s = w_1 w_2 \ldots w_n$, y representaciones $\overline{w_1}, \overline{w_2}, \ldots, \overline{w_n} \in \mathbb{R}^m$, podemos obtener una representación
-
-\begin{equation}
-    \overline{s} = \sum\limits_{i=1}^{n} \alpha_i \overline{w_i}
-\end{equation}
-
-con $\alpha_1, \ldots, \alpha_n \in \mathbb{R}$ escalares (dependientes de la oración). De esta manera, obtenemos de $n$ representaciones independientes del contexto una representación para el tweet, sin tener en cuenta posibles interacciones entre los distintos componentes. La figura \ref{fig:tweet_embeddings} ilustra esta metodología simple para obtener representaciones de oraciones.
-
-Tenemos entonces dos posibilidades para determinar la combinación lineal: la forma de obtener las representaciones, y la forma de calcular los coeficientes. Para las representaciones, podemos usar varias de las técnicas que ya vimos como word2vec, GloVe, o \fasttext{}. Para calcular los coeficientes, consideramos en nuestro trabajo dos formas. La primera, la forma canónica, calculando un promedio de las representaciones, es decir, tomando $\alpha_i = \frac{1}{n}$
-
-Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
-Seguimos dos enfoques simples: promedio simple y promedio ponderado. En el segundo caso, utilizamos un esquema que se asemeja a la frecuencia inversa suave (SIF) \cite {arora17}, inspirado en la reponderación de TF-IDF.
-Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado.
-Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
-
-% También consideramos dos opciones que afectan las incrustaciones de tweets: binarización, que ignora las repeticiones de tokens en los tweets; y normalización, que escalas dando como resultado que los vectores de tweets tengan una norma unitaria.
-
-
-\subsection{Embeddings contextualizados}
-\label{subsec:elmo}
-
-Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet{mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
-
-\elmo{} \cite{peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
-% Estas representaciones se consideran profundas ya que utilizan la salida de cada capa LSTM.
-Para obtener un vector final para cada token, los autores sugieren colapsar las capas en vectores mediante una combinación lineal.
-
-% Sea $ t_1, \ldots, t_n $ una secuencia de tokens, y sea $ h_ {k, j} $ el vector que representa la salida de la capa $ j $ cuando se consume el token $ t_k $. Entonces, el vector contextualizado para el token $ k $ es:
-%
-% \begin {ecuación}
-% ELMo_k ^ {tarea} = \gamma ^ {tarea} \sum_ {j = 0} ^ {L} s_j h_ {k, j} \label {eq: elmo}
-% \end {ecuación}
-
-En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
-
 \subsection{Modelos}
 
-Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{}, a las cuales agregamos modelos basados en transformers. Estos modelos no estaban disponibles al momento de presentar dicho trabajo. \footnote{El trabajo de BERT\cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, BETO}.
-
-Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
+Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{atalaya_tass2018}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de BERT\cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, BETO}. Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
 
 \begin{itemize}
-    \item Modelos lineales: regresiones logísticas y SVM con kernel lineales, consumiendo como entrada bolsas de palabras, bolsas de caracteres, y tweet embeddings usando SIF.
+    \item Modelos lineales: regresiones logísticas y SVM con kernel lineales, consumiendo como entrada bolsas de palabras, bolsas de caracteres, y tweet embeddings (
     \item Redes neuronales recurrentes: usando como entrada word-embeddings y embeddings contextualizados (\elmo{})
-    \item BERT: Usamos la versión en español entrenada por \citet{canete2020spanish}, BETO.
+    \item Modelos pre-entrenados basados en LM: ídem sección \ref{sec:03_classification}.
 \end{itemize}
+
+Para los modelos lineales, utilizamos tweets embeddings calculados con SIF ver sección \ref{sec:02_tweet_embeddings}) para más detalles). Utilizamos como base embeddings de \fasttext{} entrenados sobre tweets utilizando el preprocesado orientado a sentimientos descripto en la sección \ref{sec:04_preprocessing}. Para el resto de los modelos, utilizamos el preprocesado básico.
 
 Para el caso de la tarea de multidetección (\subtaskb{}), podemos pensar este problema de dos maneras:
 
@@ -253,100 +136,118 @@ Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{img/bert_model_hateval.pdf}
-    \caption{Modelo basado en BERT para la tarea de clasificación múltiple}
+    \includegraphics[width=0.7\textwidth]{img/bert_model_hateval.pdf}
+    \caption{Modelo basado en BERT para la tarea de clasificación múltiple. Cada variable (HS, TR, AG) representa un problema de clasificación en sí mismo}
     \label{fig:bert_hateval_classifier}
 \end{figure}
 
 
 Así mismo, proponemos para esta subtarea modelos basados en transformers basado en multi-clasificación. La arquitectura usual de modelos basados en BERT para clasificación constan de poner como última capa una  ``cabeza'' que consume la salida del token \verb|[CLS]|. En términos concretos, esto agrega una matriz de parámetros $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers, y usando softmax como función de activación.
 
-Para construir un modelo de multi-clasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, $softmax(W x + b)$ nos da para el elemento i-ésimo el score de que la instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)$ nos da el score de predecir la etiqueta positiva para el (en nuestro caso,  $\sigma(W x + b)_1$ nos da la probabilidad de que $HS = 1$,  $\sigma(W x + b)_2$ nos da la probabilidad de que $HS = 2$, etc). La figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
+Para construir un modelo de multi-clasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, $softmax(W x + b)$ nos da para el elemento i-ésimo el score de que la instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)$ nos da el score de predecir la etiqueta positiva para el (en nuestro caso,  $\sigma(W x + b)_1$ nos da $P( HS = 1 \mid x)$,  $\sigma(W x + b)_2$ nos da  $P(TR = 1 \mid x)$, etc). La figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
 
-Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma o promedio\footnote{Es equivalente optimizar una u otra} de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la pérdida es:
+Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma o promedio\footnote{Es equivalente optimizar una u otra} de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la función de costo es:
 
 \begin{equation}
 \label{eq:multi_loss}
 L(y, \widehat{y}) = \sum\limits_{k \in \{HS, TR, AG\}} J(y_k, \widehat{y_k})
 \end{equation}
 
-donde $J$ es la entropía cruzada. Esta función de pérdida, sin embargo, ignora cualquier tipo de jerarquía entre las variables; por ejemplo, si para una instancia tenemos $HS = 0$, toma la pérdida de las variables $TR$ y $AG$. Contemplamos entonces una variante de esta función para tener en cuenta esta jerarquía:
+donde $J$ es la entropía cruzada. Esta función de costo, sin embargo, ignora cualquier tipo de jerarquía entre las variables; por ejemplo, si para una instancia tenemos $HS = 0$, calcula el costo también de las variables $TR$ y $AG$. Contemplamos entonces una variante de esta función para tener en cuenta esta jerarquía:
 
 \begin{equation}
     \label{eq:hierarchical_loss}
     L(y, \widehat{y}) =  J(y_{HS}, \widehat{y_{HS}}) + \beta(y_{HS})\sum\limits_{k \in \{TR, AG\}} J(y_k, \widehat{y_k})
 \end{equation}
 
-donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR, AG$ cuando no hay discurso discriminatorio. Análogamente, $\beta(y) = 1$ sería el caso descripto en la ecuación \ref{eq:multi_loss}.
-
-Para generalizar esto, podemos agregar un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$.
+donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR, AG$ cuando no hay discurso discriminatorio. Análogamente, $\beta(y) = 1$ sería el caso descripto en la ecuación \ref{eq:multi_loss}. Una forma de generalizar esto es agregando un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$.
 
 Las evaluaciones de los modelos las realizamos poniendo una máscara por encima de estos modelos de clasificación múltiple de manera de evitar salidas incoherentes (por ejemplo, $HS = 0, TR = 1, AG= 0$).
 
 
 \section{Resultados}
+
 \newcommand{\esrow}[1]{\multirow{#1}{*}{es}}
 \newcommand{\enrow}[1]{\multirow{#1}{*}{en}}
-\newcommand{\tbf}[1]{\textbf{#1}}
-
 
 \begin{table}
-
     \centering
-
     \begin{tabular}{l l| l l l}
         Modelo       & Idioma              & Recall     & Precision & Macro-F1 \\
         \hline
-        SVM          & \mr{3}{es}          & Recall     & Precision & 0.730    \\
-        ELMO-RNN     &                     & 0.753      & 0.669     & 0.735    \\
-        BETO         &                     & 0.839      & 0.674     & 0.764    \\
+        SVM$^*$          & \mr{3}{es}          & 0.741          & 0.665         & 0.730    \\
+        ELMO-RNN$^*$     &                     & 0.753          & 0.669         & 0.735    \\
+        BETO             &                     & \textbf{0.839} & \textbf{0.674}&\textbf{0.764}\\
         \hline
-        ELMO-RNN     & \mr{4}{en}          & ?          & ?         & 0.471   \\
-        BERT         &                     & 0.968      & 0.474     & 0.496   \\
-        RoBERTa      &                     & 0.967      & 0.470     & 0.485   \\
-        BERTweet     &                     & 0.958      & 0.495     & 0.546
+        BERT            & \mr{3}{en}          & 0.968      & 0.474     & 0.496   \\
+        RoBERTa         &                     & 0.967      & 0.470     & 0.485   \\
+        BERTweet        &                     & 0.958      & 0.495     & 0.546
     \end{tabular}
-    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por la métrica macro F1. En negrita, el mejor resultado.}
+    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por precisión y sensitividad sobre la clase positiva (discurso de odio) y por la métrica macro F1. Con $^*$ están marcados los resultados presentados en \citet{atalaya_tass2018}. En negrita, el mejor resultado.}
     \label{tab:hateval_task_a}
 \end{table}
 
 
 
-La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos para la detección de discurso de odio ``plana''. Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, podemos observar que entre los presentados para aquella competencia, el modelo basado en SVMs obtiene la mejor performance, aún contra aquel basado en embeddings contextualizados, obteniendo el mejor desempeño en dicha con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal entrenamiento , y puede que también debido al cambio de dominio, contra los cuales la entrada de las SVM está mejor adaptada.
+La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos para la detección de discurso de odio binaria (\subtaska{}). Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, podemos observar que entre los presentados para aquella competencia, el modelo basado en SVMs obtiene la mejor performance, aún contra aquel basado en embeddings contextualizados, obteniendo el mejor desempeño en dicha con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal pre-entrenamiento del modelo base\footnote{No queda claro que en entrenar este modelo sobre 20M palabras sea suficiente, ni que sea un dataset suficientemente general} y puede que también debido al cambio de dominio, a los cuales modelos pre-entrenados previos a BERT son sumamente sensibles \cite{hendrycks-etal-2020-pretrained}.
 
-Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo (y a los SVMs en el caso del español). Particularmente, en el caso del inglés, BERTweet \cite{bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a BERTweet para español que mejora la performance sobre BETO, a la vez que evaluaremos sobre versiones de BETO ajustadas al dominio social\footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
+Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs. Particularmente, en el caso del inglés, BERTweet \cite{bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a BERTweet para español que mejora la performance sobre BETO, a la vez que evaluaremos sobre versiones de BETO ajustadas al dominio social\footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
+
+
+\begin{table}
+    \centering
+    \small
+    \begin{tabular}{lll rrr rrr}
+        Modelo            &        & Idioma      &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       &  HS Macro-F1 \\
+        \hline
+        \mr{3}{beto}      & multi  & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} &  0.771      \\
+                          & hier   &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722       &  0.776      \\
+                          & combi  &             &  \tbf{742} &  0.763       &  0.668        & 0.698       &     0.724       &  0.776      \\
+        \hline
+        \mr{3}{BERT}      & multi  & \mr{6}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       &  0.512      \\
+                          & hier   &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       &  0.521      \\
+                          & combi  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       &  0.531      \\
+        \mr{3}{RoBERTa}   & multi  &             &  0.634     &  0.578       &  0.454        & 0.365       &     0.555       &  0.487      \\
+                          & hier   &             &  0.637     &  0.572       &  0.456        & 0.370       &     0.555       &  0.490      \\
+                          & combi  &             &  0.636     &  0.576       &  0.442        & 0.377       &     0.551       &  0.500      \\
+        \mr{3}{BERTweet}  & multi  &\mr{3}{en}   &  0.658     &  0.629       &\tbf{0.462}    & 0.426       & \tbf{0.583}     &  0.567      \\
+                          & hier   &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       &  0.555      \\
+                          & combi  &             & \tbf{0.666}&\tbf{0.637}   &  0.444        & \tbf{0.449} &     0.582       &  \tbf{0.589}\\
+        \hline
+    \end{tabular}
+
+    \caption{Resultados de la evaluación para para \subtaskb{} en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS. Las 3 variaciones de los modelos son: \emph{multi} es la salida de multiclasificación estándar, \emph{hier} es la salida de multiclasificación con una jerarquía de clasificación, y \emph{combi} es la salida de multiclasificación con una combinación de clasificaciones.}
+    \label{tab:hateval_task_b}
+\end{table}
+
 
 La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: Multi refiere a clasificación múltiple, Jerárquica a clasificación múltiple con la función de costo jerárquica, y Combinatoria a la conversión del problema en una clasificación de 5 clases.
 
 Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, esta diferencia la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro-F1, la mejor performance es de BETO con el problema de clasificación múltiple y sin la función de costo jerárquica, pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
 
-Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con BERTweet con la salida de 5 clases. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y contemplando el Macro F1 de los mejores resultados de la competencia, obtenidos por el equipo MITRE \cite{gertner-etal-2019-mitre}. En ese trabajo se basaron en un ensemble de modelos entrenados con BERT, usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuid
-
-Algo que puede observarse es que, lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir varias variables pareciera mejorar la performance. Este resultado puede verse en ambos idiomas, obteniendo cerca de (+1 puntos de Macro F1, y cerca de +4 puntos Macro F1 en inglés). \todo{Correr un test estadístico para ver si esto es significativo}.
+Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con BERTweet con la salida de 5 clases en el caso del EMR, y con la salida múltiple (sin pérdida jerárquica) para la Macro-F1. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y cercano en términos de Macro F1 a los mejores resultados de la competencia. En \citet{gertner-etal-2019-mitre}, se basaron en un ensemble de modelos entrenados con BERT y usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuidas. \footnote{En\citet{gertner-etal-2019-mitre} dan evidencia de esto en su trabajo algo que perjudica el desempeño de estos modelos}
 
 
 
-\begin{table}
-    \small
+\begin{table}[h]
     \centering
-    \begin{tabular}{lll rrr rrr}
-        Modelo            & Salida         & Idioma     &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       & Macro HS F1 \\
-        \mr{3}{beto}      & multi         & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} &  0.771      \\
-                          & jerárquico    &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722       &  0.776      \\
-                          & combinatoria  &             &  \tbf{742} &  0.763       &  0.668        & 0.698       &     0.724       &  0.776      \\
+    \begin{tabular}{l  l l | c c c c}
+        \toprule
+        Modelo           & Idioma        &  Tarea  &     precision     &          recall    &              f1    &        macro\_f1 \\
+        \mr{2}{bertweet} & \mr{2}{en}    &  A      & 0.495 $\pm$ 0.012 &  0.959 $\pm$ 0.012 &  0.653 $\pm$ 0.009 &  0.546 $\pm$ 0.027 \\
+                         &               &  B      & 0.505 $\pm$ 0.011 &  0.948 $\pm$ 0.018 &  0.658 $\pm$ 0.005 &  0.567 $\pm$ 0.022 \\
 
-        \hline
-        \mr{3}{BERT}      & multi         & \mr{3}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       &  0.512      \\
-                          & jerárquico    &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       &  0.521      \\
-                          & combinatoria  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       &  0.531      \\
-        \mr{3}{BERTweet}  & multi         &\mr{3}{en}   &  0.658     &  0.629       &  0.462        & 0.426       &     0.583       &  0.567      \\
-                          & jerárquico    &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       &  0.555      \\
-                          & combinatoria  &             &  0.666     &  0.637       &  0.444        & 0.449       &     0.582       &  0.589      \\
+        \mr{2}{beto}     & \mr{2}{es}    &  A      & 0.674 $\pm$ 0.021 &  0.839 $\pm$ 0.026 &  0.747 $\pm$ 0.007 &  0.764 $\pm$ 0.011 \\
+                         &               &  B      & 0.713 $\pm$ 0.042 &  0.778 $\pm$ 0.054 &  0.741 $\pm$ 0.013 &  0.771 $\pm$ 0.015 \\
+        \bottomrule
     \end{tabular}
-
-    \caption{Resultados de la evaluación para la detección de discurso múltiple de discurso de odio, \subtaskb{}, en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS.  }
-    \label{tab:hateval_task_b}
+    \caption{Comparación de la performance sobre la detección de discurso de odio para los clasificadores entrenados sobre \subtaska{} y \subtaskb{}. Resultados expresados como la media de 10 corridas independientes del experimento junto a sus desviaciones estándar. Ambos clasificadores de la \subtaskb{} están entrenados sobre el problema de multi-clasificación}
+    \label{tab:hateval_task_a_vs_b}
 \end{table}
+
+Lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir más de una variable pareciera mantener el desempeño. La tabla \ref{tab:hateval_task_a_vs_b} muestra la comparativa para la detección de discurso de odio (HS) para aquellos clasificadores que obtuvieron mejores resultados para \subtaska{} y \subtaskb{} (en ambos casos, BETO y BERTweet). En ambos casos, hay ligeras diferencias para a favor de uno u otro clasificador pero no parecieran ser significativas.
+
+
 
 
 
@@ -354,9 +255,6 @@ Algo que puede observarse es que, lejos de dañarse la performance de la detecci
 \subsection{Análisis de Error}
 \label{sec:hateval_error_analysis}
 \input{src/04_error_analysis.tex}
-
-
-\todo{Esto falta}
 
 \section{Discusión}
 
@@ -383,9 +281,6 @@ Un género no explorado en estos mensajes (usualmente aislados) son aquellos en 
 
 Así mismo, otro problema que suele ocurrir relacionado al anterior es que no tenemos \textbf{información granular} de los datos anotados. Si bien algunos trabajos agregan información de la característica vulnerada, la mayoría simplemente agrega una etiqueta binaria sobre la existencia o no de discurso de odio (o bien algún nivel intermedio como si hay o no discurso ofensivo, como el caso de \citet{Davidson2017AutomatedHS}). Teniendo en cuenta lo observado en este capítulo, agregar información más detallada sobre cada caso puede ayudar a mejorar la detección del discurso de odio mediante una señal más rica a nuestros clasificadores sobre las diferentes fronteras de cada característica.
 
-\subsection{Interpretabilidad y fragilidad de clasificadores}
-
-\todo{Ver si esto va o es muy tirado de los pelos ya que es un problema más general de AI}
 
 \section{Conclusiones}
 

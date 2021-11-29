@@ -151,7 +151,8 @@ En base a esto, adoptamos una estrategia similar a la normalización \textbf{dé
 
 Si bien en algunas secciones (como en \ref{sec:04_preprocessing}) usaremos variaciones de estos métodos --particularmente para modelos lineales--, en líneas generales seguiremos esta estrategia de normalización.
 
-\section{Algoritmos de clasificación}
+\section{Modelos de clasificación}
+\label{sec:03_classification}
 
 \begin{figure}
     \centering
@@ -190,7 +191,7 @@ Nuestros modelos diferirán entonces en los codificadores. Proponemos las siguie
 
 En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de los modelos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\textbf{[CLS]} en el caso de BERT pero puede variar para RoBERTa u otros modelos)\footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}. La figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
 
-Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet. Para los dos primeros modelos, los entrenamos usando Adam con un learning rate de 0.001 con un decay de 0.01. Para los modelos basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
+Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet. Para los dos primeros modelos, los entrenamos usando Adam \cite{kingma2014adam} con un learning rate de 0.001 y un decay de 0.01. Para los modelos basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
 
 \section{Resultados}
 

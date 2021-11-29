@@ -7,39 +7,32 @@
 \end{figure}
 
 
-Para tener una mejor idea de lo ocurrido con nuestros clasificadores, realizamos un análisis de error. Para ello, tomamos el clasificador BETO con clasificación múltiple, y lo aplicamos sobre el dataset de test. Para intentar mitigar los efectos de la varianza de los clasificadores, tomamos las salidas de 10 clasificadores BETO entrenados con una distinta semilla y analizamos el error sobre un clasificador de ensamble por voto mayoritario; de esta manera, tratamos de buscar aquellos errores frecuentes, aquellos que la mayoría de los 10 clasificadores erran. Nos centraremos en observar los errores de la etiqueta HS, y particularmente veremos qué pasa con los falsos positivos. La figura \ref{fig:hateval_error_analysis} muestra la matriz de confusión de nuestros clasificadores. Como era de esperar (dado que la precisión es más baja que la sensitividad) tenemos muchos falsos positivos, por lo cual haremos eje en observar estos.
+Para tener una mejor idea de lo ocurrido con nuestros clasificadores, realizamos un análisis de error sobre los datasets en español. Para intentar mitigar los efectos de la varianza de los clasificadores, tomamos las salidas de 10 clasificadores BETO entrenados con una distinta semilla y analizamos el error sobre un clasificador de ensamble por voto mayoritario; de esta manera, tratamos de buscar aquellos errores frecuentes, aquellos que la mayoría de los 10 clasificadores erran. Nos centraremos en observar los errores de la etiqueta HS, y particularmente veremos qué pasa con los falsos positivos. La figura \ref{fig:hateval_error_analysis} muestra la matriz de confusión de nuestros clasificadores. Como era de esperar (dado que la precisión es más baja que la sensitividad) tenemos muchos falsos positivos, por lo cual haremos eje en observar estos errores.
 
 
 \begin{table}
-    \begin{tabularx}{\columnwidth}{l l X}
-        Etiqueta & Motivo   &  Tweet \\
+    \begin{tabularx}{\columnwidth}{l X}
+        Índice   &  Tweet \\
         \hline
-         \mr{7}{No HS} &\mr{7}{Uso irónico o apropiación cultural} & Una cosa que le pasó a una amiga mexicana en Barcelona. Una chica repartía flyers en castellano y catalán, le dio uno a mí amiga en catalán y al segundo se lo quitó y se lo dio en castellano. -No, déjalo que entiendo catalán -Ah, es que como te he visto cara de sudaca Racismo 0 URL \\
-                    &        & @saludhernandezm Esas personas que extrañan dictaduras, cualquier dictadura, aún más si son las ibéricas que ponen como eje a Madrid; su cultura, política e idioma sobre la idiosincrasia de los demás. Esos mismos que añoran a Franco y viven en un país 'Sudaca' creyéndose dueños de la verdad.	 \\
-                    &        & @caciena después sigo siendo un sudaca pero bueno \\
-                    &        & @ArturoMonteduro Pues tienes toda la razón del mundo. Y lo peor es que seguro que tenía papeles y DNI español, pero queda mejor decir "argelino" o "uno d'estos del top manta", "puto inmigrante", o "moro mierda" y ya pues matas dos pájaros de un tiro. \\
-                    &        & Obvio me ofendo cuando algn Sudaca hace algn comentario presuponiendo que los mexicanos somos feos, o que el pas est de la verga. Entre mexicanos podemos hablar mierda de Mxico, pero que a ningn pinche extranjero se le ocurra, porque va a haber pedo! \\
-                    &        & TODOS LOS INMIGRANTES Y GITANOS FUERA!!! Menos: el colombiano que me vende coca, el negro que me consigue putas, el moro que me pasa costo y el gitano que me vende maría. \\
-                    &        & Ayer nos fuimos a tomar algo con los cumpas: Dos españoles, un ponja, un africano y un sudaca. Estamos para campaña de United Colours of Benneton. \\
-                    \hline
-                    %& Overfitting a keywords & Los fascistas salen de la ratonera para atacar a los 100 inmigrantes que han logrado saltar la valla de Ceuta. Asco de prensa y partidos políticos que se pelean por lograr los votos de los fascistas. Ningún ser humano es ilegal. \#Ceuta \#FelizMiércoles https://t.co/iAIqTj9qmi
-                    %&                       & @saludhernandezm Esas personas que extrañan dictaduras, cualquier dictadura, aún más si son las ibéricas que ponen como eje a Madrid; su cultura, política e idioma sobre la idiosincrasia de los demás. Esos mismos que añoran a Franco y viven en un país 'Sudaca' creyéndose dueños de la verdad. \\
-            \hline
+        1   & Una cosa que le pasó a una amiga mexicana en Barcelona. Una chica repartía flyers en castellano y catalán, le dio uno a mí amiga en catalán y al segundo se lo quitó y se lo dio en castellano. -No, déjalo que entiendo catalán -Ah, es que como te he visto cara de sudaca Racismo 0 URL \\
+        2   & Los fascistas salen de la ratonera para atacar a los 100 inmigrantes que han logrado saltar la valla de Ceuta. Asco de prensa y partidos políticos que se pelean por lograr los votos de los fascistas. Ningún ser humano es ilegal. \\
+        3   & @saludhernandezm Esas personas que extrañan dictaduras, cualquier dictadura, aún más si son las ibéricas que ponen como eje a Madrid; su cultura, política e idioma sobre la idiosincrasia de los demás. Esos mismos que añoran a Franco y viven en un país 'Sudaca' creyéndose dueños de la verdad.	 \\
+        4   & @caciena después sigo siendo un sudaca pero bueno \\
+        5   & @ArturoMonteduro Pues tienes toda la razón del mundo. Y lo peor es que seguro que tenía papeles y DNI español, pero queda mejor decir "argelino" o "uno d'estos del top manta", "puto inmigrante", o "moro mierda" y ya pues matas dos pájaros de un tiro. \\
+        6   & Obvio me ofendo cuando algn Sudaca hace algn comentario presuponiendo que los mexicanos somos feos, o que el pas est de la verga. Entre mexicanos podemos hablar mierda de Mxico, pero que a ningn pinche extranjero se le ocurra, porque va a haber pedo! \\
+        7   & TODOS LOS INMIGRANTES Y GITANOS FUERA!!! Menos: el colombiano que me vende coca, el negro que me consigue putas, el moro que me pasa costo y el gitano que me vende maría. \\
+        8   & Ayer nos fuimos a tomar algo con los cumpas: Dos españoles, un ponja, un africano y un sudaca. Estamos para campaña de United Colours of Benneton. \\
+        \hline
     \end{tabularx}
 
-    \caption{Errores de etiquetado. En la columna Etiqueta mostramos la etiqueta asignada en el dataset}
+    \caption{Falsos positivos del modelo de clasificación para la detección de discurso de odio (HS).}
     \label{tab:hateval_error_analysis}
 \end{table}
 
 
-En la tabla \ref{tab:hateval_error_analysis} podemos observar algunos de los errores que cometen nuestros clasificadores. Por un lado, podemos observar que algunos errores se deben a cierto overfitting a ciertas palabras ``clave'', muchas de las cuales son producto del proceso de recolección que está fuertemente basada en keywords (inmigrante, sudaca, por ejemplo). Haciendo un poco de probing en los clasificadores, podemos ver que ciertas palabras como ``inmigrante'' automáticamente disparan una salida odiosa.
-
-Otros de los casos que nuestros clasificadores no parecieran detectar son los reportes de discriminación (por ejemplo...) o casos de apropiación cultural o contenido irónico (\emph{ Ayer nos fuimos a tomar algo con los cumpas: Dos españoles, un ponja, un africano y un sudaca. Estamos para campaña de United Colours of Benneton.}). Estos casos dan cuenta de la dificultad de la detección de esta tarea.
+En la tabla \ref{tab:hateval_error_analysis} podemos observar algunos de los errores que comete nuestros clasificador. Por un lado, podemos observar que algunos errores se deben a cierto overfitting a ciertas palabras ``clave'' (como las nro. 1, 2 y 3) muchas de las cuales son producto del proceso de recolección que está fuertemente basada en keywords (inmigrante, sudaca, por ejemplo). Haciendo un poco de probing en los clasificadores, podemos ver que ciertas palabras como ``sudaca'' o ``migrante'' automáticamente disparan una salida odiosa \footnote{Puede probarse esto en el cuadro interactivo de \url{https://huggingface.co/pysentimiento/robertuito-hate-speech?text=migrante}. Si bien este modelo es el que presentaremos en el capítulo \ref{chap:07_domain_adaptation}, la idea se mantiene}. Otros de los casos que nuestros clasificadores no parecieran detectar son los reportes de discriminación (como el caso 5, parcialmente también el 1) o casos de apropiación cultural (caso 3 o 5) o contenido irónico (casos 3, 4, 7 y 8 ). Estos casos dan cuenta de la dificultad de la detección de esta tarea.
 
 Así mismo, en el proceso del análisis de error descubrimos algunos tweets a los cuales pareciera faltar contexto para poder tomar una decisión. Si bien esto a veces puede ser inferido por un humano (por ejemplo, infiriendo que un comentario habla de tal o cual suceso), un clasificador necesitaría esa información. Para el dataset en concreto, muchos de estos comentarios tienen un contexto implícito: muchos tweets hablan de incidentes en la frontera de Ceuta (España) entre inmigrantes y la policía, debido al proceso de recolección realizado. La tabla \ref{tab:hateval_lack_of_context} muestra algunos de estos ejemplos.
-
-
-Por otro lado, en la tabla YYY podemos observar que el dataset contiene
 
 
 

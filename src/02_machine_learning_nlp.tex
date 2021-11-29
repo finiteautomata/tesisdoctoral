@@ -69,12 +69,62 @@ El problema de \textbf{exploding gradient} puede solucionarse mediante la técni
 \subsection{Optimización}
 
 
-\section{Técnicas de representación de NLP}
-\subsection{Word-embeddings}
+\section{Técnicas de representación}
 
+Una de las necesidades que tienen las redes neuronales para poder trabajar con textos es el de tener representaciones continuas de cada token o palabra. Las representaciones utilizadas en la época previa de los modelos lineales --bolsas de palabras/caracteres ponderadas con algún esquema similar a TF/IDF-- adolecen de varios problemas: tienen una altísima dimensionalidad; no tienen representación semántica de la similaridad de las palabras; están concentradas en una o pocas dimensiones y suelen ser discretas.
 
+Trabajo previo ha demostrado que obtener representaciones continuas y distribuidas (de manera opuesta a discretas y concentradas)
 
-\subsubsection{Sub-word embeddings}
+Latent Semantic Analysis (LSA) \cite{landauer1997solution} es una de las primeras técnicas de representación continua utilizadas para esta tarea. Plantean el problema de obtener representaciones continuas como el de factorizar una matriz de co-ocurrencia entre tokens y documentos (o contextos). LDA (Latent Dirichlet Allocation) \cite{blei2003latent} es otra técnica basada en modelos gráficos entrenados mediante métodos variacionales, muy utilizada aún en la actualidad ya que genera representaciones latentes de los tópicos de los textos.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.65\textwidth]{img/02/bengio_neural_language_model.pdf}
+    \caption{Ilustración del modelo de lenguaje neuronal de \citet{bengio2003neural}. La entrada consta de $n-1$ palabras, que primero pasan por una lookup table (o capa de embeddings), una función de activación y son colapsadas para luego ser utilizadas como entrada de una función softmax.}
+    \label{fig:bengio_neural_language_model}
+
+\end{figure}
+
+Dentro de los métodos neuronales, uno de los más populares ha sido el de \citet{bengio2003neural} que propone una arquitectura neuronal para un modelo de lenguaje markoviano. La arquitectura de esta red está ilustrada en la figura \ref{fig:bengio_neural_language_model}. En la capa intermedia contiene una tabla de lookup de vectores de las diferentes palabras (también conocido como capa de embeddings) donde se generan las representaciones de las palabras. Trabajo posterior (con diferentes variaciones de esta misma idea) como el de \citet{collobert2011natural} ha demostrado que la utilización de este tipo de representaciones es útil para diversas tareas de NLP como POS Tagging, NER, y otras.
+
+Uno de los problemas de los métodos vistos hasta el momento es que sufrían problemas de eficiencia, sólo pudiéndose entrenar con pocos millones de palabras y con dimensiones reducidas. La técnica \emph{word2vec} \cite{mikolov2013efficient} permite entrenar representaciones de palabras de mayor dimensión y sobre grandes cantidades de textos de manera eficiente. Los vectores de palabras guardan cierta estructura lineal y semántica, como ilustran los autores con algunos ejemplos, como el ya clásico $v(\text{rey}) - v(\text{hombre}) + v(\text{mujer}) \approx v(\text{reina})$.
+
+Para generar los vectores de \emph{word2vec}, los autores plantean una relajación del problema de modelado de lenguaje mediante dos alternativas: Continuous Bag of Words (CBOW) y Skip-Gram. En CBOW intentamos predecir la palabra faltante dada una bolsa de palabras del contexto, y en skip-gram intentamos predecir las palabras del contexto dada la palabra central. Para ambos problemas, se generan representaciones intermedias ricas para las distintas palabras. \citet{mikolov2013efficient} extiende la idea del anterior trabajo proponiendo plantear el problema de skip-gram como uno de distinguir ruido de palabras efectivamente del contexto, haciendo mucho más eficiente el cálculo de estas representaciones. GloVe \cite{pennington2014glove} es otra técnica de representación de palabras que combina las ideas de factorización de matrices de LSA  mediante un problema de optimización distinto y generando representaciones que superan ligeramente en algunos benchmarks de tareas a los de \emph{word2vec}.
+
+Uno de los problemas que tienen estos métodos es que cada representación se calcula sobre las distintas palabras. En español, por ejemplo, las palabras gato, gata, gatito, gatuno, todas tienen representaciones independientes en \emph{word2vec}, a pesar de tener información morfológica en común. Esto es un problema en varios escenarios: idiomas con muchas inflexiones o aglutinantes (como el turco, alemán o finés) o --lo que es de nuestro interés-- texto altamente desnormalizado como el de redes sociales. La técnica \fasttext{} \cite{bojanowski16} extiende la idea de \emph{word2vec} mediante la asignación de vectores a secuencias de 3 caracteres (subpalabras), capturando así cierta información morfológica. La representación de una palabra se obtiene mediante una combinación lineal de los vectores de las subpalabras que la componen.
+
+\subsection{Tweet Embeddings}
+\label{sec:02_tweet_embeddings}
+
+%%
+%%
+%%
+%%  https://docs.google.com/drawings/d/1BU3ulBiqU0NojpW6Fkb4xFlMCDigSWwfjN7z9smO6nY/edit
+%%
+%%
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.80\textwidth]{img/tweet_embeddings.pdf}
+    \caption{Representación contínua de un tweet mediante combinación lineal de las representaciones de cada palabra.}
+    \label{fig:tweet_embeddings}
+\end{figure}
+
+Una forma relativamente simple de obtener una representación de un documento u oración (en nuestra tesis, esto será casi siempre un tweet) es realizar una combinación lineal de las representaciones obtenidas para cada palabra. Es decir, dada una oración $s = w_1 w_2 \ldots w_n$, y representaciones $\overline{w_1}, \overline{w_2}, \ldots, \overline{w_n} \in \mathbb{R}^m$, podemos obtener una representación
+
+\begin{equation}
+    \overline{s} = \sum\limits_{i=1}^{n} \alpha_i \overline{w_i}
+\end{equation}
+
+con $\alpha_1, \ldots, \alpha_n \in \mathbb{R}$ escalares (dependientes de la oración). De esta manera, obtenemos de $n$ representaciones independientes del contexto una representación para el tweet, sin tener en cuenta posibles interacciones entre los distintos componentes. La figura \ref{fig:tweet_embeddings} ilustra esta metodología simple para obtener representaciones de oraciones.
+
+Tenemos entonces dos posibilidades para determinar la combinación lineal: la forma de obtener las representaciones, y la forma de calcular los coeficientes. Para las representaciones, podemos usar varias de las técnicas que ya vimos como word2vec, GloVe, o \fasttext{}. Para calcular los coeficientes, consideramos en nuestro trabajo dos formas. La primera, la forma canónica, calculando un promedio de las representaciones, es decir, tomando $\alpha_i = \frac{1}{n}$
+
+Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
+Seguimos dos enfoques simples: promedio simple y promedio ponderado. En el segundo caso, utilizamos un esquema que se asemeja a la frecuencia inversa suave (SIF) \cite{arora17}, inspirado TF-IDF.
+Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado.
+Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
+
 
 \subsection{Modelos pre-entrenados}
 
@@ -83,7 +133,23 @@ El problema de \textbf{exploding gradient} puede solucionarse mediante la técni
 
 \subsubsection{Transfer Learning}
 
-\subsection{ELMo}
+\subsection{Embeddings contextualizados}
+\label{subsec:elmo}
+
+Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet{mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
+
+\elmo{} \cite{peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
+% Estas representaciones se consideran profundas ya que utilizan la salida de cada capa LSTM.
+Para obtener un vector final para cada token, los autores sugieren colapsar las capas en vectores mediante una combinación lineal.
+
+% Sea $ t_1, \ldots, t_n $ una secuencia de tokens, y sea $ h_ {k, j} $ el vector que representa la salida de la capa $ j $ cuando se consume el token $ t_k $. Entonces, el vector contextualizado para el token $ k $ es:
+%
+% \begin {ecuación}
+% ELMo_k ^ {tarea} = \gamma ^ {tarea} \sum_ {j = 0} ^ {L} s_j h_ {k, j} \label {eq: elmo}
+% \end {ecuación}
+
+En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
+
 % \begin{figure}
 %     \centering
 %     \includegraphics[width=0.65\textwidth]{img/ELMo.png}
@@ -92,3 +158,4 @@ El problema de \textbf{exploding gradient} puede solucionarse mediante la técni
 % \end{figure}
 \subsection{ULM-Fit}
 \subsection{BERT}
+
