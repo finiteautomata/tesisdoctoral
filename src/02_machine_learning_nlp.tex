@@ -126,36 +126,29 @@ Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es 
 Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 
 
-\subsection{Modelos pre-entrenados}
+
+\section{Transfer Learning y modelos pre-entrenados}
+\label{subsec:elmo}
+
+
+Hasta cerca de 2018, la forma canónica de abordar un problema de NLP era entrenar una red neuronal recurrente que consumiera embeddings no contextualizados de los tokens de entrada. Esta arquitectura tiene algunas limitaciones que detallaremos en esta sección. Una de ellas es que, dados dos problemas distintos (por ejemplo, análisis de sentimientos e inferencia de lenguaje natural --NLI--) lo único compartido por ambas arquitecturas es la capa más baja de la red, la capa de embeddings, teniendo que entrenar desde cero todo el resto de los parámetros. En términos coloquiales, cada red debe ``aprender a leer'' sobre cada tarea, ignorando muchas construcciones sintácticas y semánticas comunes del lenguaje.
+
+Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextualizados es \elmo{} \cite{peters2018}. Este modelo aprende embeddings ya no sobre una única palabra como \emph{word2vec} y sus variantes, sino sobre todo una oración, generando representaciones contextualizadas de cada palabra.  Para aprenderlas, \elmo{} se entrena sobre modelo de lenguaje bidireccional recurrente de varias capas sobre grandes cantidades de texto. En dicho trabajo, utilizan luego una combinación lineal de la salida de cada capa para obtener representaciones contextualizadas de cada token. Esta misma idea es una continuación \citet{peters2017semi}, y también parcialmente de \citet{mccann2017learned}; en este último trabajo abordan la construcción de representaciones contextualizadas mediante la tarea de traducción automática.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/02/ulmfit.pdf}
+    \caption{Universal Language Modeling for Text Classification (ULMFiT). Esquema del método planteado:}
+    \label{fig:ulmfit}
+\end{figure}
+
+Alrededor de 2018, este paradigma comenzó a cambiar hacia un esquema donde se entrena una red neuronal sobre una tarea genérica para luego ajustarla a la tarea específica, algo muy común en el área de Computer Vision. \citet{howard-ruder-2018-universal} introdujeron la técnica de ULMFiT(Universal Language Modeling for Fine-tuning for text classification), uno de los trabajos fundamentales de este nuevo paradigma. La idea propuesta se puede resumir en entrenar un modelo de lenguaje sobre un gran dataset no etiquetado, y luego utilizar esa misma red (cambiándole la última capa) ajustándola a una tarea específica.
+
+Los autores proponen 3 etapas: primero, el pre-entrenamiento sobre la tarea de modelado de lenguaje en un gran dataset de texto (e.g. Wikipedia o Common Crawl); segundo, un ajuste de la tarea de modelado de lenguaje sobre el texto de la tarea en cuestión (LM fine-tuning); y finalmente, el entrenamiento sobre las etiquetas de la tarea (Classifier fine-tuning). La figura \ref{fig:ulmfit} ilustra las 3 etapas para el problema de clasificación de sentimientos. Entre varias técnicas que utilizan para entrenar estos modelos y evitar el olvido catastrófico, vale destacar el uso de \emph{slanted triangular learning rates}, donde el learning rate tiene una etapa de \emph{warmup} donde sube hasta el pico y luego una etapa de \emph{annealing} donde se reduce linealmente hasta 0 por el resto del entrenamiento. Esta técnica será utilizada por \bert{} y otros modelos de lenguaje basados en transformers.
+
+El modelo de lenguaje utilizado por los autores de ULMFiT utiliza una arquitectura AWD-LSTM \cite{merity2018regularizing}. Estas arquitecturas recurrentes fueron el estado del arte hasta el momento, pero fueron sobrepasados por las basadas en \emph{transformers}, que pasaremos a detallar.
+
+
 
 \subsection{BERT}
 \label{sec:02_preliminar_bert}
-
-\subsubsection{Transfer Learning}
-
-\subsection{Embeddings contextualizados}
-\label{subsec:elmo}
-
-Después del gran salto adelante que representó las incrustaciones de palabras independientes del contexto, llegó una nueva ola en los últimos años. En lugar de tener vectores entrenados para cada palabra, se generan representaciones dependientes del contexto para cada token dada una oración. Por ejemplo, \citet{mccann2017learned} usó un codificador LSTM profundo para traducción automática para generar vectores sensibles al contexto.
-
-\elmo{} \cite{peters2018} es uno de estos enfoques dependientes del contexto y se basa en un modelo de lenguaje bidireccional profundo (biLM). La arquitectura del modelo de lenguaje consta de L capas de LSTM bidireccionales, además de una representación de token independiente del contexto. Por lo tanto, para cada token en una secuencia, obtenemos representaciones vectoriales de $ 2L + 1 $.
-% Estas representaciones se consideran profundas ya que utilizan la salida de cada capa LSTM.
-Para obtener un vector final para cada token, los autores sugieren colapsar las capas en vectores mediante una combinación lineal.
-
-% Sea $ t_1, \ldots, t_n $ una secuencia de tokens, y sea $ h_ {k, j} $ el vector que representa la salida de la capa $ j $ cuando se consume el token $ t_k $. Entonces, el vector contextualizado para el token $ k $ es:
-%
-% \begin {ecuación}
-% ELMo_k ^ {tarea} = \gamma ^ {tarea} \sum_ {j = 0} ^ {L} s_j h_ {k, j} \label {eq: elmo}
-% \end {ecuación}
-
-En este trabajo, usamos la implementación y los modelos entrenados previamente de \cite{che-EtAl:2018:K18-2}. El modelo español se entrenó con $L = 2 $ capas y 1024 dimensiones, y la combinación lineal se realizó utilizando un promedio simple.
-
-% \begin{figure}
-%     \centering
-%     \includegraphics[width=0.65\textwidth]{img/ELMo.png}
-%     \caption{Ilustración de ELMo. Las dos capas inferiores representan un modelo de lenguaje bidireccional, y la superior representa una combinación lineal convexa de las salidas de las capas recurrentes}
-%     \label{fig:modelos_offenseval_hateval}
-% \end{figure}
-\subsection{ULM-Fit}
-\subsection{BERT}
-
