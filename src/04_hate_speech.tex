@@ -171,16 +171,16 @@ Las evaluaciones de los modelos las realizamos poniendo una máscara por encima 
 
 \begin{table}[ht]
     \centering
-    \begin{tabular}{l l| l l l}
-        Modelo       & Idioma              & Recall     & Precision & Macro-F1 \\
+    \begin{tabular}{l l| l l l l}
+        Modelo          & Idioma      & Precision  & Recall      & F1            & Macro-F1 \\
         \hline
-        SVM$^*$          & \mr{3}{es}          & 0.741          & 0.665         & 0.730    \\
-        ELMO-RNN        &                     & 0.753          & 0.669         & 0.735    \\
-        \beto{}             &                     & \textbf{0.839} & \textbf{0.674}&\textbf{0.764}\\
+        SVM$^*$         & \mr{3}{es}  & 0.639       & 0.800       & 0.711       & 0.730  \\
+        ELMO-RNN        &             & 0.661       & 0.753       & 0.704       & 0.735  \\
+        \beto{}         &             & \tbf{0.674} & \tbf{0.839} & \tbf{0.747} & \tbf{0.764} \\
         \hline
-        BERT            & \mr{3}{en}          & 0.968      & 0.474     & 0.496   \\
-        RoBERTa         &                     & 0.967      & 0.470     & 0.485   \\
-        \bertweet{}        &                     & 0.958      & 0.495     & 0.546 \\
+        bert            & \mr{3}{en}  & 0.474       & \tbf{0.968} & 0.637       &  0.496 \\
+        roberta         &             & 0.470       & 0.967       & 0.632       &  0.486 \\
+        bertweet        &             & \tbf{0.495} & 0.959       & \tbf{0.653} & \tbf{0.546} \\
         \hline
     \end{tabular}
     \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por precisión y sensitividad sobre la clase positiva (discurso de odio) y por la métrica macro F1. Con $^*$ están marcados los resultados presentados en \citet{atalaya_tass2018}. En negrita, el mejor resultado.}
