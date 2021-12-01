@@ -2,26 +2,29 @@
 
 \section{Recolección de datos}
 
+\begin{table*}[t]
+    \centering
+    \large
+    \begin{tabular}{ lll }
+        Nombre     &  username          & \#Followers \\
+        \hline
+        La Nación  &  @LANACION         & 3.6M            \\
+        Clarín     &  @clarincom        & 3.2M        \\
+        Infobae    &  @infobae          & 3.0M   \\
+        Perfil     &  @perfilcom        & 0.81M    \\
+        Crónica    &  @cronica          & 0.80M     \\
+        \hline
+    \end{tabular}
+    \caption{Cuentas de medios utilizadas para la recolección de datos.}
+    \label{tab:medios_analizados}
+\end{table*}
+
+
 En esta sección describiremos el proceso de recolección de datos. La salida de esta etapa será un conjunto de artículos y sus comentarios extraídos de Twitter. Describiremos a continuación las decisiones realizadas respecto a las fuentes y a decisiones técnicas realizadas.
 
-\subsection{Diarios elegidos}
+Limitamos nuestra recolección de datos a cuentas de medios de la República Argentina y, puntualmente, nos centramos en diarios con comunidad mayormente rioplatense ya que (como comentaremos más adelante) los anotadores son nativos de esa variedad dialectal. Esto es teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios. Esto además se debe a que, habiendo buscando en otros medios de Argentina (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja: pocos usuarios comentan sus notas.  Centrándonos en diarios que generen interacción. Los cinco diarios sobre los que anotamos datos están listados en la tabla \ref{tab:medios_analizados}.
 
-Limitamos nuestra recolección de datos a cuentas de diarios de la República Argentina y, puntualmente, nos centramos en diarios con comunidad mayormente rioplatense ya que (como comentaremos más adelante) los anotadores son nativos de esa variedad dialectal. Esto es teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios.
-
-Además, si bien buscamos otros medios del interior de Argentina (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja: pocos usuarios comentan sus notas.
-
-Los diarios seleccionados fueron los siguientes:
-
-\begin{itemize}
-    \item @infobae
-    \item @clarincom
-    \item @perfilcom
-    \item @LANACION
-    \item @cronica
-\end{itemize}
-
-
-Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, 4 de ellos con soporte escrito, siendo Infobae el único medio enteramente digital. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa'' (puntualmente, ``La Derecha Diario''\footnote{\url{http://twitter.com/laderechadiario}}). Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de las subsiguientes etapas.
+Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, 4 de ellos con soporte escrito, siendo Infobae el único medio enteramente digital. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa''. Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de la etapa de anotación.
 
 
 \subsection{Método de recolección}
@@ -38,15 +41,14 @@ Si bien recolectamos notas de otros medios, no los consideraremos a partir de ah
 \end{table*}
 
 
-La API de Twitter\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones. Recomendamos investigar mejor esta versión actualizada para esquivar muchas de las dificultades técnicas que incursionamos para lo descripto en esta sección} en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma:
+La API de Twitter, en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones. Recomendamos investigar mejor esta versión actualizada para esquivar muchas de las dificultades técnicas que incursionamos para lo descripto en esta sección}:
 
 \begin{enumerate}
     \item Search API: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
     \item Stream API: permite buscar tweets en tiempo real sobre una muestra de cerca del 1\% de todos los tweets de la red social
 \end{enumerate}
 
-La API Stream, mientras por un lado limita temporalmente la recolección de datos, por el otro nos brinda la posibilidad de recolectar una mayor cantidad de información en tiempo real. Más aún, dada la naturaleza de nuestros datos (discurso de odio), se corre el riesgo de que con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la API Search. \todo{Mencionar algo de los términos y condiciones de Twitter}
-
+La API Stream (también conocida como Spritzer), mientras por un lado limita temporalmente la recolección de datos, por el otro nos brinda la posibilidad de recolectar una mayor cantidad de información en tiempo real. Más aún, dada la naturaleza de nuestros datos (discurso de odio), se corre el riesgo de que con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la API Search.
 
 Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de estas cuentas. Si estamos entonces recolectando tweets sobre \verb|@medio|, el proceso de recolección nos da:
 
