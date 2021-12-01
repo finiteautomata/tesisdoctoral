@@ -29,16 +29,6 @@ Si bien recolectamos notas de otros medios, no los consideraremos a partir de ah
 
 \subsection{Método de recolección}
 
-\begin{table*}[t]
-    \centering
-    \begin{tabular}{ c|c|c }
-        coronavirus  &  encierro          & síntomas \\
-        covid        &  fase              & fiebre   \\
-        cuarentena   &  infectados        & distanciamiento     \\
-        normalidad   &  Wuhan             & aislamiento\\
-    \end{tabular}
-    \caption{Palabras usadas para recolectar artículos relacionados a COVID-19.\label{tab:article_words}}
-\end{table*}
 
 
 La API de Twitter, en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones. Recomendamos investigar mejor esta versión actualizada para esquivar muchas de las dificultades técnicas que incursionamos para lo descripto en esta sección}:
@@ -62,12 +52,11 @@ Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de esta
 
 Los RTs y tweets que arroben a \verb|@medio| carecen de interés para nuestro estudio, con lo cual los descartamos. Por otro lado, también descartamos las citas, aunque podrían entenderse como ``respuestas'' a los tweets originales. Nos quedamos con tweets de \verb|@medio| y las respuestas a estos. Si bien la API nos da estos tweets desestructuradamente, reconstruimos el árbol de la discusión mediante el campo \verb|in_reply_to_status_id|\footnote{Ver la documentación y la referencia al campo en \url{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}}.
 
-Para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporaremos hilos de respuestas.
+Algo importante a remarcar es que para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporaremos hilos de respuestas. Trabajo futuro debería explorar este nivel adicional de complejidad incorporando contexto conversacional adicional.
 
+Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Por ese motivo, y dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se volcó el foco hacia artículos relacionados con el coronavirus. Para ello seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. Utilizamos las siguientes palabras: coronavirus, encierro, síntomas, covid, fase, fiebre, cuarentena, infectados, distanciamiento, normalidad,  Wuhan, aislamiento.
 
-Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Por ese motivo, y dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se hizo foco en artículos relacionados con COVID-19. Para ello seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. La tabla \ref{tab:article_words} contiene las palabras utilizadas para recuperar estos artículos.
-
-Por último, nos quedamos con aquellos tweets de los medios periodísticos que tuvieran un link a un artículo. Para ello, utilizamos la librería \emph{newspaper3k}\footnote{\url{https://newspaper.readthedocs.io/en/latest/}}, que nos permite acceder a la información relacionada a los artículos en cuestión, en particular siendo lo que más nos interesa el cuerpo del artículo. Esto vamos a utilizarlo posteriormente como una suerte de ``contexto largo''. Aquellos tweets de medios periodísticos que no contengan un link a un artículo fueron descartados de las siguientes etapas.
+Por último, nos quedamos con aquellos tweets de los medios periodísticos que tuvieran un link a un artículo. Para ello, utilizamos la librería \emph{newspaper3k}\footnote{\url{https://newspaper.readthedocs.io/en/latest/}}, que nos permite acceder a la información relacionada a los artículos en cuestión, en particular siendo lo que más nos interesa el cuerpo del artículo. Esto vamos a utilizarlo posteriormente como el contexto ``largo'' para los comentarios. Aquellos tweets de medios periodísticos que no contengan un link a un artículo fueron descartados de las siguientes etapas.
 
 \subsection{Datos recolectados}
 
@@ -91,19 +80,7 @@ Por último, nos quedamos con aquellos tweets de los medios periodísticos que t
 
 La tabla \ref{tab:articulos_recoletados_por_medio} contiene los números de los artículos recolectados por cada medio, luego de aplicado el filtro de palabras mencionado en la anterior sección. Si bien recolectamos más artículos de otros medios, no son enumerados. Infobae es el medio que más producción de artículos genera, y también será finalmente sobre el que más comentarios etiquetemos.
 
-La figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando el filtro de palabras listado en la tabla \ref{tab:article_words}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a la caída de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país.
+En el apéndice \ref{app:distribucion_datos} mostramos la distribución temporal de los datos. Si bien tenemos un pequeño gap en los datos por un problema técnico en la recolección, tenemos datos desde Marzo de 2020 hasta Febrero de 2021.
 
-Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas notas contienen links a otras con sus títulos y eso puede interferir en estas estimaciones. Así y todo, decidimos mantener este método ya que consideramos que mayormente las notas en el período referido tienen relación con la pandemia.
-
-Si bien en las siguientes secciones realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación, este conjunto de datos no supervisado será utilizado para efectuar ajustes de dominio en la siguiente sección.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{img/fechas_por_medios_todas.png}
-    \caption{Distribución temporal de artículos recolectados}
-    \label{fig:fecha_articulos_por_medio_todas}
-    \includegraphics[width=\textwidth]{img/fechas_por_medios.png}
-    \caption{Distribución temporal de artículos recolectados que mencionan COVID-19 o algún término relacionado}
-    \label{fig:fecha_articulos_por_medio_covid}
-\end{figure}
+En siguientes secciones realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación, pero este conjunto de datos no filtrado será utilizado para efectuar ajustes de dominio, y es liberado como se recomienda en \citet{gururangan-etal-2020-dont}. Hablaremos más sobre esto en los capítulos \ref{chap:06_contextualized_hate_speech} y \ref{chap:07_domain_adaptation}.
 
