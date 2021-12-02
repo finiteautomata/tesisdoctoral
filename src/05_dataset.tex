@@ -231,22 +231,22 @@ En el caso de la categoría CRIMINAL, se puede observar por un lado comentarios 
 
 En el caso de racismo (la categoría más marcada del dataset) hay una fuerte cantidad de comentarios discriminatorios contra la comunidad china. Esto es esperable por el brote racista debido a la pandemia del COVID-19 que obviamente tuvo su replica en las redes sociales \cite{he2021racism}. El racismo de las categorías que más llamados a la acción tiene, muchos del estilo de tirar bombas, aniquilar, etc a China o a la comunidad de dicho país, o llamados a tomar medidas ``blandas'', como ``no ir a comprarles a los supermercados''.
 
-Algunas de las categorías como las de la tabla \ref{tab:politics_and_calls_examples} tietienen características más elementales, basadas en agravios directos y explícitos. A priori, uno podría pensar que son las características que menos necesidad de contexto revisten, ya que --mayormente-- su carga de odio es notoria. Algo a notar es que en muchos de estos insultos se usan técnicas de camuflaje (``tafaldegaver'', falta de verga, ``docer'', cerdo), que dificultan su detección por las técnicas actuales.
+Algunas de las categorías como las de la tabla \ref{tab:politics_and_calls_examples} poseen características más elementales y menos interesantes, basadas en agravios directos y explícitos. A priori, uno podría pensar que son las características que menos necesidad de contexto revisten, ya que --mayormente-- su carga de odio es notoria y centrada en insultos. Algo a notar es que en muchos de estos insultos se usan técnicas de camuflaje (``tafaldegaver'', falta de verga, ``docer'', cerdo), que dificultan su detección por las técnicas actuales.
 
 
 
 
 \section{Discusión}
 
-En este capítulo, describimos la construcción de un dataset contextualizado de lenguaje discriminatorio o hate speech. Para ello, recolectamos respuestas a noticias periodísticas posteadas en Twitter por los principales medios de noticias de Argentina. Exploramos distintas alternativas para la selección de artículos a etiquetar, tanto observando los tópicos de los artículos como los comentarios a este. Decidimos elegir los artículos en base a sus comentarios potencialmente discriminatorios, y luego seleccionar una muestra aleatoria y acotada de comentarios. Ya de por sí únicamente este punto demostró tener una complejidad no menor
+En este capítulo, describimos la construcción de un dataset contextualizado de lenguaje discriminatorio. Separamos la construcción de este dataset en tres etapas: recolección, selección, y anotación. Con respecto a la recolección, esta se basó en recolectar respuestas a noticias periodísticas posteadas en Twitter por los principales medios de noticias de Argentina.
+
+La etapa de selección presentó cierta complejidad, teniendo en cuenta que el discurso de odio no está distribuido uniformemente entre los distintos artículos periodísticos. Exploramos distintas alternativas para esta tarea, tanto observando los tópicos como los comentarios a éste. Decidimos elegir los artículos en base a sus comentarios potencialmente discriminatorios usando un lexicon de expresiones. Las evaluaciones subjetivas de los dos métodos --seleccionar en base al artículo vs seleccionar en base a los comentarios-- resultaron en una mejor calidad de artículos seleccionados en base a los comentarios. A diferencia de otros trabajos, estos lexicones no marcaron los comentarios a etiquetar, sino los artículos: los comentarios se seleccionaron --ahora sí-- de manera aleatoria entre los artículos ya seleccionados.
 
 
-Para realizar la tarea de etiquetado, desarrollamos nuestra propia herramienta la cual hacemos pública. Definimos un modelo de anotación jerárquico y granular para la tarea, siendo relativamente novedoso el hecho de anotar las características ofendidas en cada texto social. Seis etiquetadores nativos de la variedad dialectal rioplatense realizaron la tarea de anotación bajo un esquema de 2 anotaciones + desempate.
+Para realizar la tarea de etiquetado, definimos un modelo de anotación jerárquico y granular para la tarea teniendo en cuenta lo discutido en la sección \ref{sec:04_discussion}. El hecho de anotar las características --y no sólo la etiqueta binaria de presencia de discurso de odio-- es algo que no suele realizarse en muchos trabajos. Seis etiquetadores nativos de la variedad dialectal rioplatense realizaron la tarea de anotación bajo un esquema de 2 anotaciones + desempate. Como producto, obtuvimos un dataset de cerca de 57,000 comentarios repartidos en 1,238 artículos, una cantidad de tamaño considerable en términos de comentarios aunque no tengamos parámetro de comparación ya que no existen muchos datasets similares. De los comentarios, alrededor de 8,000 comentarios tienen contenido discriminatorio (una tasa de 1 cada 6).
 
-Como producto, obtuvimos un dataset de cerca de 57k comentarios repartidos en 1.2k artículos, una cantidad de tamaño considerable aunque no tengamos parámetro de comparación ya que no existen muchos datasets similares. De los 57k comentarios, alrededor de 8k comentarios tienen contenido discriminatorio (una tasa de 1 cada 6). Un análisis exploratorio de los comentarios discriminatorios muestra ejemplos complejos y ricos, algunos de ellos altamente dependientes del contexto.
 
-Observando estas co-ocurrencias, podemos afirmar que el dataset anotado posee cierta diversidad en sus instancias, con comentarios conteniendo múltiples tipos de discriminación, y artículos que poseen comentarios odiosos de diversa naturaleza. Sobre esto, podemos especular que tanto el texto (el comentario en sí) como el contexto (el tweet del medio periodístico y su artículo periodístico) contienen información valiosa para poder distinguir entre las distintas categorías discriminatorias. \todo{esto es polémico, reformular: que varios comentarios sean discriminatorios y de característica distinta no implica que el contexto necesariamente ayude}
-
+Un análisis exploratorio de los comentarios discriminatorios muestra ejemplos complejos y ricos, algunos de ellos altamente dependientes del contexto. Finalmente, un análisis de la co-ocurrencia de las características ofendidas da muestra de que el conjunto de datos anotado posee diversidad en sus instancias, con comentarios conteniendo múltiples tipos de discriminación y artículos que poseen comentarios odiosos de diversa naturaleza. Podemos especular que tanto el texto (el comentario en sí) como el contexto (el tweet del medio periodístico y su artículo periodístico) contienen información valiosa para poder distinguir entre las distintas categorías discriminatorias.
 
 
 \section{Conclusión}
@@ -255,3 +255,8 @@ Observando estas co-ocurrencias, podemos afirmar que el dataset anotado posee ci
 
 
 En el siguiente capítulo, abordaremos nuestra pregunta original: ¿puede el contexto ayudar a los algoritmos de clasificación a mejorar su performance?. Para responder esto, utilizaremos este dataset especialmente diseñado.
+
+\section{Notas}
+
+
+En el apéndice \ref{app:02} pueden encontrarse el manual de etiquetado, como así información adicional sobre la construcción del dataset. La herramienta de etiquetado puede encontrarse en \url{https://github.com/finiteautomata/news-labelling}.
