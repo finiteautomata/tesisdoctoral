@@ -89,37 +89,6 @@ Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la se
 
 En algunos trabajos previos (como por ejemplo \citet{waseem2016hateful,hateval2019semeval}) la recolección y selección constan conjuntamente de usar ciertos keywords y, o bien recolectar tweets que usen esas palabras, o bien sirven para preseleccionar usuarios de los cuales luego extraer tweets para ser etiquetados. En nuestro caso, la selección de artículos y comentarios presenta cierta novedad y complejidad, con lo cual separamos este procedimiento para explicarlo detalladamente en las siguientes secciones.
 
-\section{Definición de discurso de odio}
-\label{sec:our_hate_speech_definition}
-\begin{table}[t]
-    \centering
-    \small
-    \begin{tabularx}{\textwidth}{l X}
-        Nombre & Descripción \\
-        \hline
-        MUJER        & Misoginia, agresiones basadas en ser mujer  \\
-        LGBTI        & Homofobia, transfobia, y ofensas a la comunidad LGBTI \\
-        RACISMO      & Racismo, Xenofobia, Judeofobia, etc \\
-        POBREZA      & Basado en su condición de clase \\
-        POLITICA     & En base a la filiación política del agredido \\
-        ASPECTO      & Gordofobia, gerontofobia \\
-        CRIMINAL     & Criminales, presos, y personas en conflicto con la ley \\
-        DISCAPACIDAD & Discapacidades y problemas de adicciones \\
-        \hline
-    \end{tabularx}
-    \caption{Características protegidas consideradas en este trabajo. Consideramos una agrupación de ciertas características bajo una misma denominación: por ejemplo, LGBTI contempla homofobia, transfobia, entre otras; análogamente racismo puede contemplar xenofobia, y otras variantes de este fenómeno. }
-    \label{tab:caracteristicas_protegidas}
-\end{table}
-
-
-Teniendo en cuenta la discusión realizada en la sección \ref{sec:hate_speech_definitions} realizamos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es necesario solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita a al menos una característica protegida.
-
-A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser ``protegidas''. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (a veces conocido como aporofobia), por su aspecto físico, y otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, el discurso de odio ``político'', que de acuerdo a \citet{CIDH2015} (ver sección \ref{sec:hate_speech_definitions}) es difícil considerar como protegida ya que puede dar lugar a censura y restricciones de la libertad de expresión.
-
-Por otro lado, consideramos el discurso de odio contra criminales, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como una característica protegida en ninguno de los trabajos mencionados en la sección \ref{sec:hate_speech_definitions}, agregamos esta característica debido a la enorme cantidad de contenido alentando la violencia contra criminales en las noticias de policiales, teniendo en cuenta que nos interesa detectar la incitación a la violencia.
-
-Tenemos entonces 8 características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás odio por aspecto; por su ideología política; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la tabla \ref{tab:caracteristicas_protegidas} junto a nombres de referencia que usaremos en éste y el próximo capítulo.
-
 % COLECCIÓN
 \input{src/05_sec_coleccion.tex}
 % SELECCIÓN
