@@ -5,65 +5,66 @@ Para analizar el error de nuestros clasificadores, elegimos el que mejor perform
 \begin{table}[t]
     \centering
     \small
-    \begin{tabularx}{\textwidth}{X X}
-        Contexto & Comentario \\
+    \begin{tabular}{p{0.03\textwidth} p{0.45\textwidth} p{0.50\textwidth}}
+          &Contexto & Comentario \\
         \hline
-        Contó que era lesbiana, su papá le confesó que era gay y ahora su madre se enamoró de una mujer, lo que inspiró su segundo film & WTF. Mucho ESI los degeneró... \\
-                                & @usuario Esta familia tiene los genes alterados \\
+        1 & Contó que era lesbiana, su papá le confesó que era gay y ahora su madre se enamoró de una mujer, lo que inspiró su segundo film & WTF. Mucho ESI los degeneró... \\
+        2 &                        & @usuario Esta familia tiene los genes alterados \\
         \hline
-        Oscar González Oro ya está instalado en el Uruguay: "Recuperé mi libertad" & Ahora quedate allá, y hablá mal d Macri d nuevo pa tener rating. Y opiná q los taxi boy uruguayos son mas educados q los escorts argentinos! Ano abierto! \\
-        ¿Por qué un beso entre dos hombres los vuelve tan violentos?": la vida después de haber sido víctima de ataques  homofóbicos &  Será xq va contra la naturaleza de la raza... \\
+        3 & Oscar González Oro ya está instalado en el Uruguay: "Recuperé mi libertad" & Ahora quedate allá, y hablá mal d Macri d nuevo pa tener rating. Y opiná q los taxi boy uruguayos son mas educados q los escorts argentinos! Ano abierto! \\
         \hline
-        ``¿Por qué no vemos médicos trans?'': el reclamo de un prestigioso cardiólogo para que América sea más inclusiva & Es difícil ser médico con la cabeza quemada \\
-            & porque un enfermo no cura a otro enfermo \\
+        4 & ¿Por qué un beso entre dos hombres los vuelve tan violentos?": la vida después de haber sido víctima de ataques  homofóbicos &  Será xq va contra la naturaleza de la raza... \\
         \hline
-        ``Te amo''. La emotiva dedicatoria de Luis Novaresio a su pareja en su cumpleaños & \emoji{face-vomiting}\emoji{face-vomiting}\emoji{face-vomiting} \\
+        5 & ``¿Por qué no vemos médicos trans?'': el reclamo de un prestigioso cardiólogo para que América sea más inclusiva & Es difícil ser médico con la cabeza quemada \\
+        6  &  & porque un enfermo no cura a otro enfermo \\
         \hline
-        Elizabeth Gómez Alcorta: "Por la pandemia, vamos a tener una suba de los femicidios y travesticidios" &  Travesticidios... Osea asesinatos de tipos con peluca y tetas \\
+        7 & ``Te amo''. La emotiva dedicatoria de Luis Novaresio a su pareja en su cumpleaños & \emoji{face-vomiting}\emoji{face-vomiting}\emoji{face-vomiting} \\
         \hline
-        Mariana Genesio Peña pasa su cuarentena total con guantes, barbijo y desnuda: "Mi cuerpo es el planeta Tierra" & Coronavirus nivel pelotudo en bolas	\\
-            & Con 3 piernas cualquiera es feliz!!!	\\
-            & pasa la cuarentena rascándose las bolas \\
+        8 & Elizabeth Gómez Alcorta: ``Por la pandemia, vamos a tener una suba de los femicidios y travesticidios'' &  Travesticidios... Osea asesinatos de tipos con peluca y tetas \\
         \hline
-
-        Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Cómo no saco su escopeta y aplicó la defensa propia?! \\
-        & @usuario Salió de caño... cuac!	\\
-    \end{tabularx}
-    \caption{Falsos negativos para la característica LGBTI. Ninguno de los 10 clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios }
+        9 & Mariana Genesio Peña pasa su cuarentena total con guantes, barbijo y desnuda: ``Mi cuerpo es el planeta Tierra'' & Coronavirus nivel pelotudo en bolas	\\
+        10 &    & Con 3 piernas cualquiera es feliz!!!	\\
+        11 &    & pasa la cuarentena rascándose las bolas \\
+        \hline
+        12 & Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Cómo no saco su escopeta y aplicó la defensa propia?! \\
+        13 & & @usuario Salió de caño... cuac!	\\
+        \hline
+    \end{tabular}
+    \caption{Falsos negativos para la característica LGBTI. Ninguno de los 10 clasificadores que consumen contexto y texto indentificaron como discriminatorios a estos comentarios }
     \label{tab:lgbti_error_analysis}
 \end{table}
 
-La tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios falsos negativos para la característica LGBTI junto a sus contextos. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio contra LGBTI, podemos dilucidar algunas razones. En primer lugar, algunos mensajes altamente ofensivos son complejos de entender o con una alta variabilidad léxica: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (\todo{de nuevo, hacer un apéndice con esto}). Esto puede hacerse de numerosas e ``ingeniosas'' maneras, y haciendo alusiones que difícilmente pueda un modelo de lenguaje entender (pensar todas las maneras que se puede hacer referencia a la genitalidad de una mujer trans).
+La tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios falsos negativos para la característica LGBTI junto a sus contextos. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio contra LGBTI, podemos esbozar algunas posibles razones. En primer lugar, ciertos mensajes altamente ofensivos son complejos de entender o con una alta variabilidad léxica: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (ejemplos 5 y 6). Esto puede hacerse de numerosas e ``ingeniosas'' maneras, y haciendo alusiones que difícilmente pueda un modelo de lenguaje entender (pensar todas las maneras que se puede hacer referencia a la genitalidad de una mujer trans, como las de los ejemplos 10 y 12).
 
-Otros contextos --como los que mencionan a Oscar González Oro o Mariana Genesio Peña-- omiten información acerca de la sexualidad o género sobre quienes versa la nota(que obviamente, no corresponde que un titular explicite). Esta información faltante no permite a los clasificadores (y tampoco a un humano que carezca de esta información) entender completamente el caracter discriminatorio de los mensajes.
+Otros contextos --como los ejemplos 3, 7, 9, 10 y 11-- omiten información acerca de la sexualidad o género sobre quienes versa la nota. Esta información faltante no permite a los clasificadores (y tampoco a un humano que carezca de esta información) entender completamente el caracter discriminatorio de los mensajes.
 
 
 \begin{table}[t]
     \centering
     \small
-    \begin{tabularx}{\textwidth}{X X}
-        Contexto & Comentario \\
+    \begin{tabular}{p{0.03\textwidth} p{0.45\textwidth} p{0.50\textwidth}}
+        & Contexto & Comentario \\
         \hline
-        Martha Rosenberg: ``En situación de pandemia, legalizar el aborto es más urgente que nunca'' & Quien es esta vieja?. No debería estar tejiendo? \\
+        1 & Martha Rosenberg: ``En situación de pandemia, legalizar el aborto es más urgente que nunca'' & Quien es esta vieja?. No debería estar tejiendo? \\
         \hline
-        Mara Gómez: la historia de la primera futbolista trans en el torneo argentino  &  Feminismo pierde de nuevo... ya le metieron un tipo... jaja punto para el patriarcado...	 \\
+        2& Mara Gómez: la historia de la primera futbolista trans en el torneo argentino  &  Feminismo pierde de nuevo... ya le metieron un tipo... jaja punto para el patriarcado...	 \\
         \hline|
-        Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Las feministas en modo error 404 al no saber si celebrar o ofenderse  \\
+        3& Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Las feministas en modo error 404 al no saber si celebrar o ofenderse  \\
         \hline
-         El desesperado pedido de Actrices Argentinas ante la violencia de género en cuarentena: ``Es urgente'' & Que risa me dan las feministas!!! Ignorantes.	 \\
+        4& El desesperado pedido de Actrices Argentinas ante la violencia de género en cuarentena: ``Es urgente'' & Que risa me dan las feministas!!! Ignorantes.	 \\
         \hline
-        Leche de cucaracha, la nueva bebida nutritiva: ¿quién se anima a probarla? & No me digas q la hija de CFK está embarazada y ya sale leche por esos senos	 \\
+        5& Leche de cucaracha, la nueva bebida nutritiva: ¿quién se anima a probarla? & No me digas q la hija de CFK está embarazada y ya sale leche por esos senos	 \\
         \hline
-        Los fans de Florencia Kirchner le piden casamiento por Instagram & Zoofilia \\
-                                & Hdp tienen que tener estomago para querer casarse con terrible adefesio \\
+        6& Los fans de Florencia Kirchner le piden casamiento por Instagram & Zoofilia \\
+        7&                       & Hdp tienen que tener estomago para querer casarse con terrible adefesio \\
         \hline
-         Rosario: para sacar una licencia de conducir habrá que hacer un curso de perspectiva de género & Te quieren adoctrinar desde cualquier ámbito, y se están metiendo en todo para que empieces a hablar como el orto, como a ellas les gusta.	\\
-            & El que choca más feministas le dan más años de licencia	\\
+        8& Rosario: para sacar una licencia de conducir habrá que hacer un curso de perspectiva de género & Te quieren adoctrinar desde cualquier ámbito, y se están metiendo en todo para que empieces a hablar como el orto, como a ellas les gusta.	\\
+        9&   & El que choca más feministas le dan más años de licencia	\\
         \hline
-        Por qué los países liderados por mujeres parecen haber respondido mejor a la crisis del coronavirus & Son mujeres inteligentes que se dejan asesorar de sus esposos \\
-         Joe Biden presentó su nuevo equipo de comunicación compuesto enteramente por mujeres & Será equipe conche seque?	\\
+        10& Por qué los países liderados por mujeres parecen haber respondido mejor a la crisis del coronavirus & Son mujeres inteligentes que se dejan asesorar de sus esposos \\
+        11& Joe Biden presentó su nuevo equipo de comunicación compuesto enteramente por mujeres & Será equipe conche seque?	\\
          \hline
-    \end{tabularx}
+    \end{tabular}
     \caption{Falsos negativos para la característica MUJER. Ninguno de los 10 clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios }
     \label{tab:women_error_analysis}
 \end{table}
