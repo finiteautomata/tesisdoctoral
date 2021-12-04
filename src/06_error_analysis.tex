@@ -1,7 +1,5 @@
 
-Para analizar el error de nuestros clasificadores, elegimos el que mejor performance tuvo en la tarea B: el clasificador que toma el tweet más el tweet de la noticia, ajustado a dominio. De una manera similar a la que realizamos en la sección \ref{sec:hateval_error_analysis}, entrenamos 10 clasificadores y analizamos el error sobre el ensamble de voto mayoritario para centrarnos en los errores más frecuentes.
-
-Nos centramos en aquellas clases que peor performance tienen: MUJER, LGBTI, y CLASE. Observando las matrices de confusión \todo{Mandar esto a un apéndice}, vemos que los resultados de los clasificadores son bajos en términos de recall. Observaremos entonces los casos de falsos negativos, que revisten el mayor problema.
+Para analizar el error de nuestros clasificadores, elegimos el que mejor performance tuvo en la tarea B: el clasificador que toma el tweet más el tweet de la noticia, ajustado a dominio. De una manera similar a la que realizamos en la sección \ref{sec:hateval_error_analysis}, entrenamos 10 clasificadores y analizamos el error sobre el ensamble de voto mayoritario para centrarnos en los errores más frecuentes. Para ver los casos más problemáticos, analizamos aquellas clases donde peor desempeño muestran los clasificadores: MUJER, LGBTI, y CLASE. Observando las matrices de confusión \todo{Mandar esto a un apéndice}, vemos que los resultados de los clasificadores son bajos en términos de recall. Observaremos entonces los casos de falsos negativos, que revisten el mayor problema.
 
 
 \begin{table}[t]
