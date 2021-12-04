@@ -184,7 +184,7 @@ Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.dja
 
 \subsection{Asignación}
 
-\citet{pustejovsky2012natural} denominan \tbf{asignación} al procedimiento de asignar \tbf{gold labels} al dataset anotado. En este punto tenemos una etiqueta binaria si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias: una para la llamadas a la acción (CALLS) y otras 8 para las características ofendidas. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características restantes.
+Llamamos \tbf{asignación} al procedimiento de asignar \tbf{gold labels} al dataset anotado \cite{pustejovsky2012natural}. Nuestro modelo consta de una etiqueta binaria marcando si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias: una para la llamadas a la acción (CALLS) y otras 8 para las características ofendidas. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características restantes.
 
 Para este dataset, tomamos las siguientes decisiones:
 

@@ -35,13 +35,11 @@ Un punto criticable de este trabajo es que utiliza el nombre de usuario como fea
 \end{figure*}
 
 
-En la sección \ref{sec:dataset_previous} hemos descripto el dataset construído por \citet{pavlopoulos2020toxicity}. Nos detendremos un momento para analizar sus experimentos de clasificación  ya que guardan importantes similaridades con lo que haremos en este capítulo. En ese trabajo se obtuvieron dos datasets de entrenamiento, uno etiquetado viendo el contexto y otro sin verlo. El dataset de test fue etiquetado viendo el contexto, considerando que el etiquetado es de mejor calidad usando más información. Tenemos entonces, dos preguntas: ¿mejora la performance de la tarea usando el dataset etiquetado con contexto? ¿mejora la performance del clasificador consumiendo información contextual? Estas dos preguntas nos brinda entonces dos elecciones: dataset de entrenamiento con o sin contexto, y clasificador con o sin contexto. Tenemos 4 posibles combinaciones de experimentos, sin aún considerar posibles técnicas de clasificación.
+En la sección \ref{sec:dataset_previous} hemos descripto el dataset construído por \citet{pavlopoulos2020toxicity}. Nos detendremos un momento para analizar sus experimentos de clasificación ya que guardan importantes similaridades con lo que haremos en este capítulo. En ese trabajo se obtuvieron dos datasets de entrenamiento: uno en el cual los etiquetadores tenían información del contexto y otro en el que no, mientras que el dataset de test fue etiquetado viendo el contexto, considerando que el etiquetado es de mejor calidad usando más información. Los autores plantearon dos preguntas sobre esta base: ¿mejora la performance de los clasificadores que son entrenados con el dataset etiquetado con contexto? ¿mejora la performance de los clasificadores consumiendo información contextual? Con estas preguntas, tenemos que tomar dos decisiones: dataset de entrenamiento con o sin contexto, y clasificador con o sin contexto. Tenemos 4 posibles combinaciones de experimentos, sin aún considerar posibles técnicas de clasificación.
 
-Para cada una de estas combinaciones, se consideraron técnicas del estado del arte de clasificación. Para aquellos clasificadores que no consumen contexto, las opciones son las mismas que hemos visto en capítulos anteriores: bi-LSTM o BERT. Para aquellos que sí consumen contexto, se evaluan dos estrategias: una, concatenar con algún caracter, y otra usando dos encoders distintos para el contexto y el texto. A su vez también utilizan la API Perspective de Google \todo{Agregar alguna cita de esto, y quizás alguna explicación en capítulo 4}.
+Para cada una de estas combinaciones, se consideraron técnicas del estado del arte de clasificación. Para aquellos clasificadores que no consumen contexto, las opciones son las mismas que hemos visto en capítulos anteriores: bi-LSTM o BERT. Para aquellos que sí consumen contexto, se evaluan dos estrategias: una, concatenar con algún caracter, y otra usando dos encoders distintos para el contexto y el texto. A su vez también utilizan la API Perspective de Google, que finalmente obtiene los mejores resultados en términos de performance. En todas las combinaciones posibles, si bien hay una mejora en la performance medida con ROC-AUC al usar contexto en ambas formas, esta no es estadísticamente significativa.
 
-Para todas las combinaciones posibles, si bien hay una mejora en la performance medida con ROC-AUC al usar contexto en ambas formas, esta no es significativa. De esto los autores concluyen que no pueden encontrar evidencia suficiente sobre la utilidad del contexto en la detección de toxicidad.
-
-Algo a mencionar (que retomaremos en este y en el siguiente capítulo) es que usan dos versiones de BERT: una usando los pesos del modelo de BERT, y otro haciendo un ajuste de dominio () corriendo la tarea de MLM sobre un dataset grande y no etiquetado. En el caso de el trabajo mencionado, sólo hacen un fine-tuning sobre comentarios sueltos del dataset de Civil Comments. Esto podría tener algún efecto deteriorando la performance al usar contexto; sin embargo, en el BERT a secas (sin hacer ajustes) tampoco se observa mejora significativa en la performance.
+Algo a mencionar (que retomaremos en este y en el siguiente capítulo) es que usan dos versiones de \bert{}: una usando los pesos del modelo de \bert{}, y otro haciendo un ajuste de dominio () corriendo la tarea de MLM sobre un dataset grande y no etiquetado. En el caso de el trabajo mencionado, sólo hacen un fine-tuning sobre comentarios sueltos del dataset de Civil Comments. Esto podría tener algún efecto deteriorando la performance al usar contexto; sin embargo, en el \bert{} a secas (sin hacer ajustes) tampoco se observa mejora significativa en la performance.
 
 Algunas limitaciones marcadas por los autores son:
 
@@ -55,19 +53,14 @@ En \citet{xenos-2021-context}, continuación de este trabajo, reetiquetaron el d
 
 
 \section{Tareas de clasificación propuestas}
+\label{sec:tasks}
 
-
-
-Ahora que tenemos este corpus especialmente diseñado que contiene el contexto, ahora dirigimos nuestra atención a responder nuestra pregunta original: ¿pueden los clasificadores aprovechar el contexto para mejorar su desempeño en la tarea de detección del discurso discriminatorio? Para ello, proponemos las siguientes tareas de clasificación:
+Para analizar el impacto del contexto en la detección de discurso de odio, y teniendo en cuenta que contamos de un dataset con anotaciones granulares sobre las características ofendidas, proponemos dos tareas de clasificación:
 
 \begin{enumerate}
-    \item \textbf{Detección ``binaria''}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio
-    \item \textbf{Detección ``granular''}\footnote{En inglés usamos la denominación \emph{fine-grained}, aunque no hay una traducción precisa para este término en español}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción
+    \item \textbf{Detección binaria}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio.
+    \item \textbf{Detección granular}\footnote{En inglés usamos la denominación \emph{fine-grained}, aunque no hay una traducción precisa para este término en español}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción.
 \end{enumerate}
-
-
-Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Estas segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros datasets.
-
 
 %%
 %%
@@ -82,58 +75,22 @@ Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la
     \label{fig:hate_detection_tasks}
 \end{figure}
 
-La tarea en su versión fina nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea binaria sólo debemos decidir la frontera entre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
+
+
+Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Esta segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros trabajos. La tarea granular nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea binaria sólo debemos decidir la frontera sobre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
+
 
 Planteándolos como problemas de clasificación, la detección binaria consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea granular podemos construir un clasificador para la tarea binaria tomando la disyunción lógica de sus salidas; o dicho más coloquialmente, poniendo una compuerta OR sobre la salida del clasificador granular. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
 
 
-
-
-\subsection{Performance humana de la tarea}
-
-
-Como observamos en la anterior sección, la tarea de detección de lenguaje discriminatorio contiene una alta cantidad de ruido, y el acuerdo entre humanos es moderado. En este contexto, cabe preguntarse una cota a la performance que puede lograr un clasificador para esta tarea. Por la misma naturaleza del problema, claramente no puede ser perfecta. Para obtener algunas medidas de esto, calculamos en primer lugar las F1 usando todos los posibles pares de anotadores. Como la F1 es simétrica (invirtiendo roles se invierten la precisión y la sensibilidad) no necesitamos hacer ninguna asunción sobre sus roles.
-
-Algo a tener en cuenta es que nuestra métrica final será contra la etiqueta resultante del (nuestro \emph{gold standard}). Una cota que seguro está por arriba de nuestra performance es el acuerdo que haya entre los anotadores y este \emph{gold standard}; hay que también observar que cada etiqueta ``de oro'' codifica información de sus anotaciones, con lo cual éste número es una cota superior sin dudas pero también pueden ser demasiado ``gruesa''.
-
-\begin{table}
-    \centering
-    \begin{tabular}{lll|ll}
-        \hline
-                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Gold} \\
-        {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
-        \hline
-        HATEFUL    &  0.6525 &   0.6751    & 0.8285   &   0.8515   \\
-        \hline
-        CALLS      &  0.4341 &   0.4950   &  0.7042   &   0.8424  \\
-        WOMEN      &  0.4896 &   0.4676   &  0.7406   &   0.7593  \\
-        LGBTI      &  0.5959 &   0.5765   &  0.8462   &   0.9152  \\
-        RACISM     &  0.6532 &   0.6444   &  0.8712   &   0.8789  \\
-        CLASS      &  0.4431 &   0.4444   &  0.7220   &   0.7317  \\
-        POLITICS   &  0.4609 &   0.4360   &  0.7951   &   0.8155  \\
-        DISABLED   &  0.5502 &   0.6000   &  0.8127   &   0.8421  \\
-        APPEARANCE &  0.6485 &   0.7428   &  0.8314   &   0.9146  \\
-        CRIMINAL   &  0.5265 &   0.5801   &  0.8415   &   0.9292  \\
-        \hline
-        Macro F1   &  0.5336 &   0.5541   &  0.7961   &   0.8477  \\
-        \bottomrule
-    \end{tabular}
-
-    \caption{Estadísticos de los cálculos de F1 entre anotadores. Cada característica es tomada como una etiqueta binaria independientemente del cálculo de la métrica para discurso de odio. La Macro F1 es el promedio de los F1 todas las características y la F1 de la llamada a la acción (CALLS). Las dos primeras columnas marcan las métricas medidas entre anotadores, y las dos últimas la de los anotadores contra la etiqueta gold}
-    \label{tab:ia_f1_scores}
-\end{table}
-
-
-La tabla \ref{tab:ia_f1_scores} contiene estadísticos de estos cálculos, tanto entre anotadores como contra el \emph{gold-standard}. Como podemos observar, la mediana entre anotadores de la F1 (usada para obviar outliers) es relativamente baja para la detección de odio ($\sim 0.67$), mientras que contra el gold standard es de $0.85$. De esto entendemos que la performance máxima en la detección está entre esos dos números.
-
-\subsection{Preprocesamiento}
-
-Para cada tweet, aplicamos el mismo procesamiento descripto en secciones anteriores: primero, cortamos las repeticiones de caracteres hasta tres ocurrencias; normalizamos las risas; convertimos los identificadores de usuario en un token especial \verb|@usuario| ; convertimos emojis en una representación textual usando la biblioteca de python \emph{emoji} \footnote {\url{https://github.com/carpedm20/emoji/}}. Los hashtags se eliminan, están rodeados por una ficha especial \emph{hashtag } y se dividen en palabras si están en mayúsculas.
-
-Aunque no realizamos un análisis de ablación para evaluar el impacto de cada paso del preprocesamiento, el proceso general pareció mejorar el rendimiento de la clasificación en el conjunto de datos de desarrollo.
-
-\subsection{Clasificadores}
+\section{Modelos de clasificación}
 \label{sec:contextualized_classifiers}
+
+
+
+
+
+Para las dos tareas, entrenamos varios clasificadores basados en \beto{} \cite{canete2020spanish}. Respecto a la información contextual, tenemos tres tipos de entrada por instancia: el comentario sin ningún tipo de contexto, con contexto simple (el tweet al que responde), y con contexto largo (el tweet al que responde + el texto del artículo periodístico). Usamos el token especial BERT \emph {[SEP]} para separar el contexto y el texto analizado. Este token es el que \emph {[SEP]} se usa para la tarea de predicción de la siguiente oración (tarea NSP) en el preentrenamiento al estilo BERT (ver la sección \ref{sec:02_transformers} para más información).
 
 %%
 %%
@@ -142,38 +99,22 @@ Aunque no realizamos un análisis de ablación para evaluar el impacto de cada p
 %%
 %%
 
-
-
-Proponemos varios clasificadores, todos basados en \beto{}\cite{canete2020spanish}, una versión en español de \emph{BERT} \cite{devlin2018bert}. Para cada tarea, proponemos tres tipos de entrada por instancia: el comentario sin ningún tipo de contexto, con contexto simple (el tweet al que responde), y con contexto largo (el tweet al que responde + el texto del artículo periodístico).
-
-
-
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{img/bert_multioutput.pdf}
-    \caption{Muestra de la recolección de datos}
-    \label{fig:bert_classifier}
+    \includegraphics[width=\textwidth]{img/06/bert_contextual_classifier.pdf}
+    \caption{Modelo de multiclasificación para la tarea granular. Los modelos son entrenados de 3 maneras distintas: sin contexto (sólo el comentario), con el contexto del tweet, y con el contexto del tweet y el texto del artículo.}
+    \label{fig:05_multi_bert_classifier}
 \end{figure}
 
-Para la tarea de detección del discurso de odio, presentamos versiones sin contexto y conscientes del contexto, utilizando el título y el cuerpo completo como posibles contextos. Usamos el token especial BERT \emph {[SEP]} para codificar el contexto y el texto analizado. Recuerde que el token \emph {[SEP]} se usa para la tarea de predicción de la siguiente oración (tarea NSP) en el preentrenamiento al estilo BERT.
-
-
-En cuanto a la detección de características ofendidas, consideramos este problema como una tarea de clasificación multibinaria; es decir, dado un texto odioso y una característica protegida, lo consideramos como una tarea de clasificación binaria para predecir si el texto ofende la característica respectiva. En lugar de entrenar un clasificador diferente para cada característica, entrenamos un BERT de múltiples salidas, compartiendo todos sus pesos con la excepción de 9 capas lineales diferentes para cada salida. La pérdida utilizada es
+Para la tarea de clasificación binaria, la salida de los clasificadores es la salida estándar de clasificadores del tipo \bert{}: una capa softmax para las dos posibles clases (ver la sección \ref{sec:03_classification} o \ref{sec:04_classifiers} para más información). En cuanto a la tarea de detección granular, lo planteamos como la predicción de 9 variables distintas: llamado a la acción (CALLS) y las 8 características ofendidas: MUJER, RACISMO, CLASE, LGBTI, CRIMINAL, ASPECTO, DISCAPACIDAD, POLITICA. En lugar de entrenar un clasificador diferente para cada característica, entrenamos un BERT de múltiples salidas, compartiendo todos sus pesos con la excepción de 9 capas lineales diferentes para cada salida. La función de costo utilizada es:
 
 \begin{equation*}
-    J = \sum\limits_{c \in CHAR \cup \{CALLS\}} J_c
+    J = \sum\limits_{c \in CHAR'} J_c
 \end{equation*}
 
-donde $CHAR$ es el conjunto de todas las características protegidas (MUJERES, LGBTI, RACISMO, CLASE, etc.) y $CALLS$ es `` llamadas a la acción ''. $ J_c $, ya que cualquier $ c $ es una pérdida de entropía cruzada binaria.
+donde $CHAR'$ es el conjunto de todas las características protegidas y además la variable de llamada a la acción, y cada $ J_c $ es la función de entropía cruzada. Compartir los pesos entre todas las salidas tiene dos objetivos: primero, poder generar un modelo más compacto (de otra forma ¡serían 9 BERT distintos!) y segundo, para compartir información común entre las distintas características atacadas, ya que consideramos que guardan similaridades -- y muchas de ellas tienen cierta intersección, como hemos visto en el capítulo anterior. Para tener costos computacionales más amigables, limitamos nuestras secuencias a 128, 256 y 512 tokens para el modelo sin contexto, el modelo que consume el tweet, y el modelo de tweet + cuerpo respectivamente. La figura \ref{fig:05_multi_bert_classifier} muestra el modelo de clasificación para la tarea granular, junto a los 3 tipos de entrada descriptos.
 
-Para tener costos computacionales más amigables, limitamos nuestras secuencias a 128, 256 y 512 tokens para el modelo no contextualizado, el modelo de título y el modelo de título y cuerpo, respectivamente.
-
-Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio sobre textos relacionados a nuestro problema; en nuestro caso, al dominio de redes sociales. Esto se realiza corriendo la tarea de MLM (ver sección YYY) sobre un dataset grande y no supervisado relacionado a nuestro dominio, o directamente sobre el dataset de la tarea si esto no está disponible. En la sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña de esta técnica, pero por lo pronto podemos entender que ajusta nuestro ``conocimiento'' a los textos disponibles (en este caso, BETO entrenado en Wikipedia y noticias es ajustado a un dominio de tweets).
-
-Para lo que nos concierne en esta sección, \citet{pavlopoulos2020toxicity} realizó una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} (a lo que denomina BERT-CCTK), sin realizar una adaptación sobre textos con contexto. Proponemos, entonces, y a diferencia de este trabajo que tomamos como referencia, 3 tipos de adaptaciones: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia.
-\todo{agregar secciones}
-
-Realizamos el ajuste utilizando el sobrante de la recolección de datos del anterior capítulo: alrededor de 288k artículos y 5.1M comentarios\footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}. La tabla \ref{tab:hs_ft_hyperparameter} contiene los hiperparámetros utilizados. Para correr estos experimentos, las corrimos sobre una TPU v2-8 y una máquina de Google Colab Pro por alrededor de 10 hs (en su largo de cadena máximo).
+Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio sobre textos relacionados a nuestro. Esto se realiza corriendo la tarea de masked language model (ver sección \ref{sec:02_transformers}) sobre un dataset grande y no supervisado relacionado a nuestro dominio, o directamente sobre el dataset de la tarea si esto no está disponible \cite{gururangan-etal-2020-dont}. En la sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña más extensa de esta técnica, pero por lo pronto podemos entender que ajusta el modelo de lenguaje a los textos disponibles; en este caso, \beto{} fue entrenado en Wikipedia y textos formales, con esta técnica lo ajustaremos a nuestro dominio particular de comentarios en Twitter a notas periodísticas.
 
 \begin{table}[t]
     \centering
@@ -196,133 +137,57 @@ Realizamos el ajuste utilizando el sobrante de la recolección de datos del ante
     \label{tab:hs_ft_hyperparameter}
 \end{table}
 
+Para lo que nos concierne en esta sección, \citet{pavlopoulos2020toxicity} realizó una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} (a lo que denomina BERT-CCTK). Esta adaptación la realizó únicamente con los comentarios, sin utilizar ningún tipo de contexto. Proponemos a diferencia de este trabajo, 3 tipos de adaptaciones: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia.
+
+Realizamos el ajuste utilizando el sobrante de la recolección de datos del anterior capítulo: alrededor de 288k artículos y 5.1M comentarios\footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}. La tabla \ref{tab:hs_ft_hyperparameter} contiene los hiperparámetros utilizados. Estos ajustes los realizamos sobre una TPU v2-8 y una máquina de Google Colab Pro por alrededor de 10 hs (en su largo de cadena máximo).
+
+
+
+Preprocesamos ambos tweets --contexto y texto-- utilizando las técnicas descriptas en la sección \ref{sec:03_preprocessing}: conversión de usernames a un token especial (\verb|usuario|), tratamiento de hashtags (separación e inserción de un hashtag especial), y conversión de emojis a su representación textual.
+
+
+\subsection{Performance humana de la tarea}
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{l cc  cc}
+                   & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Gold} \\
+        {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
+        \hline
+        ODIO       &  0.653 &   0.675    & 0.829   &   0.851   \\
+        CALLS      &  0.434 &   0.495   &  0.704   &   0.842  \\
+        \hline
+        MUJER      &  0.490 &   0.468   &  0.741   &   0.759  \\
+        LGBTI      &  0.596 &   0.577   &  0.846   &   0.915  \\
+        RACISMO    &  0.653 &   0.644   &  0.871   &   0.879  \\
+        CLASE      &  0.443 &   0.444   &  0.722   &   0.732  \\
+        POLITICA   &  0.461 &   0.436   &  0.795   &   0.815  \\
+        DISCAPACIDAD& 0.550 &   0.600   &  0.813   &   0.842  \\
+        APARIENCIA &  0.649 &   0.743   &  0.831   &   0.915  \\
+        CRIMINAL   &  0.527 &   0.580   &  0.841   &   0.929  \\
+        \hline
+        Macro F1   &  0.534 &   0.554   &  0.796   &   0.848  \\
+        \hline
+    \end{tabular}
+
+    \caption{Estadísticos de las cotas de performance entre anotadores. Cada característica es tomada como una etiqueta binaria independientemente del cálculo de la métrica para discurso de odio. La Macro F1 es el promedio de los F1 todas las características y la F1 de la llamada a la acción (CALLS). Las dos primeras columnas marcan las métricas medidas entre anotadores, y las dos últimas la de los anotadores contra la etiqueta gold}
+    \label{tab:ia_f1_scores}
+\end{table}
+
+
+Como observamos en la anterior sección, la tarea de detección de lenguaje discriminatorio contiene una alta cantidad de ruido, y el acuerdo entre humanos es moderado. En este contexto, cabe preguntarse una cota a la performance que puede lograr un clasificador para esta tarea, que claramente por la misma naturaleza del problema, va a distar mucho de la perfección. Para obtener algunas medidas de esto, calculamos en primer lugar las F1 usando todos los posibles pares de anotadores. Como la F1 es simétrica no necesitamos hacer ninguna asunción sobre sus roles.
+
+Algo a tener en cuenta es que la métrica final será contra la etiqueta resultante de la votación mayoritaria (nuestro \emph{gold standard}). Una cota que seguro está por arriba de nuestra performance es el acuerdo que haya entre los anotadores y este \emph{gold standard}; hay que también observar que cada etiqueta asignada (ver sección \ref{sec:assign}) codifica información de cada anotador, con lo cual éste número es una cota superior pero puede que sobreestimada.
+
+
+La tabla \ref{tab:ia_f1_scores} contiene estadísticos para estas cotas, tanto entre anotadores como contra el \emph{gold-standard}. Como podemos observar, la mediana entre anotadores de la F1 (usada para obviar outliers) es relativamente baja para la detección de odio ($\sim 0.67$), mientras que contra el gold standard es de $0.85$. De esto entendemos que la performance una cota superior a la performance está entre esos dos números.
+
+
 
 \section{Resultados}
 
-
-\begin{table*}
-    \centering
-    \begin{tabular}{l |ll  | ll | ll}
-        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
-                                 & $\neg$FT&  FT    & $\neg$FT&    FT  & $\neg$ FT&    FT \\
-                       accuracy  & 0.889   &  0.899 & 0.902 &\textbf{0.910} & 0.904 &    0.905 \\
-                       precision & 0.678   &  0.718 & 0.731 &\textbf{0.748} & 0.739 &    0.728 \\
-                       recall    & 0.568   &  0.602 & 0.601 &\textbf{0.653} & 0.611 &    0.641 \\
-                       F1        & 0.618   &  0.655 & 0.660 &\textbf{0.697} & 0.669 &    0.681 \\
-                       Macro  f1 & 0.776   &  0.798 & 0.801 &\textbf{0.822} & 0.806 &    0.813 \\
-        \bottomrule
-    \end{tabular}
-
-
-    \caption{Resultados de los experimentos de clasificación para la tarea \emph{binaria} de detección de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}}
-    \label{tab:task_a_results}
-\end{table*}
-
-
-La tabla \ref{tab:task_a_results} contiene los resultados de la tarea de clasificación binaria, medidos por accuracy, precisión, recall, F1 de la clase positiva y Macro F1 entre las dos clases. Tenemos 3 posibles modelos dependiendo del contexto utilizado, y para cada uno dos posibilidades de acuerdo si ajustamos al dominio o no. Podemos observar que, en todos los casos, la adaptación de dominio (las columnas marcadas con FT) obtienen mejor performance que los modelos que no están adaptados ($\neg$FT), resultando en los casos sin contexto y con contexto de tweet en una mejora de alrededor de 4 puntos de F1. Entre los modelos sin ajustar a dominio, el modelo que consume el contexto completo (tweet + cuerpo de la noticia) obtiene el mejor desempeño; sin embargo, el contexto simple mejora esta performance cuando es adaptado.
-
-Con respecto al contexto, el modelo que consume el contexto simple y está ajustado a dominio (columna Tweet y FT) obtiene la mejor performance. La mejora contra el modelo que no consume contexto es de 4.2 puntos de F1. El modelo con el contexto completo, si bien mejora la performance general contra no tener contexto, pierde precisión al ser adaptado al dominio.
-
-que agregar contexto parece mejorar el desempeño; en particular, agregar el texto parece proporcionar suficiente contexto para la tarea de detección del discurso de odio. Agregar el cuerpo mejora marginalmente el rendimiento, pero a un costo computacional más alto (recuerde que la longitud máxima con título se establece en 256, y en el otro caso es 512). La mejora en la puntuación de F1 con solo agregar el título es de aproximadamente 3 puntos; título y cuerpo suma alrededor de 3,5 puntos F1 sobre la clasificación no contextualizada. Al analizar los modelos contextuales, el cuerpo completo parece mejorar el recuerdo al tiempo que disminuye ligeramente la precisión, con una puntuación general igual de F1 que el modelo de solo título.
-
-\begin{table*}
-    \centering
-    \begin{tabular}{l |ll  | ll | ll}
-        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
-                       & $\neg$FT&    FT    & $\neg$FT   &    FT     & $\neg$ FT&    FT     \\
-        \hline
-        Calls F1       & 0.646 &    0.651   & 0.638 &\textbf{0.685}  & 0.653 &    0.680    \\
-        Women F1       & 0.373 &    0.389   & 0.411 &\textbf{0.421}  & 0.381 &\textbf{0.421} \\
-        Lgbti F1       & 0.351 &    0.366   & 0.451 &\textbf{0.482}  & 0.427 &    0.445    \\
-        Racism F1      & 0.635 &    0.653   & 0.688 &\textbf{0.720}  & 0.691 &    0.711    \\
-        Class F1       & 0.401 &    0.433   & 0.491 &\textbf{0.511}  & 0.451 &    0.476    \\
-        Politics F1    & 0.555 &    0.611   & 0.579 &0.625           & 0.591 &\textbf{0.648} \\
-        Disabled F1    & 0.551 &    0.582   & 0.585 &\textbf{0.609}  & 0.557 &    0.578    \\
-        Appearance F1  & 0.726 &    0.742   & 0.741 &\textbf{0.766}  & 0.755 &    0.758    \\
-        Criminal F1    & 0.513 &    0.529   & 0.650 &\textbf{0.699}  & 0.654 &    0.668    \\
-        \hline
-        Macro F1       & 0.528 &    0.551   & 0.582 &\textbf{0.613}  & 0.573 &    0.598    \\
-        Macro Precision& 0.558 &    0.630   & 0.642 &\textbf{0.702}  & 0.677 &    0.678    \\
-        Macro Recall   & 0.506 &    0.499   & 0.540 &\textbf{0.551}  & 0.504 &    0.541    \\
-        \hline
-        Hate Precision & 0.679 &    0.712   & 0.722 &\textbf{0.760}  & 0.748 &    0.741    \\
-        Hate Recall    & 0.621 &    0.631   & 0.642 &\textbf{0.666}  & 0.621 &    0.658    \\
-        Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
-        \bottomrule
-        \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección fina de discurso de odio. Cada modelo es un BERT con 3 posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}. Reportamos también la F1 sobre la clase de discurso de odio, ignorando las características de la misma manera que hacemos en la detección binaria}
-    \label{tab:task_b_results}
-\end{table*}
-
-
-
-La tabla \ref{tab:task_b_results} muestra los resultados de los experimentos de clasificación para la tarea de detección fina, medida en F1 para cada una de las características, y las medidas agrupadas de forma macro precision, recall, y F1. Se muestra en cada caso el resultado de la media de 10 corridas del experimento. Como era esperable, la ganancia de tener contexto disponible es más evidente en este punto, con una diferencia de Macro F1 aproximadamente 6 puntos de F1 entre la mejor versión sin contexto y la mejor versión con contexto (0.55 Macro F1 de la versión FT sin contexto vs 0.61 F1 de la versión FT con el contexto del tweet).
-
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{img/task_b_scores.pdf}
-    \caption{Métrica F1 para cada característica de la tarea Task B. Las características están ordenadas de mayor a menor de acuerdo a la diferencia de performance entre el modelo sin contexto y el modelo contextualizado. }
-    \label{fig:barplot_task_b_results}
-\end{figure*}
-
-La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por característica, esta vez ordenados de mayor a menor según el gap entre la performance contextualizada vs la no contextualizada, junto a sus intervalos de confianza 95\%, usando como modelos las versiones ajustadas al dominio. Todas las características obtienen una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por Benjamini-Hochberg\cite{benjamini1995controlling}). \todo{Mandar esto a un apéndice} Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+0.17$ F1 de diferencia), LGBTI ($+0.12$), CLASE ($+0.08$), y RACISMO (casi $+0.07$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto (ver Apéndice \ref{app:manual_criterios_anotacion} para ejemplos).
-
-Los modelos con contexto simple (que consumen sólo el tweet) son los que mejor performance tienen, en general y para cada característica, con la excepción de POLITICA.
-
-
-
-
-
-\begin{figure}[t]
-    \centering
-    \small
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=0.85\textwidth]{img/context_classification/precision_barplot.pdf}
-        \caption{Precisión}
-    \end{subfigure}
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=0.85\textwidth]{img/context_classification/exact_recall_barplot.pdf}
-        \caption{Recall exacto}
-        \label{subfig:exact_recall}
-    \end{subfigure}
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \includegraphics[width=0.85\textwidth]{img/context_classification/hate_recall_barplot.pdf}
-        \caption{Recall por categoría}
-        \label{subfig:total_recall}
-    \end{subfigure}
-    \caption{Precision y Recall para cada característica de la tarea Task B. Las diferentes barras marcan el tipo de entrada que recibe el clasificador basado en \beto{}. Recall exacto (Figura \ref{subfig:exact_recall}) cuenta el recall sobre la salida de cada categoría (es decir, sólo cuenta como recuperado un tweet marcado como MUJER si la salida del clasificador es MUJER). Recall total cuenta como recuperado un tweet si al menos alguna característica del clasificador lo marca como discurso de odio.}
-    \label{fig:precision_recall}
-\end{figure}
-
-La tabla \ref{fig:precision_recall} muestra la precisión y sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados. Análogamente la categoría CLASE obtiene una mejora sustancial en su sensibilidad, otra que es esperable que tenga cierta mezcla con otras características como RACISMO y posiblemente CRIMINAL.
-
-
-\todo{Actualizar esto con última corrida}
-
-\begin{table*}
-    \centering
-    \begin{tabular}{l |ll  | ll | ll}
-        Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
-                       & Plano &    Granular    & Plano   &    Granular     & Plano &   Granular     \\
-        \hline
-        Precision & 0.718 & 0.711 & 0.748 & 0.759 &      0.727 & 0.740 \\
-        Recall    & 0.602 & 0.636 & 0.653 & 0.667 &      0.641 & 0.660 \\
-        F1        & 0.655 & 0.671 & 0.697 & 0.710 &      0.681 & 0.697 \\
-        Macro F1  & 0.798 & 0.806 & 0.822 & 0.830 &      0.812 & 0.822 \\
-        \bottomrule
-        \end{tabular}
-    \caption{Performance de los modelos para la tarea de detección de discurso de odio. Los modelos son BERT ajustados a dominio, consumiendo los 3 tipos de contexto: sin contexto, con contexto de tweet, y con contexto completo (tweet+cuerpo). A su vez, comparamos la performance entre los clasificadores que fueron entrenados sobre la tarea \textbf{binaria} y la tarea \textbf{granular}, esta última luego relajándose para obtener un clasificador binario.}
-    \label{tab:plain_vs_granular_hate_detection}
-\end{table*}
-
-La tabla \ref{tab:plain_vs_granular_hate_detection} compara la tarea de detección de discurso de odio binaria para dos tipos de clasificadores: aquellos que fueron entrenados sobre la detección binaria
-
-
-
+\input{src/06_results.tex}
 
 \section{Análisis de error}
 

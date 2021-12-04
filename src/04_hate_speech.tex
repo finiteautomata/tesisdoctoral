@@ -25,7 +25,7 @@ La detección del discurso del odio es una tarea de clasificación de oraciones 
 
 En cuanto a las tareas compartidas, \citet{fersini2018overview} presentó un shared task en la detección de misoginia en Twitter, tanto en español como en inglés, mientras que \citet{fersini2018evalitaoverview} planteó un desafío similar pero en italiano e inglés. \citet{bosco2018overview} propuso un concurso de detección automática sobre publicaciones de Twitter y comentarios de Facebook, que incluía discursos de odio en general.
 
-Una de las herramientas más utilizadas, no sólo para la detección de discurso de odio sino para la detección de contenido tóxico en general es la Perspective API de Google, desarrollada originalmente por Jigsaw \footnote{\url{https://developers.perspectiveapi.com/s/}}. Esta API de acceso libre brinda un analizador muy potente para la detección de lenguaje tóxico, con información granular sobre los tipos de ataques. Algunos trabajos lo utilizan como algoritmo de detección en modalidad zero-shot, obteniendo mejores resultados que modelos entrenados sobre los propios datos \cite{pavlopoulos2020toxicity}. Sin embargo, algunos trabajos han marcado sus debilidades mediante ejemplos adversariales, algo que obviamente es propio de las actuales limitaciones de las técnicas de NLP \cite{hosseini2017deceiving,jain2018adversarial}.
+Una de las herramientas más utilizadas, no sólo para la detección de discurso de odio sino para la detección de contenido tóxico en general es Perspective API de Google, desarrollada originalmente por Jigsaw \footnote{\url{https://developers.perspectiveapi.com/s/}}. Esta API de acceso libre brinda un analizador muy potente para la detección de lenguaje tóxico, con información granular sobre los tipos de ataques. Algunos trabajos lo utilizan como algoritmo de detección en modalidad zero-shot, obteniendo mejores resultados que modelos entrenados sobre los propios datos \cite{pavlopoulos2020toxicity}. Sin embargo, algunas de sus debilidades han sido marcadas mediante ejemplos adversariales, algo que obviamente es propio de las actuales limitaciones de las técnicas de NLP \cite{hosseini2017deceiving,jain2018adversarial}.
 
 Dentro de los trabajos en español, \citet{plaza2021pretrained} evalua distintos modelos pre-entrenados de lenguaje sobre la tarea de detección de discriminación usando dos datasets: el primero, \citet{pereira2019detecting} que consta de 6000 tweets, recolectado por el Estado Español para monitorear el discurso de odio en redes sociales; y el segundo, el dataset de SemEval 2019 Task 5 (hatEval) \cite{hateval2019semeval}, presentado en contexto de una shared-task y que comprende ataques contra inmigrantes y mujeres.
 
@@ -112,7 +112,8 @@ Para el manejo de la negación, seguimos un enfoque simple:
 % \cite {das01, pang02}:
 Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra.
 
-\subsection{Modelos}
+\subsection{Modelos de clasificación}
+\label{sec:04_classifiers}
 
 Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{atalaya_tass2018}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de BERT\cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, \beto{}}. Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
 
