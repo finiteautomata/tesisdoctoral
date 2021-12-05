@@ -89,23 +89,22 @@ La figura \ref{fig:barplot_task_b_results} muestra los resultados de las F1 por 
         \caption{Recall por categoría}
         \label{subfig:total_recall}
     \end{subfigure}
-    \caption{Precision y Recall para cada característica de la tarea Task B. Las diferentes barras marcan el tipo de entrada que recibe el clasificador basado en \beto{}. Recall exacto (Figura \ref{subfig:exact_recall}) cuenta el recall sobre la salida de cada categoría (es decir, sólo cuenta como recuperado un tweet marcado como MUJER si la salida del clasificador es MUJER). Recall total cuenta como recuperado un tweet si al menos alguna característica del clasificador lo marca como discurso de odio.}
+    \caption{Precision y Recall para cada característica de la tarea granular. Las diferentes barras marcan el tipo de contexto que recibe el clasificador. Recall exacto (Figura \ref{subfig:exact_recall}) cuenta el recall sobre la salida exacta de cada categoría. Recall total cuenta como recuperado un tweet si al menos alguna característica del clasificador lo marca como discurso de odio.}
     \label{fig:precision_recall}
 \end{figure}
 
-La tabla \ref{fig:precision_recall} muestra la precisión y recall/sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados. Análogamente la categoría CLASE obtiene una mejora sustancial en su sensibilidad, otra que es esperable que tenga cierta mezcla con otras características como RACISMO y posiblemente CRIMINAL.
+La tabla \ref{fig:precision_recall} muestra la precisión y recall/sensibilidad de los clasificadores de la tarea granular. La sensibilidad es analizada de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, tiene que decir MUJER); y total, donde consideramos un tweet recuperado si alguna característica se enciende, independientemente si es la adecuada. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor cantidad de recuperados. Análogamente la categoría CLASE obtiene una mejora sustancial en su sensibilidad, otra que es esperable que tenga cierta mezcla con otras características como RACISMO y posiblemente CRIMINAL. También puede observarse que en líneas generales, el contexto favorece una mejora de la precisión para cada característica, y también un mayor recall exacto. Si relajamos las condiciones de la detección, la sensibilidad de los clasificadores se empareja entre las versiones contextualizadas y no contextualizadas por cada categoría, con la excepción más notoria de LGBTI y CRIMINAL.
 
 \begin{table*}
     \centering
-    \footnotesize
     \begin{tabular}{l |cc  | cc | cc}
         Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
                        & Plano &    Granular    & Plano   &    Granular     & Plano &   Granular     \\
         \hline
-        precision &  $0.718 \pm 0.016$ &  $0.711 \pm 0.022$ &  $0.748 \pm 0.019$& $0.759 \pm 0.013$ & $0.728 \pm 0.024$ & $0.740 \pm 0.015$ \\
-        recall    &  $0.602 \pm 0.014$ &  $0.636 \pm 0.015$ &  $0.653 \pm 0.014$& $0.667 \pm 0.013$ & $0.641 \pm 0.023$ & $0.660 \pm 0.015$ \\
-        F1        &  $0.655 \pm 0.004$ &  $0.671 \pm 0.003$ &  $0.697 \pm 0.003$& $0.710 \pm 0.006$ & $0.681 \pm 0.006$ & $0.697 \pm 0.004$ \\
-        Macro F1  &  $0.798 \pm 0.002$ &  $0.806 \pm 0.002$ &  $0.822 \pm 0.002$& $0.830 \pm 0.003$ & $0.813 \pm 0.003$ & $0.822 \pm 0.002$ \\        \bottomrule
+        precision &  $0.718$ &  $0.711$ &  $0.748$& $0.759$ & $0.728$ & $0.740$ \\
+        recall    &  $0.602$ &  $0.636$ &  $0.653$& $0.667$ & $0.641$ & $0.660$ \\
+        F1        &  $0.655$ &  $0.671$ &  $0.697$& $0.710$ & $0.681$ & $0.697$ \\
+        Macro F1  &  $0.798$ &  $0.806$ &  $0.822$& $0.830$ & $0.813$ & $0.822$ \\        \bottomrule
         \end{tabular}
     \caption{Performance de los modelos para la tarea de detección de discurso de odio. Los modelos son BERT ajustados a dominio, consumiendo los 3 tipos de contexto: sin contexto, con contexto de tweet, y con contexto completo (tweet+cuerpo). Comparamos la performance entre los clasificadores que fueron entrenados sobre la tarea \textbf{binaria} y la tarea \textbf{granular}}
     \label{tab:plain_vs_granular_hate_detection}
@@ -113,6 +112,4 @@ La tabla \ref{fig:precision_recall} muestra la precisión y recall/sensibilidad 
 
 
 Como se mencionó en la sección \ref{sec:tasks}, un clasificador sobre la tarea granular puede convertirse fácilmente en un clasificador para la tarea binaria tomando la disyunción lógica de sus salidas: si al menos una salida es 1, entonces el tweet es discurso de odio. Analizamos así el desempeño en la tarea binaria de aquellos clasificadores entrenados granularmente. La tabla \ref{tab:plain_vs_granular_hate_detection} muestra esta comparativa. Podemos observar que en todos los casos, entrenar el modelo sobre la tarea granular produce mejoras pequeñas pero significativas en la performance de los clasificadores entrenados sobre la tarea binaria.
-
-
 
