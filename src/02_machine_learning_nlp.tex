@@ -1,18 +1,16 @@
+En esta sección haremos una breve introducción a técnicas de Machine Learning y NLP. Describiremos las principales técnicas de clasificación utilizadas durante los últimos años en el área, las cuales usaremos en las secciones subsiguientes.
+
 \section{Redes Neuronales}
 
 \subsection{Multi-layer perceptron}
 
-Una red neuronal puede pensarse simplemente como una función $f: \mathbb{R}^m \rightarrow O$ que intenta aproximar una función $f^*$ con misma aridad. Podremos notar $ y = f(x; \Theta)$, siendo $\Theta$ los parámetros de dicha función
-
-El perceptrón, desarrollado en 1958 por Frank Rosenblatt \cite{rosenblatt1958perceptron}, intenta ajustar
+La idea detrás de la red neuronal es puede pensarse simplemente como una función $f: \mathbb{R}^m \rightarrow O$ que intenta aproximar una función $f^*$ con misma aridad. Podremos notar $ y = f(x; \Theta)$, siendo $\Theta$ los parámetros de dicha función. El perceptrón, desarrollado en 1958 \cite{rosenblatt1958perceptron}, intenta ajustar:
 
 \begin{equation*}
     y = H(\Theta_1 x + \Theta_0)
 \end{equation*}
 
-donde $H$ es la función de activación, y $\Theta = (\Theta_0, \Theta_1)$ son los parámetros de la función. Este modelo es el primero cuyos pesos se encontraban mediante un algoritmo, considerando que $H$ es una función derivable. Este puede considerarse como el primer modelo de una neurona, junto al modelo de McCulloch-Pitts.
-
-\citet{minsky1969perceptrons} demostraron que este tipo de modelos sólo pueden ajustarse a datos linealmente separables, provocando el primer ``invierno'' de las redes neuronales.
+donde $H$ es la función de activación, y $\Theta = (\Theta_0, \Theta_1)$ son los parámetros de la función. Este modelo es el primero cuyos pesos se encontraban mediante un algoritmo, considerando que $H$ es una función derivable y no lineal. Este puede considerarse como el primer modelo de una neurona, junto al modelo de McCulloch-Pitts. \citet{minsky1969perceptrons} demostraron que este tipo de modelos sólo pueden ajustarse a datos linealmente separables, provocando el primer ``invierno'' de las redes neuronales.
 
 Una forma de sortear estas dificultades planteadas es ``apilar'' (stack en inglés) varias de estas funciones para poder ajustar a más tipos de funciones. En términos matemáticos, esto es tan sólo una composición de funciones, tomando ahora $f = f_3 \circ f_2 \circ f_1$, donde $f_1$ es la primer ``capa'' de nuestra función correspondiente a la entrada, $f_2$ es la capa intermedia u oculta, y $f_3$ es la capa de salida. Si bien este ejemplo consta de 3 capas, se puede generalizar a arbitrarias capas ocultas. Este modelo es el que conocemos como \textbf{Perceptrón Multicapa} o \textbf{Multi-Layer Perceptron} (MLP por sus siglas en inglés)
 
@@ -57,9 +55,6 @@ El problema de \textbf{exploding gradient} puede solucionarse mediante la técni
     \label{eq:lstm}
 \end{align}
 
-
-
-\subsection{Optimización}
 
 
 \section{Técnicas de representación}
@@ -132,7 +127,7 @@ Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextua
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{img/02/ulmfit.pdf}
-    \caption{Universal Language Modeling for Text Classification (ULMFiT). Esquema del método planteado:}
+    \caption{Universal Language Modeling for Text Classification (ULMFiT). Esquema del método planteado: primero se pre-entrena sobre la tarea de modelado de lenguaje sobre un dataset no supervisado. Luego, se corre la misma tarea pero sobre el texto de la tarea ignorando las etiquetas (ajuste de dominio). Finalmente, se agrega una capa de parámetros particulares de la tarea y se entrena la red completa descongelando gradualmente. Fuente: \citet{howard-ruder-2018-universal}}
     \label{fig:ulmfit}
 \end{figure}
 
@@ -253,9 +248,17 @@ Un punto no menor es que el modelo Transformer, siendo que no tiene ningún tipo
 No nos extenderemos más en la explicación de esta arquitectura, y referimos para más información a los excelentes artículos \emph{Transformers from Scratch} \footnote{\url{http://peterbloem.nl/blog/transformers}}, \emph{Annotated Transformer} \footnote{\url{https://nlp.seas.harvard.edu/2018/04/03/attention.html}} y \emph{The Illustrated Transformer} \footnote{\url{https://jalammar.github.io/illustrated-transformer/}}.
 
 
-\section{GPT, BERT, y modelos pre-entrenados basados en Transformers}
+\section{BERT y amigos}
 
 Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de modelado de lenguaje-- y la arquitectura Transformer --removiendo las redes recurrentes y facilitando la paralelización del cálculo-- en \citet{radford2018improving} se introduce GPT (\emph{generative pre-training}). Esta técnica consiste de un pre-entrenamiento sobre un gran corpus no etiquetado y luego un fine-tuning discriminativo para cada tarea, muy en la línea de \citet{howard-ruder-2018-universal}, introduciendo parámetros específicos únicamente para cada una de estas. El modelo que usa esta tarea es el de \tbf{modelado de lenguaje causal} -- es decir, de izquierda a derecha. Este modelo obtuvo para muchas tareas como el benchmark GLUE \cite{wang-etal-2018-glue} el estado del arte.
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/02/gpt_vs_bert.pdf}
+    \caption{Comparación entre ELMo, GPT y BERT. ELMo genera vectores contextualizados mediante dos modelos de lenguaje recurrentes (uno de izquierda a derecha y el otro al revés), . GPT pre-entrena un modelo de lenguaje basado en Transformers. BERT genera representaciones bidireccionales }
+    \label{fig:gpt_vs_bert_vs_elmo}
+\end{figure}
 
 
 \bert{} \cite{devlin2018bert} (Bidirectional Encoder Representations from Transformers) plantea una modificación sobre GPT: en lugar de pre-entrenar el modelo sobre la tarea de modelado de lenguaje \tbf{causal} --de izquierda a derecha-- entrenar sobre la tarea de modelado de lenguaje \tbf{enmascarado}. Esta tarea (usualmente llamada \emph{Cloze task} \cite{taylor1953cloze}) consta de enmascarar una cierta cantidad de palabras de una frase, y luego intentar predecir las palabras faltantes. Por ejemplo, en la siguiente frase, consta de reemplazar los dos tokens \verb|[MASK]|:
@@ -265,16 +268,25 @@ Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de mo
 \end{center}
 
 
-\begin{figure}
+A diferencia de la tarea de modelado de lenguaje causal, los autores argumentan que esta tarea permite generar representaciones bidireccionales ricas. La figura \ref{fig:gpt_vs_bert_vs_elmo} muestra una comparación entre los distintos tipos de pre-entrenamiento de GPT.
+
+BERT es entrenado conjuntamente sobre dos tareas: una, la ya mencionada tarea de modelado de lenguaje enmascarado; la otra, la tarea de \emph{predicción de próxima oración} (Next Sentence Prediction, NSP). Esta tarea consiste en predecir si, dado un par de oraciones, la segunda es la que sigue a la primera. Esta tarea debiera guardar cierta relación con la semántica de las oraciones y su interrelación, necesaria en tareas como NLI y Question Answering.
+
+\newcommand{\clstok}[0]{\texttt{[CLS]}}
+\newcommand{\septok}[0]{\texttt{[SEP]}}
+
+\begin{figure}[t]
     \centering
-    \includegraphics[width=\textwidth]{img/02/gpt_vs_bert.pdf}
-    \caption{Comparación entre ELMo, GPT y BERT. }
+    \includegraphics[width=\textwidth]{img/02/bert.pdf}
+    \caption{Pre-entrenamiento y fine-tuning de BERT para distintas tareas. Fuente: \citet{devlin2018bert}}
+    \label{fig:bert_pretraining_and_finetuning}
 \end{figure}
 
-A diferencia de la tarea de modelado de lenguaje causal, los autores argumentan que esta tarea permite generar representaciones bidireccionales ricas. La figura
+Dos caracteres especiales son utilizados en \bert{}: \clstok{} y \septok{}. Estos caracteres se utilizan para delimitar las oraciones en la entrada de la red, y también para separar las dos oraciones de entrada. Durante el pre-entrenamiento, la representación generada por \clstok{} es utilizada como la predicción de la tarea NSP y la representación de cada token enmascarado es utilizado como entrada de una capa softmax para predecir el token faltante. Para la mayoría de las tareas de clasificación de texto, \clstok{} es usado como la representación de la (o las) oraciones de entrada. La figura \ref{fig:bert_pretraining_and_finetuning} ilustra esta metodología para la tarea de QA, ligeramente más compleja que la clasificación de texto.
+
+\bert{} utiliza WordPiece \cite{wu2016google}, un algoritmo de tokenización muy similar a BPE \cite{sennrich2016neural}, con un vocabulario de largo 30,000 para separar su entrada en subpalabras de manera eficiente. A su vez, para cada posición de su entrada entrena embeddings posicionales (a diferencia de los embeddings posicionales fijos originales de \citet{vaswani2017attention}) con un límite de 512, y dos embeddings especiales para la primer oración y la segunda oración de la entrada. Los vectores que ingresan a la primer capa de transformers son la suma de los embeddings de cada token, los embeddings posicionales, y los embeddings de oración.
 
 
-A modo de comparación entre las distintas estrategias de pre-entrenamiento, la figura
+\citet{liu2019roberta} propone dos modificaciones al pre-entrenamiento de \bert{}: en primer lugar, remover la tarea de NSP; y en segundo lugar, realizar un pre-entrenamiento más extenso y con batch sizes más grandes, pasando de lotes de 512 a 8,192 oraciones. Este modelo pre-entrenado (al cual se denomina \roberta{}) obtuvo mejor desempeño en el dataset de GLUE y otras tareas que \bert{}.
 
-
-
+Luego de estos modelos de lenguaje, una suerte de guerra armamentística tuvo lugar para entrenar modelos más grandes y con más parámetros al observar que aumentando la cantidad de estos mejoraba la performance -- sin observarse aún un techo más que los recursos del planeta. Sólo para ilustrar el punto, la versión \emph{base} de \bert{} tiene 110M parámetros, su versión large 330M.
