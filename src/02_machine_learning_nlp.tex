@@ -1,7 +1,5 @@
 \section{Redes Neuronales}
 
-\subsection{Brevísima historia}
-\subsection{Definición}
 \subsection{Multi-layer perceptron}
 
 Una red neuronal puede pensarse simplemente como una función $f: \mathbb{R}^m \rightarrow O$ que intenta aproximar una función $f^*$ con misma aridad. Podremos notar $ y = f(x; \Theta)$, siendo $\Theta$ los parámetros de dicha función
@@ -17,11 +15,6 @@ donde $H$ es la función de activación, y $\Theta = (\Theta_0, \Theta_1)$ son l
 \citet{minsky1969perceptrons} demostraron que este tipo de modelos sólo pueden ajustarse a datos linealmente separables, provocando el primer ``invierno'' de las redes neuronales.
 
 Una forma de sortear estas dificultades planteadas es ``apilar'' (stack en inglés) varias de estas funciones para poder ajustar a más tipos de funciones. En términos matemáticos, esto es tan sólo una composición de funciones, tomando ahora $f = f_3 \circ f_2 \circ f_1$, donde $f_1$ es la primer ``capa'' de nuestra función correspondiente a la entrada, $f_2$ es la capa intermedia u oculta, y $f_3$ es la capa de salida. Si bien este ejemplo consta de 3 capas, se puede generalizar a arbitrarias capas ocultas. Este modelo es el que conocemos como \textbf{Perceptrón Multicapa} o \textbf{Multi-Layer Perceptron} (MLP por sus siglas en inglés)
-
-
-
-
-
 
 \subsection{Redes neuronales recurrentes}
 
@@ -128,12 +121,13 @@ Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 
 
 \section{Transfer Learning y modelos pre-entrenados}
+
+\subsection{ELMo y ULMFiT}
 \label{subsec:elmo}
 
+Hasta cerca de 2018, la forma canónica de abordar un problema de NLP era entrenar una red neuronal recurrente que consumiera embeddings no contextualizados de los tokens de entrada. Esta arquitectura tiene algunas limitaciones; una de ellas es que, dados dos o más problemas distintos (por ejemplo, análisis de sentimientos e inferencia de lenguaje natural --NLI--) lo único compartido por ambas arquitecturas es la capa más baja de la red -- la capa de embeddings -- teniendo que entrenar desde cero todo el resto de los parámetros del modelo. En términos coloquiales, cada red debe ``aprender a leer'' sobre cada tarea, ignorando muchas construcciones sintácticas y semánticas comunes del lenguaje.
 
-Hasta cerca de 2018, la forma canónica de abordar un problema de NLP era entrenar una red neuronal recurrente que consumiera embeddings no contextualizados de los tokens de entrada. Esta arquitectura tiene algunas limitaciones que detallaremos en esta sección. Una de ellas es que, dados dos problemas distintos (por ejemplo, análisis de sentimientos e inferencia de lenguaje natural --NLI--) lo único compartido por ambas arquitecturas es la capa más baja de la red, la capa de embeddings, teniendo que entrenar desde cero todo el resto de los parámetros. En términos coloquiales, cada red debe ``aprender a leer'' sobre cada tarea, ignorando muchas construcciones sintácticas y semánticas comunes del lenguaje.
-
-Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextualizados es \elmo{} \cite{peters2018}. Este modelo aprende embeddings ya no sobre una única palabra como \emph{word2vec} y sus variantes, sino sobre todo una oración, generando representaciones contextualizadas de cada palabra.  Para aprenderlas, \elmo{} se entrena sobre modelo de lenguaje bidireccional recurrente de varias capas sobre grandes cantidades de texto. En dicho trabajo, utilizan luego una combinación lineal de la salida de cada capa para obtener representaciones contextualizadas de cada token. Esta misma idea es una continuación \citet{peters2017semi}, y también parcialmente de \citet{mccann2017learned}; en este último trabajo abordan la construcción de representaciones contextualizadas mediante la tarea de traducción automática.
+Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextualizados es \elmo{} \cite{peters2018}. Este modelo aprende embeddings ya no sobre una única palabra como \emph{word2vec} y sus variantes, sino sobre todo una oración, generando representaciones contextualizadas de cada palabra.  Para aprenderlas, \elmo{} se entrena sobre modelo de lenguaje bidireccional \footnote{En realidad no es estrictamente bidireccional, sino dos modelos de lenguaje concatenados} recurrente de varias capas sobre grandes cantidades de texto. En dicho trabajo, utilizan luego una combinación lineal de la salida de cada capa para obtener representaciones contextualizadas de cada token. Esta misma idea es una continuación \citet{peters2017semi}, y también parcialmente de \citet{mccann2017learned}; en este último trabajo abordan la construcción de representaciones contextualizadas mediante la tarea de traducción automática.
 
 \begin{figure}[t]
     \centering
@@ -149,5 +143,138 @@ Los autores proponen 3 etapas: primero, el pre-entrenamiento sobre la tarea de m
 El modelo de lenguaje utilizado por los autores de ULMFiT utiliza una arquitectura AWD-LSTM \cite{merity2018regularizing}. Estas arquitecturas recurrentes fueron el estado del arte hasta el momento, pero fueron sobrepasados por las basadas en \emph{transformers}, que pasaremos a detallar.
 
 
-\subsection{Modelos basados en transformers}
+\subsection{Modelos basados en atención}
 \label{sec:02_transformers}
+
+Una de las limitaciones de los modelos basados en redes recurrentes es que sufren un \tbf{sesgo de localidad o secuencialidad}(locality bias) \cite{battaglia2018relational}. En palabras coloquiales, las redes recurrentes tienen problemas para aprender dependencias de largo rango en las oraciones, siendo esto producto de su arquitectura autorregresiva donde se construye la salida $y_t$ en base a $y_{t-1}$. Este sesgo es particularmente dañino en tareas de transducción de sequencias con la arquitectura encoder-decoder básica ya que a esto se le suma un cuello de botella forzoso por la compresión de toda la secuencia de entrada en un vector de longitud fija. \footnote{\citet{sutskever2014sequence} de hecho en su trabajo observa que invertir la oración de entrada obtiene mejores resultados para la tarea de traducción automática}.
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/02/attention_model.pdf}
+    \caption{Mecanismo general de atención. En azul, la salida del encoder recurrente de la entrada. En rojo, la salida del decoder recurrente. Fuente: \citet{luong2015effective}}
+    \label{fig:attention_mechanism}
+\end{figure}
+
+
+Una de las formas de mitigar este sesgo es la utilización de mecanismos de \emph{atención} \cite{bahdanau2014neural}. Suponiendo una arquitectura recurrente de encoder y decoder, y siguiendo la notación de \citet{luong2015effective}, para la tarea de traducción automática de una secuencia $(x_1, \ldots , x_n)$ a $(y_1, \ldots , y_m)$, con estados ocultos $(\overline{h_1}, \ldots , \overline{h_n})$ para la entrada y $(h_1, \ldots , h_m)$ y para la salida, el mecanismo de atención \footnote{global, en \citet{luong2015effective} se menciona el mecanismo local que no consideramos} consta de calcular para cada paso $t$ un vector de contexto
+
+\begin{equation*}
+    c_t = \sum_{i=1}^n \alpha_i^{(t)} \overline{h_i}
+\end{equation*}
+
+donde $\alpha^{(t)}$ es el vector de alineamiento, calculado como
+
+\newcommand{\score}[0]{\text{score}}
+
+\begin{equation*}
+    \alpha^{(t)} = \softmax(\score(\overline{h_1}, h_t), \score(\overline{h_2}, h_t) \ldots , \score(\overline{h_n}, h_t))
+\end{equation*}
+
+Cada $\score(\overline{h_i}, h_t)$ marca una similaridad no normalizada entre sus argumentos. Siguiendo las alternativas planteadas en \citet{luong2015effective}, tenemos algunas posibles opciones para esto:
+
+\begin{equation}
+    score(\overline{h_i}, h_t) =  \begin{cases}
+        \overline{h_i}^T h_t   & \text{dot} \\
+        \overline{h_i}^T W h_t & \text{general} \\
+        v^T\text{tanh}(W [\overline{h_i}^T; h_t]) & concat
+     \end{cases}
+\end{equation}
+
+% copypasting random stuff from the Internetz
+% https://tex.stackexchange.com/questions/66537/making-hats-and-other-accents-bold
+%
+\newcommand{\thicktilde}[1]{\mathbf{\tilde{\text{$#1$}}}}
+
+con $W, v$ parámetros adicionales. En el caso de la atención producto interno (dot) podemos reescribir todas las ecuaciones como:
+
+\begin{equation}
+    C = \softmax(H \widehat{H}^T ) \widehat{H}
+    \label{eq:attention_product}
+\end{equation}
+
+donde $\widehat{H}, H$ son los vectores que tienen $(\overline{h_1}, \ldots , \overline{h_n})$  y $(h_1, \ldots , h_m)$ como filas respectivamente, y $\softmax$ se calcula fila a fila.
+
+Finalmente, el vector $\widetilde{h_t}$ es calculado como una transformación del estado oculto del decoder $h_t$ y el vector contextual $c_t$:
+
+
+\begin{equation*}
+    \widetilde{h_t} = \tanh(W_h [h_t; c_t])
+\end{equation*}
+
+
+El vector $\widetilde{h_t}$ codifica información de manera global de todos los estados ocultos del codificador, mitigando este problema del sesgo de localidad. Esta técnica se convirtió en parte integral de los modelos seq2seq como ser traducción automática, sumarización, entre otras. La figura \ref{fig:attention_mechanism} ilustra esta arquitectura.
+
+La técnica de auto-atención o intra-atención \cite{parikh-etal-2016-decomposable} consiste en aproximadamente la misma idea que la atención sólo que teniendo una única secuencia; podemos asumir ecuaciones similares con $\overline{h_i} = h_i$. La auto-atención genera representaciones de los distintos vectores de entrada observando la totalidad de la secuencia, a diferencia de las redes recurrentes que sólo construyen una representación en base al paso anterior. Esta capa se utiliza en arquitecturas para clasificación de texto encima de una capa recurrente para generar representaciones con dependencias sin distinción de la distancia entre los distintos tokens.
+
+\section{Transformers}
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[]{0.55\textwidth}
+        \centering
+        \includegraphics[width=0.55\textwidth]{img/02/transformer_architecture.png}
+        \caption{Arquitectura de modelos Transformer}
+        \label{fig:transformer_architecture}
+    \end{subfigure}
+    \begin{subfigure}[]{0.40\textwidth}
+        \centering
+        \includegraphics[width=0.40\textwidth]{img/02/scaled_self_attention.png}
+        \caption{Arquitectura de modelos Transformer}
+        \label{fig:scaled_self_attention}
+    \end{subfigure}
+    \caption{Modelo de transformador y su versión de auto-atención. La subfigura \ref{fig:transformer_architecture} muestra la arquitectura de los codificadores y decodificadores. Fuente: \citet{vaswani2017attention}}
+    \label{fig:transformer_mechanism}
+\end{figure}
+
+Mencionamos el sesgo de la secuencialidad como uno de los problemas de los modelos recurrentes. Otro de los grandes obstáculos para las arquitecturas autorregresivas es la paralelización. El modelo de cómputo secuencial donde $h_t$ se calcula en base a $h_{t-1}$ inhibe un cálculo paralelo, donde las diferentes representaciones puedan ser generadas simultáneamente. \citet{parikh-etal-2016-decomposable} es uno de los primeros trabajos que proponen una arquitectura para el problema de inferencia (NLI) enteramente basada en modelos de atención, sin modelos recurrentes.
+
+\citet{vaswani2017attention} introdujeron la arquitectura \emph{Transformer} para la tarea de traducción automática. Esta arquitectura no utiliza capas recurrentes ni convolucionales, basándose enteramente en el mecanismo de auto-atención. La figura \ref{fig:transformer_architecture} muestra la arquitectura de los modelos basados en Transformer, organizado en forma de encoder-decoder, con 6 capas de cada uno.
+
+Cada capa del encoder utiliza un mecanismo de auto-atención múltiple seguido de una capa feed-forward punto a punto. Las dos capas de auto-atención o feed-forward están sucedidas por una conexión residual \cite{he2016deep} \footnote{El fin de estas conexiones residuales es facilitar el flujo del gradiente en arquitecturas profundas} y una normalización, de manera que la salida se expresa como:
+
+\begin{equation*}
+    \text{Layer}(x) = \text{Norm}(x + \text{subLayer}(x))
+\end{equation*}
+
+Las capas decodificadoras son similares, salvo que se les agrega una capa extra de auto-atención donde se combinan las salidas del encoder con las representaciones que genera el decoder. A su vez, las capas de multi-atención están enmascaradas para no poder ``ver'' las representaciones que se generan en pasos posteriores para guardar su naturaleza secuencial en la tarea.
+
+El cálculo de atención utilizado en este trabajo es similar al visto en la ecuación \ref{eq:attention_product}, aunque normalizado por $\sqrt{d_k}$, donde $d_k$ es la dimensión de los vectores de entrada:
+
+\begin{equation*}
+    Attention(Q, K, V) = \text{softmax}(\frac{Q^T K}{\sqrt{d_k}}) V
+\end{equation*}
+
+Cada capa utiliza varias cabezas de auto-atención, las cuales concatena y proyecta en su salida en su salida. La salida de cada una de capa pasa por una regularización de tipo dropout \cite{srivastava2014dropout}.
+
+Un punto no menor es que el modelo Transformer, siendo que no tiene ningún tipo de recurrencia y convolución, carece de cualquier ordenamiento de la secuencia de tokens. Para inyectar ese conocimiento en la red, utilizan \emph{vectores de posicionamiento} (positional embeddings) que se suman a los vectores de entrada de la capa de embeddings, como se ilustra en la figura \ref{fig:transformer_architecture}. Estos vectores no son parámetros entrenados (como sí lo son en \bert{}) sino que se calculan mediante funciones sinusoidales.
+
+
+No nos extenderemos más en la explicación de esta arquitectura, y referimos para más información a los excelentes artículos \emph{Transformers from Scratch} \footnote{\url{http://peterbloem.nl/blog/transformers}}, \emph{Annotated Transformer} \footnote{\url{https://nlp.seas.harvard.edu/2018/04/03/attention.html}} y \emph{The Illustrated Transformer} \footnote{\url{https://jalammar.github.io/illustrated-transformer/}}.
+
+
+\section{GPT, BERT, y modelos pre-entrenados basados en Transformers}
+
+Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de modelado de lenguaje-- y la arquitectura Transformer --removiendo las redes recurrentes y facilitando la paralelización del cálculo-- en \citet{radford2018improving} se introduce GPT (\emph{generative pre-training}). Esta técnica consiste de un pre-entrenamiento sobre un gran corpus no etiquetado y luego un fine-tuning discriminativo para cada tarea, muy en la línea de \citet{howard-ruder-2018-universal}, introduciendo parámetros específicos únicamente para cada una de estas. El modelo que usa esta tarea es el de \tbf{modelado de lenguaje causal} -- es decir, de izquierda a derecha. Este modelo obtuvo para muchas tareas como el benchmark GLUE \cite{wang-etal-2018-glue} el estado del arte.
+
+
+\bert{} \cite{devlin2018bert} (Bidirectional Encoder Representations from Transformers) plantea una modificación sobre GPT: en lugar de pre-entrenar el modelo sobre la tarea de modelado de lenguaje \tbf{causal} --de izquierda a derecha-- entrenar sobre la tarea de modelado de lenguaje \tbf{enmascarado}. Esta tarea (usualmente llamada \emph{Cloze task} \cite{taylor1953cloze}) consta de enmascarar una cierta cantidad de palabras de una frase, y luego intentar predecir las palabras faltantes. Por ejemplo, en la siguiente frase, consta de reemplazar los dos tokens \verb|[MASK]|:
+
+\begin{center}
+    El \verb|[MASK]| es celeste y el pasto \verb|[MASK]|
+\end{center}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/02/gpt_vs_bert.pdf}
+    \caption{Comparación entre ELMo, GPT y BERT. }
+\end{figure}
+
+A diferencia de la tarea de modelado de lenguaje causal, los autores argumentan que esta tarea permite generar representaciones bidireccionales ricas. La figura
+
+
+A modo de comparación entre las distintas estrategias de pre-entrenamiento, la figura
+
+
+
