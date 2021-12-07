@@ -1,4 +1,11 @@
 
+\section{Algunos detalles técnicos}
+
+Una pequeña observación técnica es el que el código de entrenamiento es una adaptación de los ejemplos de huggingface/transformers, ya que la inmensa cantidad de datos que manejamos(cerca de 500gb) no es manejada adecuadamente por la librería huggingface/datasets. Dejamos a quien esté interesado esta aclaración para adaptarla cuando este problema sea resuelto.
+
+\section{Tabla completa de resultados}
+
+
 
 En la tabla \ref{tab:full_domain_adaptation_evaluation_results} tenemos los resultados para todos los modelos considerados en el benchmark de adaptación de dominio, referidos en la sección \ref{sec:domain_adaptation_results}. Notamos, para compacidad, con subíndice \emph{U, C, D} a las versiones  \emph{uncased}, \emph{cased} y \emph{deacc}. Así mismo, notamos con $10K$ (por ejemplo) a aquel modelo con adaptación de dominio por 10,000 pasos según descripto en la sección \ref{sec:domain_adaptation_vs_robertuito}.
 
