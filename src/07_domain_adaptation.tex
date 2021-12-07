@@ -3,22 +3,22 @@
 \newcommand{\cased}[0]{\textbf{cased}}
 \newcommand{\uncased}[0]{\textbf{uncased}}
 
-En este capítulo exploraremos cómo mejorar la detección de discurso de odio desde una perspectiva más general, mediante \textbf{técnicas de adaptación de dominio} y entrenando modelos de lenguaje en textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta los modelos de lenguajes pre-entrenados) generan, por un lado, representaciones ricas al ser entrenadas en dominios sociales y, así mismo, también observamos que en algunos modelos pre-entrenados (como AWD-LSTM usando la técnica de ULMFit) \todo{meter citas} continuar el entrenamiento sobre un conjunto de datos similar al de la tarea objetivo ayuda a mejorar la performance.
+En este capítulo exploraremos cómo mejorar la detección de discurso de odio desde una perspectiva más general, mediante \textbf{técnicas de adaptación de dominio} y construyendo modelos de lenguaje pre-entrenados en textos sociales. Hemos visto en capítulos anteriores que las técnicas de representación utilizadas en los últimos años (desde los word-embeddings hasta los modelos de lenguajes pre-entrenados) generan, por un lado, representaciones ricas al ser entrenadas en dominios sociales. A su vez, trabajos recientes muestran que modelos pre-entrenados mejoran su performance continuando el aprendizaje semi-supervisado sobre un conjunto de datos similar al de la tarea objetivo, en nuestro casos textos generados por usuarios.
 
-Los modelos de lenguaje suelen ser entrenados sobre cierto conjunto de datos que se suponen suficientemente generales, como Wikipedia que comprende textos de carácter enciclopédico, o como Common Crawl, que es una recopilación de datos de distintos sitios web\footnote{[\url{https://commoncrawl.org/}]}. El uso del lenguaje en estas fuentes suele tener cierta discordancia con el lenguaje de muchas tareas; por ejemplo, tareas en textos médicos, textos científicos, o --lo que es de interés en esta tesis-- las tareas sobre textos sociales tienen un uso del lenguaje muy particular, con mucha jerga, expresiones particulares, y otros usos que se diferencian de los textos fuentes en los que están entrenados BERT, RoBERTa, \beto{} y otros. A cada uno de estos grupos de textos con cierta relación se los denomina --de manera poco concisa-- \textbf{dominios}, y al conjunto de técnicas utilizadas para adaptar distintos modelos a estos \textbf{adaptación de dominio}.
+Los modelos pre-entrenados de lenguaje suelen ser entrenados sobre cierto conjunto de datos que se suponen suficientemente generales, como Wikipedia que comprende textos de carácter enciclopédico, o como Common Crawl, que es una recopilación de datos de distintos sitios web \footnote{[\url{https://commoncrawl.org/}]}. El uso del lenguaje en estas fuentes suele tener cierta discordancia con el de muchas tareas; por ejemplo, tareas en textos médicos, textos científicos, o --lo que es de interés en esta tesis-- las tareas sobre textos sociales. El texto generado por usuarios tienen un uso del lenguaje muy particular, con mucha jerga, expresiones particulares, y otros usos que se diferencian de los textos fuentes en los que están entrenados BERT, RoBERTa, \beto{} y otros. A cada uno de estos grupos de textos con cierta relación se los denomina --de manera poco concisa-- \textbf{dominios}, y al conjunto de técnicas utilizadas para adaptar distintos modelos a estos dominios se lo denomina \textbf{adaptación de dominio} \cite{eisenstein2013bad}.
 
-Teniendo estas consideraciones en cuenta, intentaremos  usando técnicas del estado del arte. En primer lugar, entrenando desde cero un modelo de lenguaje basado en transformers (RoBERTa)\cite{liu2019roberta} sobre tweets, al cual llamamos \robertuito{}; la segunda, tomando un modelo \beto{}, y continuando el pre-entrenamiento sobre un gran conjunto de tweets. Trabajo previo ha demostrado que ambas estrategias mejoran la performance de los modelos de clasificación del estado del arte cuando trabajamos en dominios especializados; sin embargo, ninguna comparación se ha realizado entre estas dos formas de abordar el problema \footnote{O al menos seguro no se hizo en español}. de interés dado el gran costo que tiene por detrás entrenar modelos basados en transformers. Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis, introducidas en los capítulos \ref{chap:03_social_text_classification}, \ref{chap:04_hate_speech} y \ref{chap:06_contextualized_hate_speech}.
+Continuaremos aquí alguna de las ideas utilizadas en el capítulo \ref{chap:06_contextualized_hate_speech} sobre adaptación de dominio. En primer lugar, describiremos el proceso de entrenamiento desde cero de un modelo de lenguaje pre-entrenado basado en transformers (RoBERTa) \cite{liu2019roberta} sobre tweets, al cual llamamos \robertuito{}. En segundo lugar, probaremos tomar un modelo \beto{} y continuar el pre-entrenamiento sobre un gran conjunto de tweets. Trabajo previo ha demostrado que ambas estrategias mejoran la performance de los modelos de clasificación del estado del arte cuando trabajamos en dominios especializados; sin embargo, ninguna comparación de la que tengamos conocimiento se ha realizado entre estas dos formas de abordar el problema \footnote{O al menos seguro no se hizo en español}. Este punto es de interés dado el gran costo que tiene entrenar modelos basados en transformers. Para ello, utilizamos como benchmark de este análisis las tareas que hemos tratado en esta tesis, introducidas en los capítulos \ref{chap:03_social_text_classification}, \ref{chap:04_hate_speech} y \ref{chap:06_contextualized_hate_speech}.
 
-Comenzamos en la sección \ref{sec:domain_adaptation_previous_work} haciendo un racconto de las técnicas de adaptación de dominio y modelos pre-entrenados sobre distintos dominios. En la sección \ref{sec:robertuito_pretrained_model} describimos la construcción y el entrenamiento de \robertuito{}, y en la sección \ref{sec:domain_adaptation_vs_robertuito} describimos la adaptación de dominio de \beto{} al dominio social y comparamos la performance de estos modelos contra \robertuito{}.
+Comenzamos en la sección \ref{sec:domain_adaptation_previous_work} haciendo un racconto de las técnicas de adaptación de dominio y modelos pre-entrenados sobre distintos dominios. En la sección \ref{sec:robertuito_pretrained_model} describimos la construcción y el entrenamiento de \robertuito{} \cite{perez2021robertuito}, y en la sección \ref{sec:domain_adaptation_vs_robertuito} describimos la adaptación de dominio de \beto{} al dominio social y comparamos la performance de estos modelos contra \robertuito{}.
 
 \section{Trabajo previo}
 \label{sec:domain_adaptation_previous_work}
 
 La definición de qué es un \textbf{dominio} suele ser relativamente amplia, pero podemos considerarlo como un conjunto de textos que guardan cierta similaridad respecto al tópico o género: por ejemplo, artículos de noticias, novelas, discursos políticos, posts de redes sociales, entre otros \cite{gururangan-etal-2020-dont}.
 
-\citet{goodfellow2016deep} define la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado sobre una distribución de datos o dominio $P_1$, lo utilizamos sobre una distribución $P_2$ relativamente similar. Concretamente, nos referimos a la aplicación de alguna técnica que ajuste la distribución de la entrada (de $P_1$) a la distribución de nuestro nuevo dominio (la distribución $P_2$), bajo la asunción de que ambas distribuciones son relativamente similares. \citet{glorot2011domain} es uno de los primeros trabajos que aplica esta técnica sobre modelos basados en Deep Learning en NLP\footnote{2011, incluso antes de word2vec}, usando stacked denoising auto-encoders para aprender características no supervisadas de los textos y usar técnicas de adaptación para los distintos dominios analizados.
+\citet{goodfellow2016deep} define la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado sobre una distribución de datos o dominio $P_1$, queremos utilizarlo sobre una distribución $P_2$ relativamente similar. Concretamente, nos referimos a la aplicación de alguna técnica que ajuste la distribución de la entrada (de $P_1$) a la distribución de nuestro nuevo dominio (la distribución $P_2$), bajo la asunción de que ambas distribuciones son relativamente similares. \citet{glorot2011domain} es uno de los primeros trabajos que aplica esta técnica sobre modelos basados en Deep Learning en NLP \footnote{2011, incluso antes de word2vec}, usando stacked denoising auto-encoders para aprender características no supervisadas de los textos y usar técnicas de adaptación para los distintos dominios analizados. \citet{eisenstein2013bad} trata puntualmente la adaptación de dominio para textos sociales, que se podría resumir en ``adaptar las herramientas al texto'' (social). Contrapuesto parcialmente está el concepto de \emph{normalización} de la entrada, que sería intentar ``adaptar el texto a las herramientas''.
 
-Para lo que nos concierne en NLP solemos querer, dado un modelo de lenguaje (tanto causal como enmascarado) entrenado en un dominio, ajustarlo a otro dominio distinto. Por ejemplo, un modelo BERT pre-entrenado en textos formales (como Wikipedia o noticias) queremos ajustarlo a la distribución de textos sociales, que si bien ambas mantienen el idioma (inglés o español) suelen tener distribuciones notoriamente distintas. Se ha observado que los modelos de lenguaje basados en transformers son mucho más robustos frente a los cambios de dominio \cite{hendrycks-etal-2020-pretrained}, pero todavía siguen sufriendo cuando los datos analizados difieren fuertemente de los utilizados en el entrenamiento. \citet{ruder2021lmfine-tuning} hace un repaso extenso de los últimos avances en las técnicas de adaptación de dominio utilizando modelos de lenguaje del estado del arte.
+Para lo que nos concierne en las técnicas actuales de modelos pre-entrenados (descriptos en \ref{sec:02_bert}) solemos querer ajustar un modelo de lenguaje a un dominio distinto al que fue utilizado en su pre-entrenamiento. Por ejemplo, un modelo \bert{} pre-entrenado en textos formales (como Wikipedia o noticias) queremos ajustarlo a la distribución de textos sociales, que si bien ambas mantienen el idioma (inglés o español) suelen tener distribuciones notoriamente distintas. Se ha observado que los modelos de lenguaje basados en transformers son mucho más robustos frente a los cambios de dominio \cite{hendrycks-etal-2020-pretrained}, pero todavía siguen sufriendo cuando los datos analizados difieren fuertemente de los utilizados en el entrenamiento. \citet{ruder2021lmfine-tuning} hace un repaso extenso de los últimos avances en las técnicas de adaptación de dominio utilizando modelos de lenguaje del estado del arte.
 
 Dentro de la última ola que sacudió NLP de modelos pre-entrenados, la técnica de ULMFit \cite{howard-ruder-2018-universal} contempla una etapa de adaptación a la tarea utilizando de manera no-supervisada el texto del dataset de la tarea atacada corriendo la tarea de modelado de lenguaje. Los modelos basados en Transformers como BERT \cite{devlin2018bert} y subsiguientes no siguieron esta costumbre, sólo haciendo la adaptación de los pesos sobre las etiquetas supervisadas, pero \citet{gururangan-etal-2020-dont} han mostrado recientemente que esta adaptación no supervisada es beneficiosa para los modelos.
 
@@ -38,70 +38,55 @@ En todos los casos, usando modelos del estado del arte como RoBERTa muestran que
     \begin{tabular}{llll}
         Nombre                                 & Idioma            & Dominio                          & Familia     \\
         \hline
-        SciBERT\cite{beltagy-etal-2019-scibert} & Inglés            & Papers científicos               & BERT        \\
-        BERT-CT                                 &                   &                                  &             \\
-        ClinicalBERT\cite{huang2019clinicalbert}& Inglés            &                                  & BERT        \\
-        BERTweet\cite{dat2020bertweet}          & Inglés            & Tweets, algunos COVID-related    & RoBERTa     \\
-        TwilBERT                                &                   &                                  &             \\
-        AlBERTo                                 &                   &                                  &             \\
+        SciBERT\cite{beltagy-etal-2019-scibert}   & inglés            & Papers                           & BERT        \\
+        ClinicalBERT \cite{huang2019clinicalbert} & inglés            & noticias médicas                                 & BERT        \\
+        BERT-CT \cite{muller2020covid}            & inglés            & Tweets en inglés sobre COVID     & BERT        \\
+        BERTweet \cite{dat2020bertweet}           & inglés            & Tweets, algunos COVID-related    & RoBERTa     \\
+        AlBERTo \cite{polignano2019alberto}       & italiano          & Tweets                           & RoBERTa     \\
+        TwilBERT                                  & español           & Tweets                           & $\sim$ BERT        \\
+        \hline
     \end{tabular}
 
-    \caption{Modelos pre-entrenados sobre distintos dominios. En familia nos referimos a qué tipo de modelo de lenguaje es usado (BERT, RoBERTa, etc)}
+    \caption{Modelos pre-entrenados sobre dominios no canónicos. En familia nos referimos a qué tipo de pre-entrenamiento es realizado en el modelo de lenguaje: BERT es MLM + NSP, RoBERTa sólo MLM. En el caso de TwilBERT, se usa un símil BERT ya que no usan exactamente NSP sino una tarea muy parecida.)}
     \label{tab:bert_pretrained_models}
 \end{table}
 
 
-Luego del estallido de los modelos de lenguaje basados en transformers, algunos trabajos se han basado en directamente entrenar estos modelos ya no en textos formales como Wikipedia o noticias sino directamente en el dominio en cuestión. Por ejemplo, SciBERT \cite{beltagy-etal-2019-scibert} es un modelo BERT entrenado directamente en textos científicos, BERTweet \cite{dat2020bertweet} entrena un modelo RoBERTa\cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. La tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos.
-
-En español tenemos el modelo TwilBERT \cite{gonzalez2021twilbert}; sin embargo, tiene algunas limitaciones: en primer lugar, no queda claro cuánto tiempo de entrenamiento recibió ni si los datos fueron suficientes; en segundo, usaron un modo de entrenamiento basado en una variante de la tarea NSP (ver subsección XXX) \todo{poner sección bien} cuando numerosos trabajos muestran que el tipo de entrenamiento basado en RoBERTa (sólo tarea MLM) mejora el desempeño. Finalmente, su modelo no es accesible mediante el hub de huggingface\todo{agregar URL o cita}, que usamos para este trabajo.
+Luego del estallido de los modelos de lenguaje basados en transformers, algunos trabajos se han basado en directamente entrenar estos modelos ya no en textos formales como Wikipedia o noticias sino directamente en el dominio en cuestión. Por ejemplo, SciBERT \cite{beltagy-etal-2019-scibert} es un modelo BERT entrenado directamente en textos científicos, BERTweet \cite{dat2020bertweet} entrena un modelo RoBERTa \cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. La tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos. En español tenemos el modelo TwilBERT \cite{gonzalez2021twilbert}; sin embargo, tiene algunas limitaciones: en primer lugar, no queda claro cuánto tiempo de entrenamiento recibió ni si los datos fueron suficientes; en segundo, usaron un modo de entrenamiento basado en una variante de la tarea NSP (ver subsección \ref{sec:02_bert}) cuando numerosos trabajos muestran que el tipo de entrenamiento basado en RoBERTa (sólo tarea MLM) mejora el desempeño en las tareas finales. Finalmente, su modelo no es accesible mediante el model hub de huggingface, limitando seriamente su acceso.
 
 
-Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-dont} son, en primer lugar y siguiendo la regla de Bender \cite{bender2011achieving}, realizar el estudio en un idioma distinto del inglés. Por otro lado, un dominio que no está estudiado en dicho trabajo es el dominio de tareas en textos sociales. Finalmente, es de interés realizar una comparación de la performance de modelos adaptados al dominio contra aquellos que son entrenados desde cero en ese dominio, dado el enorme costo computacional, energético y ambiental que implica el entrenamiento de estos modelos desde cero \cite{strubell2019energy}.
-
-\section{Tareas utilizadas en el benchmark}
-
-Para analizar el impacto de la adaptación de dominio y realizar una comparación contra un modelo entrenado desde cero en dicho dominio usamos un conjunto de tareas como benchmark. Las tareas elegidas son todas las que analizamos en este trabajo hasta el momento:
-
-\begin{enumerate}
-    \item Detección de discurso de odio
-    \item Detección contextualizada de discurso de odio
-    \item Análisis de sentimientos
-    \item Análisis de emociones
-    \item Detección de Ironía
-\end{enumerate}
-
-La tarea de detección de discurso de odio contextualizada fue introducida en el capítulo \ref{chap:06_contextualized_hate_speech} mientras que las 3 tareas restantes lo fueron en el capítulo \ref{chap:03_social_text_classification}. Respecto al preprocesamiento y entrenamiento de los distintos modelos, seguiremos los procedimientos referidos en los respectivos capítulos.
+Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-dont} son, en primer lugar y siguiendo la regla de Bender \cite{bender2011achieving}, realizar el estudio en un idioma distinto del inglés. Por otro lado, un dominio que no está estudiado en dicho trabajo es el dominio de tareas en textos de redes sociales. Finalmente, es de interés realizar una comparación de la performance de modelos adaptados al dominio contra aquellos que son entrenados desde cero en ese dominio, dado el enorme costo computacional, energético y ambiental que implica el entrenamiento de estos modelos desde cero \cite{strubell2019energy}.
 
 
 
 \section{Modelo pre-entrenado sobre tweets}
 \label{sec:robertuito_pretrained_model}
 
-Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Proponemos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español usa tildes para señalar en algunos casos la acentuación de una palabra y, por lo general, suelen pasarse por alto en los textos sociales. Queremos analizar entonces si eliminarlos mejora el rendimiento de los modelos, algo que puede considerarse como una normalización levemente más fuerte que remover mayúsculas únicamente.
+Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Entrenamos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español normativo prescibe el uso de tildes en ciertos casos para señalar la acentuación de una palabra, algo que por lo general suele pasarse por alto en los textos sociales. Queremos analizar entonces si eliminarlos mejora el rendimiento de los modelos, algo que puede considerarse como una normalización levemente más fuerte que remover mayúsculas únicamente.
 
-Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} \cite{kudo-richardson-2018-sentencepiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
 
 
 \subsection{Recolección de tweets}
 
-A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}.
+A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}. El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es una muestra de alrededor del 1\% de los tweets, supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de la posible manipulación de esta muestra \cite{pfeffer2018tampering}. Muestras no representativas y sesgadas pueden afectar al modelo en tareas finales, algunos de estos errores siendo potencialmente dañinos como sesgos raciales o de género. Por ello, publicamos el conjunto de datos para ser inspeccionado, y queda como trabajo a futuro un análisis más detallado de sus instancias.
 
-El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es una muestra de alrededor del 1\% de los tweets, supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de la posible manipulación de esta muestra \cite{pfeffer2018tampering}. Si bien esto puede ser un problema para estudios de ciencias sociales computacionales, para nuestros fines descartamos estas preocupaciones.
-
-En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019\footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.
+En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019 \footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.
 
 Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores: reemplazamos los caracteres hasta un máximo de tres, convertimos los nombres de usuarios a un token especial \verb|@usuario|, convertimos los emoji a una representación textual, y partimos los hashtag en lo posible (ver sección XXX). Esto lo realizamos a priori para bajar la carga de trabajo a la hora del pre-entrenamiento.
 
 De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
+
+Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} \cite{kudo-richardson-2018-sentencepiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
 
 
 \subsection{Arquitectura y entrenamiento}
 
 \begin{table}[t]
     \centering
+    \large
     \begin{tabular}{l|l}
         \hline
-        Hyperparameter  & Value \\
+        Hiperparámetro    & Valor \\
         \hline
         \#Heads           & 12             \\
         \#Layers          & 12             \\
@@ -121,7 +106,7 @@ De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para f
         Warmup steps      & 36,000 (6\%)   \\
         \hline
     \end{tabular}
-    \caption{Hiperparámetros utilizados en el entrenamiento de \robertuito{}.}
+    \caption{Hiperparámetros utilizados en el entrenamiento de \robertuito{}. Los valores de $\beta$ y $\epsilon$ refieren a los hiperparámetros de Adam}
     \label{tab:robertuito_architecture}
 \end{table}
 
@@ -129,22 +114,46 @@ Se utilizó una arquitectura RoBERTa base para \robertuito{}, con 12 capas de au
 
 Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de batch size grande para nuestro entrenamiento. Si bien se recomienda un tamaño de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k.
 
-Para comprobar la convergencia, primero entrenamos un modelo uncased para 200k pasos de optimización. Al comprobar que convergió (y obtuvo buenos resultados en las tareas del benchmark), procedimos al entrenamiento completo de los tres modelos.
+Para comprobar la convergencia, primero entrenamos un modelo uncased para 200k pasos de optimización. Al comprobar que convergió (y obtuvo buenos resultados en las tareas del benchmark), procedimos al entrenamiento completo de los tres modelos. Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina pre-emptible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por el programa Google TPU Research Cloud. Nuestro código está basado en la biblioteca \emph{huggingface's transformers}\cite{wolf-etal-2020-transformers} y su implementación de \emph{RoBERTa}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
 
-Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina pre-emptible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por el programa Google TPU Research Cloud. Nuestro código está basado en la biblioteca \emph{huggingface's transformers}\cite{wolf-etal-2020-transformers} y su implementación de \emph{RoBERTa}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
-
-\begin{table}[h]
+\begin{table}[t]
     \centering
-    \begin{tabular}{l|l l l|}
+    \begin{tabular}{l l l l}
         Model   & Train loss & Eval loss   & Eval ppl \\
         \hline
         \cased{}   & 1.864      & 1.753       & 5.772    \\
         \uncased{} & 1.940      & 1.834       & 6.259    \\
-        \deacc{}   & 1.951      & 1.826       & 6.209
+        \deacc{}   & 1.951      & 1.826       & 6.209    \\
+        \hline
     \end{tabular}
-    \caption{Resultados del entrenamiento para las tres versiones de \robertuito{}. La función de costo utilizada es la entropía cruzada de la tarea de Masked-Language-Modeling, y reportamos también la perplejidad (ppl)}
+    \caption{Resultados del pre-entrenamiento para las tres versiones de \robertuito{}. La función de costo utilizada es la entropía cruzada de la tarea de MLM.}
     \label{tab:training_results}
 \end{table}
+
+
+\subsection{Evaluación}
+
+Para analizar la performance de este modelo, usamos un conjunto de tareas como benchmark. Las tareas elegidas son todas las que analizamos en este trabajo hasta el momento:
+
+\begin{enumerate}
+    \item Análisis de sentimientos (capítulo \ref{chap:03_social_text_classification})
+    \item Análisis de emociones (capítulo \ref{chap:03_social_text_classification})
+    \item Detección de Ironía (capítulo \ref{chap:03_social_text_classification})
+    \item Detección de discurso de odio (capítulo \ref{chap:04_hate_speech})
+    \item Detección contextualizada de discurso de odio (capítulo \ref{chap:06_contextualized_hate_speech})
+\end{enumerate}
+
+
+Para más detalles sobre los datasets y cuestiones puntuales de cada tarea, referimos a los capítulos correspondientes. Para cada una de estas tareas, comparamos la performance de \robertuito{} contra los siguientes modelos de lenguaje pre-entrenados:
+
+\begin{itemize}
+    \item BETO \cite{canete2020spanish}, tanto en versión cased como uncased.
+    \item \emph{RoBERTa-BNE} \cite{gutierrezfandino2021spanish}, un modelo RoBERTa entrenado sobre una base de datos de 500GB de todos los sitios \emph{.es}
+    \item \emph{BERTin}\footnote{\url{https://huggingface.co/bertin-project/bertin-roberta-base-spanish}}, otro modelo RoBERTa entrenado en el contexto de un evento de la comunidad Flax/Jax \footnote{\url{https://discuss.huggingface.co/t/open-to-the-community-community-week-using-jax-flax-for-nlp-cv/7104}}, en el cual los autores exploraron diferentes estrategias de sampleo para entrenar este modelo en relativamente poco tiempo sobre la sección en español del corpus mc4, creado para entrenar T5 \cite{raffel2020exploringt5}.
+\end{itemize}
+
+Para cada modelo y tarea corremos el experimento 10 veces y reportamos medias y desviaciones estándar. Utilizamos el mismo procedimiento de entrenamiento referidos en cada capítulo para hacer el fine-tuning discriminativo de cada modelo, sin efectuar ninguna optimización de los hiperparámetros.
+
 
 
 \subsection{Resultados}
@@ -153,31 +162,31 @@ Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8
 \begin{table}
     \centering
     \footnotesize
-    \begin{tabular}{llllllr}
-        \toprule
-        Modelo             & CHATE             &  HATE             &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
-        beto-uncased       & $0.591 \pm 0.006$ &  $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.6438 \\
-        bertin             & $0.557 \pm 0.008$ &  $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.6447 \\
-        beto-cased         & $0.582 \pm 0.007$ &  $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.6485 \\
-        roberta-bne        & $0.577 \pm 0.004$ &  $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.6536 \\
+    \begin{tabular}{l ccccc c}
+        Modelo             & CONTEXT             &  HATE             &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
         \hline
-        robertuito-cased   & $0.590 \pm 0.005$ &  $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.6636 \\
-        robertuito-deacc   & $0.593 \pm 0.006$ &  $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.6753 \\
-        robertuito-uncased & $0.593 \pm 0.004$ &  $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.6776 \\
+        beto$_U$       & $0.591 \pm 0.006$ &  $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.644 \\
+        bertin             & $0.557 \pm 0.008$ &  $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.645 \\
+        beto$_C$         & $0.582 \pm 0.007$ &  $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.649 \\
+        roberta-bne        & $0.577 \pm 0.004$ &  $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.654 \\
+        \hline
+        robertuito$_C$   & $0.590 \pm 0.005$ &  $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.664 \\
+        robertuito$_D$   & $0.593 \pm 0.006$ &  $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.675 \\
+        robertuito$_U$ & $0.593 \pm 0.004$ &  $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.678 \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. El score es el promedio de los scores de todas las tareas.}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CONTEXT es contextualized hate speech, HATE es hate speech detection sobre el dataset de HatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. El score es el promedio de todas las tareas.}
     \label{tab:robertuito_evaluation_results}
 \end{table}
 
 
-La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los modelos seleccionados para las cuatro tareas de clasificación propuestas. Los resultados se muestran como la media de quince ejecuciones de los experimentos, junto con la desviación estándar. Así mismo, calculamos un \textbf{score} promediando las puntuaciones de cada tarea de forma similar a lo hecho en GLUE. Podemos observar que en la mayoría de los casos, todas las configuraciones de \robertuito{} funcionan significativamente por encima de otros modelos, en particular para las tareas de Discurso de odio y Sentimiento. El único caso donde esto no ocurre es en la tarea de detección de discurso de odio contextualizado, donde si bien hay una mejora, es marginal y poco significativa.
+La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los modelos seleccionados para las cinco tareas de clasificación propuestas. Los resultados se muestran como la media de quince ejecuciones de los experimentos, junto con la desviación estándar, junto a un \textbf{score} promediando las puntuaciones de cada tarea de forma similar a lo hecho en GLUE \cite{wang-etal-2018-glue}. Podemos observar que en la mayoría de los casos, todas las configuraciones de \robertuito{} funcionan significativamente por encima de otros modelos, en particular para las tareas de Discurso de odio y Sentimiento. El único caso donde esto no ocurre es en la tarea de detección de discurso de odio contextualizado, donde si bien hay una mejora, es marginal y no significativa.
 
-Respecto a la comparación entre los tres modelos, analizamos las diferencias entre estos mediante una prueba de la diferencia de medias. Para ello, realizamos un test de Kruskal-Wallis para las performances de cada tarea. Existen diferencias significativas entre el desempeño de los tres modelos de \robertuito{} ($ H (3) = 6.88, p \ leq 0.05 $ para Discurso de odio, $ H (3) = 9.90 , p <0.01 $ para Análisis de sentimiento, $ H (3) = 11.85, p <0.01 $ para Análisis de emociones, $ H (3) = 11.54, p <0.01 $ para Detección de ironía), no así para la detección de odio contextualizado ($H(3)=3.59, p > 0.15$).
+Respecto a la comparación entre los tres modelos, analizamos las diferencias entre estos mediante una prueba de la diferencia de medias. Para ello, realizamos un test de Kruskal-Wallis \cite{kruskal1952use} para las performances de cada tarea. Existen diferencias significativas entre el desempeño de los tres modelos de \robertuito{} ($ H (3) = 6.88, p < 0.05 $ para Discurso de odio, $ H (3) = 9.90 , p < 0.01 $ para Análisis de sentimiento, $ H (3) = 11.85, p <0.01 $ para Análisis de emociones, $ H (3) = 11.54, p <0.01 $ para Detección de ironía), no así para la detección de odio contextualizado ($H(3)=3.59, p > 0.15$).
 
-Para verificar las diferencias significativas entre las performances de los tres modelos para las 4 tareas mencionadas, realizamos un análisis post-hoc con un test de Dunn (con corrección de Benjamini-Hochberg). \todo{Mandar tablas a un apéndice}. Exceptuando la tarea de análisis de sentimientos, la versión \emph{cased} muestra siempre diferencias significativas contra las versiones \emph{uncased} o \emph{deacc}. Sin embargo, no se encuentran diferencias significativas entre \emph{uncased} y \emph{deacc}.
+Para verificar las diferencias significativas entre las performances de los tres modelos para las 4 tareas mencionadas, realizamos un análisis post-hoc con un test de Dunn (con corrección de Benjamini-Hochberg). \todo{Mandar tablas a un apéndice} Exceptuando la tarea de análisis de sentimientos, la versión \emph{cased} muestra siempre diferencias significativas contra las versiones \emph{uncased} o \emph{deacc}. Sin embargo, no se encuentran diferencias significativas entre las versiones \emph{uncased} y \emph{deacc}.
 
-Este resultado puede leerse de dos maneras: una, que una normalización más fuerte (remover las tildes) del texto de entrada en español no produce una mejora significativa en el rendimiento de los modelos, y dos, que mantener los acentos en el texto de entrada no es beneficioso ni perjudicial para el rendimiento del modelo.
+Este resultado puede leerse de dos maneras: primero, que una normalización más fuerte (remover las tildes) del texto de entrada en español no produce una mejora significativa en el rendimiento de los modelos; también, que mantener las tildes en el texto de entrada no es beneficioso ni perjudicial para el rendimiento del modelo.
 
 \begin{figure}
     \centering
@@ -186,20 +195,20 @@ Este resultado puede leerse de dos maneras: una, que una normalización más fue
     \label{fig:length_tokens}
 \end{figure}
 
-La figura \ref{fig:length_tokens} muestra la distribución del número de tokens en el texto de entrada, agrupados por tarea. Podemos observar que los modelos de \robertuito{} tienen representaciones más compactas que BETO  y \emph {RoBERTa-BNE} ; sin embargo, \emph{bertin} parece tener representaciones iguales o más compactas que él, a pesar de su menor rendimiento en general. Además, entre los modelos de \robertuito{}, podemos observar que la versión \deacc{} tiene una longitud media ligeramente menor en comparación con la versión \uncased{}.
+La figura \ref{fig:length_tokens} muestra la distribución del número de tokens en el texto de entrada agrupados por tarea. Podemos observar que los modelos de \robertuito{} tienen representaciones más compactas que BETO  y \emph {RoBERTa-BNE} ; sin embargo, \emph{bertin} parece tener representaciones iguales o más compactas que él, a pesar de su menor rendimiento en general. Además, entre los modelos de \robertuito{}, podemos observar que la versión \deacc{} tiene una longitud media ligeramente menor en comparación con la versión \uncased{}.
 
 
 \section{Adaptación de modelos pre-entrenados}
 \label{sec:domain_adaptation_vs_robertuito}
 
-Acabamos de observar que \robertuito{} obtiene una mejor performance que otros modelos pre-entrenados. Ahora, ¿puede ser esta mejora replicada adaptando otro modelo de lenguaje? Esta pregunta tiene, más allá del interés teórico de si un modelo de lenguaje entrenado en un dominio distinto puede adaptarse con éxito a un dominio diferente (algo explorado en el trabajo de \citet{gururangan-etal-2020-dont}), tiene dos consideraciones prácticas: en lenguajes de recursos relativamente bajos, entrenar un modelo desde cero como realizamos en la anterior sección puede ser prohibitivo; y por otro lado, reducir los inmensos costos computacionales de entrenar modelos desde cero puede ser de interés.
+Acabamos de observar que \robertuito{} obtiene una mejor performance que otros modelos pre-entrenados. Ahora, ¿puede ser esta mejora replicada adaptando otro modelo de lenguaje? Esta pregunta tiene --más allá del interés teórico de si un modelo de lenguaje entrenado en un dominio distinto puede adaptarse con éxito a un dominio diferente-- dos consideraciones prácticas: en lenguajes de recursos relativamente bajos, entrenar un modelo desde cero como realizamos en la anterior sección puede ser prohibitivo en términos de recursos \footnote{Con los recursos instalados de nuestro laboratorio es prácticamente imposible pre-entrenar un modelo desde cero}; y por otro lado, reducir los inmensos costos computacionales de entrenar puede ser de interés, tanto en términos económicos como ambientales.
 
-Para contestar esta pregunta, realizamos una adaptación de dominio a un modelo BETO sobre textos sociales, y probamos su performance sobre el benchmark de tareas sociales descripto en la sección anterior.
+Para contestar esta pregunta, realizamos una adaptación de dominio a un modelo BETO sobre textos generados por usuario --concretamente, los mismos datos usados para entrenar \robertuito{}-- y probamos su performance sobre el benchmark de tareas sociales descripto en la sección anterior.
 
 
 \subsection{Metodología}
 
-Para realizar la adaptación de dominio, seguimos las recomendaciones de \citet{gururangan-etal-2020-dont}: tomar un gran conjunto de datos no anotado de textos sociales, y correr la tarea de Masked Language-Modeling sobre estos. En términos de ese trabajo, estaríamos realizando \emph{Domain Adaptation Pre-training} (\emph{DAPT}). Para ello, utilizamos los mismos datos recolectados para entrenar a \robertuito{}.
+Para realizar la adaptación de dominio, seguimos las recomendaciones de \citet{gururangan-etal-2020-dont}: tomar un gran conjunto de datos no anotado de textos sociales, y correr la tarea de Masked Language-Modeling sobre estos. En términos de ese trabajo, estaríamos realizando \emph{Domain Adaptation Pre-training} (\emph{DAPT}), que consta de usar un conjunto de datos relativamente general. Para ello, utilizamos los mismos datos recolectados para entrenar a \robertuito{}.
 
 Tomamos las versiones cased y uncased de BETO, y corrimos únicamente la tarea de MLM sobre estos datos. En lugar de correr por 12.5K pasos de optimización como es sugerido en este trabajo, probamos con 2.5K, 5K, 10K y 20K pasos de optimización, para analizar también el impacto de este hiperparámetro. Finalmente, nos quedamos con la configuración que obtuvo el mejor resultado en términos del benchmark analizado.
 
@@ -214,16 +223,14 @@ Para entrenar estos modelos, usamos una TPU v2-8, gracias también al programa T
     \includegraphics[width=\textwidth]{img/robertuito/results_cased_models.pdf}
     \includegraphics[width=\textwidth]{img/robertuito/results_uncased_models.pdf}
 
-    \caption{Resultados sobre el benchmark de los modelos BETO y \robertuito{} (en versiones cased y uncased). Las barras están agrupadas por tarea y muestran la media de la performance sobre 15 corridas, junto a su intervalo 95\%. En tonalidad de rojo oscuro a amarillo están los modelos ajustados a dominio (más claro, más ajuste de dominio). En tonos azules las variantes de \robertuito{}}
+    \caption{Resultados sobre el benchmark de los modelos BETO y \robertuito{} (en versiones cased y uncased). Las barras están agrupadas por tarea y muestran la media de la performance sobre 15 corridas, junto a su intervalo 95\%. En tonalidad de rojo oscuro a amarillo están los modelos ajustados a dominio (más claro, más ajuste de dominio). El número al final de los modelos indica la cantidad de pasos de optimización realizados en el ajuste de dominio. En tonos azules las variantes de \robertuito{}}
     \label{fig:robertuito_vs_domain_barplot_results}
 \end{figure}
 
 
-En la figura \ref{fig:robertuito_vs_domain_barplot_results} podemos observar la performance para los modelos de lenguaje (\beto{} y \robertuito{}) así como también para las versiones con ajuste de dominio de \beto{}. Marcamos, por ejemplo, \emph{beto-cased-5000} a aquel modelo \beto{} ajustado a dominio por 5,000 pasos de optimización. Podemos observar que, para los modelos \emph{cased}, aumentar el pre-entrenamiento pareciera coincidir con una mejor performance; salvo para el caso de la tarea de detección de odio contextualizado. Una posible razón detrás de esto es que la tarea planteada en esta tesis tiene diferencias con el dominio sobre el cual ajustamos: utilizamos pares de tweets, uno de ellos (el contexto) proveniente de un medio periodístico.
+En la figura \ref{fig:robertuito_vs_domain_barplot_results} podemos observar la performance para los modelos de lenguaje (\beto{} y \robertuito{}) así como también para las versiones con ajuste de dominio de \beto{}. Podemos observar que, para los modelos \emph{cased}, aumentar el pre-entrenamiento pareciera coincidir con una mejor performance; salvo para el caso de la tarea de detección de odio contextualizado. Una posible razón detrás de esto es que la tarea planteada tiene diferencias con el dominio sobre el cual ajustamos: utilizamos pares de tweets, uno de ellos (el contexto) proveniente de un medio periodístico. También puede argumentarse que el dominio de tweets en general es demasiado amplio \cite{eisenstein2013bad}.
 
 En el caso de los modelos \emph{uncased}, esta mejora es un poco menos clara: por ejemplo, podemos observar que a los 5,000 pasos de optimización la performance sufre una caída con respecto a otras tareas. Esto puede deberse a problemas en la recolección de datos en los cuales entrenamos \robertuito{}, que se magnifican al realizar pocas actualizaciones. Sin embargo, salvando este caso puntual, observamos mejoras en todas las tareas, otra vez salvando el caso de la detección de odio contextualizada.
-
-La tabla \ref{tab:domain_adaptation_evaluation_results} muestra las medias de los resultados junto a sus desviaciones estándar para los modelos \emph{uncased}, que tienen los mejores resultados (ver en apéndice ZZZZ la tabla completa). Seleccionamos como modelos ajustados a dominio
 
 
 
@@ -232,7 +239,7 @@ La tabla \ref{tab:domain_adaptation_evaluation_results} muestra las medias de lo
     \footnotesize
     \begin{tabular}{llllllr}
         \toprule
-        Modelo             & CHATE                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
+        Modelo             & CONTEXT                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
         \midrule
         beto-uncased       & $0.591 \pm 0.006$ & $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$& $0.702 \pm 0.008$& 0.644 \\
 %       bertin             & $0.557 \pm 0.008$ & $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$& $0.716 \pm 0.008$& 0.644702 \\
@@ -246,11 +253,15 @@ La tabla \ref{tab:domain_adaptation_evaluation_results} muestra las medias de lo
         robertuito-uncased & $0.593 \pm 0.004$ & $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$& $0.736 \pm 0.008$& 0.678 \\
         \bottomrule
     \end{tabular}
-    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CONTEXT es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. }
 
     \label{tab:domain_adaptation_evaluation_results}
 
 \end{table}
+
+La tabla \ref{tab:domain_adaptation_evaluation_results} muestra las medias de los resultados junto a sus desviaciones estándar para los modelos \emph{uncased}, que tienen los mejores resultados (ver en apéndice \ref{app:07} la tabla completa). Seleccionamos como modelos ajustados a dominio (indicados con el subíndice $FT$) a aquellos modelos que obtuvieron una mejor performance entre aquellos que entrenamos con distinta cantidad de pasos de optimización. Haciendo una comparación entre los modelos \beto{} y \robertuito{} uncased, vemos en el caso de la tarea de HatEval que el gap es de alrededor de 4.4 puntos de F1, mientras que la versión FT achica esa diferencia a 2.26 puntos F1, una reducción del 48\% del gap de performance. En el caso de Sentiment Analysis, pasamos de un gap de 5.8 puntos de F1 a uno de 2.7, una reducción del 53\% del gap. En el caso de Emotion Analysis, este gap pasa de 3 puntos de F1 a 0, de hecho logrando mejores resultados. Finalmente, en el caso de detección de ironía, el gap de 3.4 puntos de F1 pasa a 1.9, una reducción de 44\%.
+
+
 
 
 \section{Discusión}
