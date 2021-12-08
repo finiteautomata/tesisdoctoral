@@ -4,15 +4,15 @@ En esta sección haremos una breve introducción a técnicas de Machine Learning
 
 \subsection{Multi-layer perceptron}
 
-La idea detrás de la red neuronal es puede pensarse simplemente como una función $f: \mathbb{R}^m \rightarrow O$ que intenta aproximar una función $f^*$ con misma aridad. Podremos notar $ y = f(x; \Theta)$, siendo $\Theta$ los parámetros de dicha función. El perceptrón, desarrollado en 1958 \cite{rosenblatt1958perceptron}, intenta ajustar:
+Los \tbf{perceptrones multi-capa} (MLP) o \tbf{redes feed-forward} (FFN) son la ``quintaesencia'' de los métodos modernos de Deep Learning, como describen \citet{goodfellow2016deep}. La idea detrás de estos modelos es encontrar una función $f: \mathbb{R}^m \rightarrow O$ que aproxime a otra $f^*$ con misma aridad. Podremos notar $ y = f(x; \Theta)$, siendo $\Theta$ los parámetros de dicha función. Una de las primeros acercamientos a este problema es la neurona de McCulloch-Pitts \cite{mcculloch1943logical}, que intenta modelar parte del funcionamiento de las neuronas mediante una función:
 
 \begin{equation*}
-    y = H(\Theta_1 x + \Theta_0)
+    y = H(\Theta^T x)
 \end{equation*}
 
-donde $H$ es la función de activación, y $\Theta = (\Theta_0, \Theta_1)$ son los parámetros de la función. Este modelo es el primero cuyos pesos se encontraban mediante un algoritmo, considerando que $H$ es una función derivable y no lineal. Este puede considerarse como el primer modelo de una neurona, junto al modelo de McCulloch-Pitts. \citet{minsky1969perceptrons} demostraron que este tipo de modelos sólo pueden ajustarse a datos linealmente separables, provocando el primer ``invierno'' de las redes neuronales.
+donde $H$ es la función de Heaviside o función escalón. Esta función permite aproximar a dos valores (0 ó 1) a partir de una entrada $x$ y un parámetro $\Theta$. El perceptrón, desarrollado en 1958 en \citet{rosenblatt1958perceptron}, es el primer modelo que utiliza este tipo de modelo de cómputo cuyos parámetros $\Theta$ se encontraban mediante un algoritmo. \citet{minsky1969perceptrons} demostraron que este tipo de modelos sólo pueden ajustarse a datos linealmente separables, provocando el primer ``invierno'' de las redes neuronales.
 
-Una forma de sortear estas dificultades planteadas es ``apilar'' (stack en inglés) varias de estas funciones para poder ajustar a más tipos de funciones. En términos matemáticos, esto es tan sólo una composición de funciones, tomando ahora $f = f_3 \circ f_2 \circ f_1$, donde $f_1$ es la primer ``capa'' de nuestra función correspondiente a la entrada, $f_2$ es la capa intermedia u oculta, y $f_3$ es la capa de salida. Si bien este ejemplo consta de 3 capas, se puede generalizar a arbitrarias capas ocultas. Este modelo es el que conocemos como \textbf{Perceptrón Multicapa} o \textbf{Multi-Layer Perceptron} (MLP por sus siglas en inglés)
+Una forma de sortear estas dificultades planteadas es ``apilar'' (stack en inglés) varias de estas funciones para poder ajustar a más tipos de funciones. En términos matemáticos, esto es tan sólo una composición de funciones, tomando ahora $f = f_3 \circ f_2 \circ f_1$, donde $f_1$ es la primer ``capa'' de nuestra función correspondiente a la entrada, $f_2$ es la capa intermedia u oculta, y $f_3$ es la capa de salida. Si bien este ejemplo consta de 3 capas, se puede generalizar a arbitrarias capas ocultas. Este modelo es el que conocemos como \textbf{Perceptrón Multicapa} o \textbf{Multi-Layer Perceptron} (MLP por sus siglas en inglés), y provocó el resurgir conexionista de las redes neuronales en los años 80s mediante el desarrollo de algoritmos que permitieron entrenar estos modelos mediante backpropagation \cite{rumelhart1986learning}.
 
 \subsection{Redes neuronales recurrentes}
 
@@ -22,7 +22,7 @@ Los problemas descriptos de NLP suelen constar de procesar una secuencia de pala
     y = f([x_1, \ldots, x_k])
 \end{equation*}
 
-Una manera de ajustar una función de este tipo (usando una entrada de largo fijo) es convertir este problema a ajustar una función autorregresiva
+Una manera de abordar una función de este tipo (usando una entrada de largo fijo) es convertir este problema a ajustar una función autorregresiva
 
 \begin{equation*}
     y_k = f(x_k, y_{k-1})
@@ -40,30 +40,15 @@ y_t &= \sigma(W_y h_t + b_y)
 
 $h_t$ es normalmente llamado el \textbf{estado oculto} en las redes neuronales recurrentes. Los parámetros a ajustar son $W_h, U_h$ (matrices) y $b_h, b_y$ (escalares). Podemos ver que, a grandes rasgos, este tipo de red recurrente no es nada más que un perceptrón multicapa cuya entrada consta de $x_t$, la entrada original en el tiempo actual $t$, y el estado oculto anterior, $h_{t-1}$.
 
-Para entrenar este tipo de redes recurrentes utilizamos back-propagation through time (BPTT), que consta en desplegar la relación recurrente y aplicar back-propagation de manera normal. \todo{explicar un poco mejor esto}
+Para entrenar este tipo de redes recurrentes utilizamos back-propagation through time (BPTT), que consta en desplegar la relación recurrente y aplicar back-propagation de manera normal. Este tipo de redes recurrentes sufren de varios problemas: entre ellos, \textbf{vanishing gradient} y \textbf{exploding gradient}. Estos problemas pueden observarse ya que el cálculo del gradiente de las ecuaciones \ref{eq:elman} usando BPTT induce la potencia a la $n$ (donde $n$ es el largo de la secuencia) de las matrices $W_h$ y $U_h$. Usando alguna descomposición de la matriz en valores singulares (como la forma normal de Jordan) podemos ver que sus elementos en la diagonal que sean distintos de 1, o bien tienden a infinito o a cero.
 
-Este tipo de redes recurrentes sufren de varios problemas: entre ellos, \textbf{vanishing gradient} y \textbf{exploding gradient}. Estos problemas pueden observarse ya que el cálculo del gradiente de las ecuaciones \ref{eq:elman} usando BPTT induce la potencia a la $n$ (donde $n$ es el largo de la secuencia) de las matrices $W_h$ y $U_h$. Usando la descomposición de Jordan de estas matrices, podemos ver que sus elementos en la diagonal que sean distintos de 1, o bien tienden a infinito o a cero.
-
-El problema de \textbf{exploding gradient} puede solucionarse mediante la técnica de \textbf{gradient clipping}\todo{citation needed}, que consta de reajustar la norma del gradiente. Sin embargo, nos queda aún el problema de \textbf{vanishing gradient}. Para ello, se han propuesto otras arquitecturas recurrentes.
-
-\citet{hochreiter1997long} propusieron las \textbf{Long Short-Term Memory} (LSTM) como solución a estos problemas. Para solucionar los problemas mencionados, proponen una arquitectura basadas en compuertas (\textbf{gates}) que regulan los cambios en el estado oculto y en la salida. Concretamente, la arquitectura de las LSTMs está regida por las siguientes ecuaciones\footnote{Para una muy buena explicación de las redes recurrentes, sugerimos este artículo: \url{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}}:
-
-
-\begin{align}
-    h_t &= \sigma(W_h x_t + U_h h_{t-1} + b_h) \\
-    y_t &= \sigma(W_y h_t + b_y)
-    \label{eq:lstm}
-\end{align}
-
-
+El problema de \textbf{exploding gradient} puede solucionarse mediante la técnica de \textbf{gradient clipping}\todo{citation needed}, que consta de reajustar la norma del gradiente. Sin embargo, nos queda aún el problema de \textbf{vanishing gradient}. Para ello, se han propuesto otras arquitecturas recurrentes. \citet{hochreiter1997long} propusieron las \textbf{Long Short-Term Memory} (LSTM) como solución a estos problemas. Para solucionar los problemas mencionados, proponen una arquitectura basadas en compuertas (\textbf{gates}) que regulan los cambios en el estado oculto y en la salida. La arquitectura de las LSTMs \footnote{Para una muy buena explicación de las LSTMs sugerimos este artículo: \url{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}} modifica la arquitectura de Elman mediante la inserción de \tbf{compuertas} para la entrada y salida, evitando algunos de los problemas antes mencionados. Otras arquitecturas como las Gated Recurrent Units \cite{cho-etal-2014-learning} usan menor cantidad de compuertas reduciendo la cantidad de parámetros a entrenar.
 
 \section{Técnicas de representación}
 
-Una de las necesidades que tienen las redes neuronales para poder trabajar con textos es el de tener representaciones continuas de cada token o palabra. Las representaciones utilizadas en la época previa de los modelos lineales --bolsas de palabras/caracteres ponderadas con algún esquema similar a TF/IDF-- adolecen de varios problemas: tienen una altísima dimensionalidad; no tienen representación semántica de la similaridad de las palabras; están concentradas en una o pocas dimensiones y suelen ser discretas.
+Una de las necesidades que tienen las redes neuronales para poder trabajar con textos es el de tener representaciones continuas de cada token o palabra. Las representaciones utilizadas en la época previa de los modelos lineales --bolsas de palabras/caracteres ponderadas con esquemas como TF/IDF-- adolecen de varios problemas: tienen una altísima dimensionalidad; no tienen representación semántica de la similaridad de las palabras; están concentradas en una o pocas dimensiones y suelen ser discretas.
 
-Trabajo previo ha demostrado que obtener representaciones continuas y distribuidas (de manera opuesta a discretas y concentradas)
-
-Latent Semantic Analysis (LSA) \cite{landauer1997solution} es una de las primeras técnicas de representación continua utilizadas para esta tarea. Plantean el problema de obtener representaciones continuas como el de factorizar una matriz de co-ocurrencia entre tokens y documentos (o contextos). LDA (Latent Dirichlet Allocation) \cite{blei2003latent} es otra técnica basada en modelos gráficos entrenados mediante métodos variacionales, muy utilizada aún en la actualidad ya que genera representaciones latentes de los tópicos de los textos.
+Latent Semantic Analysis (LSA) \cite{landauer1997solution} es una de las primeras técnicas populares de representación continua utilizadas. Plantean el problema de obtener representaciones continuas como el de factorizar una matriz de co-ocurrencia entre tokens y documentos (o contextos). LDA (Latent Dirichlet Allocation) \cite{blei2003latent} es otra técnica basada en modelos gráficos entrenados mediante métodos variacionales, muy utilizada aún en la actualidad ya que genera representaciones latentes de los tópicos de los textos.
 
 \begin{figure}
     \centering
@@ -73,15 +58,15 @@ Latent Semantic Analysis (LSA) \cite{landauer1997solution} es una de las primera
 
 \end{figure}
 
-Dentro de los métodos neuronales, uno de los más populares ha sido el de \citet{bengio2003neural} que propone una arquitectura neuronal para un modelo de lenguaje markoviano. La arquitectura de esta red está ilustrada en la figura \ref{fig:bengio_neural_language_model}. En la capa intermedia contiene una tabla de lookup de vectores de las diferentes palabras (también conocido como capa de embeddings) donde se generan las representaciones de las palabras. Trabajo posterior (con diferentes variaciones de esta misma idea) como el de \citet{collobert2011natural} ha demostrado que la utilización de este tipo de representaciones es útil para diversas tareas de NLP como POS Tagging, NER, y otras.
+Dentro de los métodos neuronales, uno de los más populares ha sido el de \citet{bengio2003neural}, que propone una arquitectura neuronal para un modelo de lenguaje markoviano. La arquitectura de esta red está ilustrada en la figura \ref{fig:bengio_neural_language_model}. En la capa intermedia contiene una tabla de lookup de vectores de las diferentes palabras (también conocido como capa de embeddings) donde se generan las representaciones de las palabras. Trabajo posterior (con diferentes variaciones de esta misma idea) como el de \citet{collobert2011natural} ha demostrado que la utilización de este tipo de representaciones es útil para diversas tareas de NLP como POS Tagging, NER, y otras. Más aún, este trabajo tiene una idea que fue utilizada muchos años después con éxito rotundo: la utilización de la tarea de modelado de lenguaje como base para el pre-entrenamiendo de los modelos.
 
 Uno de los problemas de los métodos vistos hasta el momento es que sufrían problemas de eficiencia, sólo pudiéndose entrenar con pocos millones de palabras y con dimensiones reducidas. La técnica \emph{word2vec} \cite{mikolov2013efficient} permite entrenar representaciones de palabras de mayor dimensión y sobre grandes cantidades de textos de manera eficiente. Los vectores de palabras guardan cierta estructura lineal y semántica, como ilustran los autores con algunos ejemplos, como el ya clásico $v(\text{rey}) - v(\text{hombre}) + v(\text{mujer}) \approx v(\text{reina})$.
 
-Para generar los vectores de \emph{word2vec}, los autores plantean una relajación del problema de modelado de lenguaje mediante dos alternativas: Continuous Bag of Words (CBOW) y Skip-Gram. En CBOW intentamos predecir la palabra faltante dada una bolsa de palabras del contexto, y en skip-gram intentamos predecir las palabras del contexto dada la palabra central. Para ambos problemas, se generan representaciones intermedias ricas para las distintas palabras. \citet{mikolov2013efficient} extiende la idea del anterior trabajo proponiendo plantear el problema de skip-gram como uno de distinguir ruido de palabras efectivamente del contexto, haciendo mucho más eficiente el cálculo de estas representaciones. GloVe \cite{pennington2014glove} es otra técnica de representación de palabras que combina las ideas de factorización de matrices de LSA  mediante un problema de optimización distinto y generando representaciones que superan ligeramente en algunos benchmarks de tareas a los de \emph{word2vec}.
+Para generar los vectores de \emph{word2vec}, los autores plantean una relajación del problema de modelado de lenguaje mediante dos alternativas: Continuous Bag of Words (CBOW) y Skip-Gram. En CBOW intentamos predecir la palabra faltante dada una bolsa de palabras del contexto, y en skip-gram intentamos predecir las palabras del contexto dada la palabra central. Para ambos problemas, se generan representaciones intermedias ricas para las distintas palabras. \citet{mikolov2013efficient} extiende la idea del anterior trabajo proponiendo plantear el problema de skip-gram como uno de distinguir palabras ruido de palabras efectivamente del contexto, haciendo mucho más eficiente el cálculo de estas representaciones. GloVe \cite{pennington2014glove} es otra técnica de representación de palabras que combina las ideas de factorización de matrices de LSA  mediante un problema de optimización distinto y generando representaciones que superan ligeramente en algunos benchmarks de tareas a los de \emph{word2vec}.
 
-Uno de los problemas que tienen estos métodos es que cada representación se calcula sobre las distintas palabras. En español, por ejemplo, las palabras gato, gata, gatito, gatuno, todas tienen representaciones independientes en \emph{word2vec}, a pesar de tener información morfológica en común. Esto es un problema en varios escenarios: idiomas con muchas inflexiones o aglutinantes (como el turco, alemán o finés) o --lo que es de nuestro interés-- texto altamente desnormalizado como el de redes sociales. La técnica \fasttext{} \cite{bojanowski16} extiende la idea de \emph{word2vec} mediante la asignación de vectores a secuencias de 3 caracteres (subpalabras), capturando así cierta información morfológica. La representación de una palabra se obtiene mediante una combinación lineal de los vectores de las subpalabras que la componen.
+Los métodos mencionados de representación calculan vectores de tamaño fijo sobre cada una de las distintas palabras. En español, por ejemplo, las palabras gato, gata, gatito, gatuno, todas tienen representaciones independientes en \emph{word2vec}, a pesar de tener información morfológica en común. Esto es un problema en varios escenarios: idiomas con muchas inflexiones o aglutinantes (como el turco, alemán o finés) o --lo que es de nuestro interés-- texto altamente desnormalizado como el de redes sociales. La técnica \fasttext{} \cite{bojanowski16} extiende la idea de \emph{word2vec} mediante la asignación de vectores a secuencias de 3 caracteres (subpalabras), capturando así cierta información morfológica. La representación de una palabra se obtiene mediante una combinación lineal de los vectores de las subpalabras que la componen.
 
-\subsection{Tweet Embeddings}
+\subsection{Embeddings a nivel documento}
 \label{sec:02_tweet_embeddings}
 
 %%
@@ -93,12 +78,12 @@ Uno de los problemas que tienen estos métodos es que cada representación se ca
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.80\textwidth]{img/tweet_embeddings.pdf}
+    \includegraphics[width=0.75\textwidth]{img/tweet_embeddings.pdf}
     \caption{Representación contínua de un tweet mediante combinación lineal de las representaciones de cada palabra.}
     \label{fig:tweet_embeddings}
 \end{figure}
 
-Una forma relativamente simple de obtener una representación de un documento u oración (en nuestra tesis, esto será casi siempre un tweet) es realizar una combinación lineal de las representaciones obtenidas para cada palabra. Es decir, dada una oración $s = w_1 w_2 \ldots w_n$, y representaciones $\overline{w_1}, \overline{w_2}, \ldots, \overline{w_n} \in \mathbb{R}^m$, podemos obtener una representación
+Una forma relativamente simple de obtener una representación de un documento \footnote{en nuestra tesis, esto será casi siempre un tweet} es realizar una combinación lineal de las representaciones obtenidas para cada palabra. Es decir, dada una oración $s = w_1 w_2 \ldots w_n$, y representaciones $\overline{w_1}, \overline{w_2}, \ldots, \overline{w_n} \in \mathbb{R}^m$, podemos obtener una representación
 
 \begin{equation}
     \overline{s} = \sum\limits_{i=1}^{n} \alpha_i \overline{w_i}
@@ -106,12 +91,7 @@ Una forma relativamente simple de obtener una representación de un documento u 
 
 con $\alpha_1, \ldots, \alpha_n \in \mathbb{R}$ escalares (dependientes de la oración). De esta manera, obtenemos de $n$ representaciones independientes del contexto una representación para el tweet, sin tener en cuenta posibles interacciones entre los distintos componentes. La figura \ref{fig:tweet_embeddings} ilustra esta metodología simple para obtener representaciones de oraciones.
 
-Tenemos entonces dos posibilidades para determinar la combinación lineal: la forma de obtener las representaciones, y la forma de calcular los coeficientes. Para las representaciones, podemos usar varias de las técnicas que ya vimos como word2vec, GloVe, o \fasttext{}. Para calcular los coeficientes, consideramos en nuestro trabajo dos formas. La primera, la forma canónica, calculando un promedio de las representaciones, es decir, tomando $\alpha_i = \frac{1}{n}$
-
-Se utilizaron combinaciones lineales para calcular una representación de un solo tweet.
-Seguimos dos enfoques simples: promedio simple y promedio ponderado. En el segundo caso, utilizamos un esquema que se asemeja a la frecuencia inversa suave (SIF) \cite{arora17}, inspirado TF-IDF.
-Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado.
-Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
+Tenemos entonces dos posibilidades para determinar la combinación lineal: la forma de obtener las representaciones, y la forma de calcular los coeficientes. Para las representaciones, podemos usar varias de las técnicas que ya vimos como word2vec, GloVe, o \fasttext{}. Para calcular los coeficientes, consideramos en nuestro trabajo dos formas. La primera, la forma canónica, calculando un promedio de las representaciones, es decir, tomando $\alpha_i = \frac{1}{n}$. Otra es realizar una ponderación distinta, como por ejemplo el de frecuencia inversa suave (SIF) \cite{arora17}, inspirado en TF-IDF. Cada palabra $ w $ se pondera con $ \frac {a} {a + p (w)} $, donde $ p (w) $ es la palabra probabilidad unigrama y $ a $ es un hiperparámetro de suavizado. Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 
 
 
@@ -120,9 +100,9 @@ Los valores altos de $ a $ significan más suavizado hacia el promedio simple.
 \subsection{ELMo y ULMFiT}
 \label{subsec:elmo}
 
-Hasta cerca de 2018, la forma canónica de abordar un problema de NLP era entrenar una red neuronal recurrente que consumiera embeddings no contextualizados de los tokens de entrada. Esta arquitectura tiene algunas limitaciones; una de ellas es que, dados dos o más problemas distintos (por ejemplo, análisis de sentimientos e inferencia de lenguaje natural --NLI--) lo único compartido por ambas arquitecturas es la capa más baja de la red -- la capa de embeddings -- teniendo que entrenar desde cero todo el resto de los parámetros del modelo. En términos coloquiales, cada red debe ``aprender a leer'' sobre cada tarea, ignorando muchas construcciones sintácticas y semánticas comunes del lenguaje.
+Hasta cerca de 2018, la forma canónica de abordar un problema de NLP era entrenar una red neuronal recurrente que consumiera embeddings no contextualizados de los tokens de entrada. Esta arquitectura tiene algunas limitaciones; una de ellas es que, dados dos o más problemas distintos (por ejemplo, análisis de sentimientos e inferencia de lenguaje natural --NLI--) lo único compartido por ambas redes es la capa más baja --la capa de embeddings -- teniendo que entrenar desde cero todo el resto de los parámetros del modelo. En términos coloquiales, cada red debe ``aprender a leer'' sobre cada tarea, ignorando muchas construcciones sintácticas y semánticas comunes del lenguaje.
 
-Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextualizados es \elmo{} \cite{peters2018}. Este modelo aprende embeddings ya no sobre una única palabra como \emph{word2vec} y sus variantes, sino sobre todo una oración, generando representaciones contextualizadas de cada palabra.  Para aprenderlas, \elmo{} se entrena sobre modelo de lenguaje bidireccional \footnote{En realidad no es estrictamente bidireccional, sino dos modelos de lenguaje concatenados} recurrente de varias capas sobre grandes cantidades de texto. En dicho trabajo, utilizan luego una combinación lineal de la salida de cada capa para obtener representaciones contextualizadas de cada token. Esta misma idea es una continuación \citet{peters2017semi}, y también parcialmente de \citet{mccann2017learned}; en este último trabajo abordan la construcción de representaciones contextualizadas mediante la tarea de traducción automática.
+Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextualizados es \elmo{} \cite{peters2018}. Este modelo aprende embeddings ya no sobre una única palabra como \emph{word2vec} sino sobre toda una oración, generando representaciones contextualizadas de cada palabra.  Para aprenderlas, \elmo{} se entrena sobre modelo de lenguaje bidireccional \footnote{En realidad no es estrictamente bidireccional, sino dos modelos de lenguaje concatenados} recurrente de varias capas sobre grandes cantidades de texto. En dicho trabajo, utilizan luego una combinación lineal de la salida de cada capa para obtener representaciones contextualizadas de cada token. Esta misma idea es una continuación de\citet{peters2017semi}, y también parcialmente de \citet{mccann2017learned}; en este último trabajo abordan la construcción de representaciones contextualizadas mediante la tarea de traducción automática.
 
 \begin{figure}[t]
     \centering
@@ -131,17 +111,17 @@ Uno de los primeros esfuerzos exitosos en sobrepasar los embeddings no contextua
     \label{fig:ulmfit}
 \end{figure}
 
-Alrededor de 2018, este paradigma comenzó a cambiar hacia un esquema donde se entrena una red neuronal sobre una tarea genérica para luego ajustarla a la tarea específica, algo muy común en el área de Computer Vision. \citet{howard-ruder-2018-universal} introdujeron la técnica de ULMFiT(Universal Language Modeling for Fine-tuning for text classification), uno de los trabajos fundamentales de este nuevo paradigma. La idea propuesta se puede resumir en entrenar un modelo de lenguaje sobre un gran dataset no etiquetado, y luego utilizar esa misma red (cambiándole la última capa) ajustándola a una tarea específica.
+Alrededor de 2018, este paradigma de entrenar una red desde cero compartiendo su capa más baja --word2vec o bien \elmo{}-- comenzó a cambiar hacia un esquema donde se entrena una red neuronal sobre una tarea genérica para luego ajustarla a la tarea específica, una práctica muy común en el área de Computer Vision. \citet{howard-ruder-2018-universal} introdujeron la técnica de ULMFiT(Universal Language Modeling for Fine-tuning for text classification), uno de los trabajos fundamentales de este nuevo enfoque en NLP. ULMFiT consta de pre-entrenar en primer lugar un modelo de lenguaje sobre un gran dataset no etiquetado, y luego utilizar esa misma red (cambiándole la última capa) ajustándola a una tarea específica. El primer paso, el \tbf{pre-entrenamiento} es realizado una única vez, y sus pesos son luego utilizados para realizar el ajuste en cada tarea distinta. Este es uno de los primeros esquemas \tbf{transfer learning} exitosos sobre NLP: transferimos conocimiento de la tarea de modelado de lenguaje a las distintas tareas finales que realizamos como POS tagging, análisis de sentimientos, detección de entidades nombradas, etc.
 
-Los autores proponen 3 etapas: primero, el pre-entrenamiento sobre la tarea de modelado de lenguaje en un gran dataset de texto (e.g. Wikipedia o Common Crawl); segundo, un ajuste de la tarea de modelado de lenguaje sobre el texto de la tarea en cuestión (LM fine-tuning); y finalmente, el entrenamiento sobre las etiquetas de la tarea (Classifier fine-tuning). La figura \ref{fig:ulmfit} ilustra las 3 etapas para el problema de clasificación de sentimientos. Entre varias técnicas que utilizan para entrenar estos modelos y evitar el olvido catastrófico, vale destacar el uso de \emph{slanted triangular learning rates}, donde el learning rate tiene una etapa de \emph{warmup} donde sube hasta el pico y luego una etapa de \emph{annealing} donde se reduce linealmente hasta 0 por el resto del entrenamiento. Esta técnica será utilizada por \bert{} y otros modelos de lenguaje basados en transformers.
+Los autores proponen 3 etapas: primero, el pre-entrenamiento sobre la tarea de modelado de lenguaje en un gran dataset de texto (e.g. Wikipedia o Common Crawl); segundo, un ajuste de la tarea de modelado de lenguaje sobre el texto de la tarea en cuestión (LM fine-tuning); y finalmente, el entrenamiento sobre las etiquetas de la tarea (Classifier fine-tuning). La figura \ref{fig:ulmfit} ilustra las 3 etapas para el problema de clasificación de sentimientos. Entre varias técnicas que utilizan para entrenar estos modelos y evitar el olvido catastrófico, vale destacar el uso de \emph{slanted triangular learning rates}, donde el learning rate tiene una etapa de \emph{warmup} donde sube hasta el pico y luego una etapa de \emph{annealing} donde se reduce linealmente hasta 0 por el resto del entrenamiento. Esta técnica es también utilizada por \bert{} y otros modelos de lenguaje basados en transformers.
 
-El modelo de lenguaje utilizado por los autores de ULMFiT utiliza una arquitectura AWD-LSTM \cite{merity2018regularizing}. Estas arquitecturas recurrentes fueron el estado del arte hasta el momento, pero fueron sobrepasados por las basadas en \emph{transformers}, que pasaremos a detallar.
+El modelo de lenguaje utilizado por los autores de ULMFiT utiliza una arquitectura AWD-LSTM \cite{merity2018regularizing}. Estas arquitecturas recurrentes fueron el estado del arte hasta el momento, pero fueron sobrepasados a los pocos meses por los modelos de lenguaje basados en \emph{transformers}.
 
 
 \subsection{Modelos basados en atención}
 \label{sec:02_transformers}
 
-Una de las limitaciones de los modelos basados en redes recurrentes es que sufren un \tbf{sesgo de localidad o secuencialidad}(locality bias) \cite{battaglia2018relational}. En palabras coloquiales, las redes recurrentes tienen problemas para aprender dependencias de largo rango en las oraciones, siendo esto producto de su arquitectura autorregresiva donde se construye la salida $y_t$ en base a $y_{t-1}$. Este sesgo es particularmente dañino en tareas de transducción de sequencias con la arquitectura encoder-decoder básica ya que a esto se le suma un cuello de botella forzoso por la compresión de toda la secuencia de entrada en un vector de longitud fija. \footnote{\citet{sutskever2014sequence} de hecho en su trabajo observa que invertir la oración de entrada obtiene mejores resultados para la tarea de traducción automática}.
+Antes de detallar los modelos basados en transformers, hacemos una pequeña digresión sobre traducción automática y los modelos de atención, conceptos necesarios para explicar adecuadamente esta arquitectura. Una de las limitaciones de los modelos basados en redes recurrentes es que sufren sesgo de \tbf{localidad} o \tbf{secuencialidad} (locality bias) \cite{battaglia2018relational}. En palabras coloquiales, las redes recurrentes tienen problemas para aprender dependencias de largo rango en las oraciones, siendo esto producto de su arquitectura autorregresiva donde se construye la salida $y_t$ en base a $y_{t-1}$. Este sesgo es particularmente dañino en tareas de transducción de sequencias con la arquitectura encoder-decoder básica ya que a esto se le suma un cuello de botella forzoso por la compresión de toda la secuencia de entrada en un vector de longitud fija. \footnote{\citet{sutskever2014sequence} en su trabajo observa que invertir la oración de entrada obtiene mejores resultados para la tarea de traducción automática. Esto también es un síntoma de este problema}.
 
 
 \begin{figure}[t]
@@ -166,7 +146,7 @@ donde $\alpha^{(t)}$ es el vector de alineamiento, calculado como
     \alpha^{(t)} = \softmax(\score(\overline{h_1}, h_t), \score(\overline{h_2}, h_t) \ldots , \score(\overline{h_n}, h_t))
 \end{equation*}
 
-Cada $\score(\overline{h_i}, h_t)$ marca una similaridad no normalizada entre sus argumentos. Siguiendo las alternativas planteadas en \citet{luong2015effective}, tenemos algunas posibles opciones para esto:
+Cada $\score(\overline{h_i}, h_t)$ marca una similaridad no normalizada entre sus argumentos. Las alternativas planteadas en \citet{luong2015effective} son:
 
 \begin{equation}
     score(\overline{h_i}, h_t) =  \begin{cases}
@@ -181,7 +161,7 @@ Cada $\score(\overline{h_i}, h_t)$ marca una similaridad no normalizada entre su
 %
 \newcommand{\thicktilde}[1]{\mathbf{\tilde{\text{$#1$}}}}
 
-con $W, v$ parámetros adicionales. En el caso de la atención producto interno (dot) podemos reescribir todas las ecuaciones como:
+con $W$ y $v$ parámetros adicionales. En el caso de la atención producto interno podemos reescribir todas las ecuaciones como:
 
 \begin{equation}
     C = \softmax(H \widehat{H}^T ) \widehat{H}
@@ -198,7 +178,7 @@ Finalmente, el vector $\widetilde{h_t}$ es calculado como una transformación de
 \end{equation*}
 
 
-El vector $\widetilde{h_t}$ codifica información de manera global de todos los estados ocultos del codificador, mitigando este problema del sesgo de localidad. Esta técnica se convirtió en parte integral de los modelos seq2seq como ser traducción automática, sumarización, entre otras. La figura \ref{fig:attention_mechanism} ilustra esta arquitectura.
+El vector $\widetilde{h_t}$ codifica información de manera global de todos los estados ocultos del codificador, atenuando los problemas de localidad de las redes recurrentes. Esta técnica se convirtió en parte integral de los modelos seq2seq como ser traducción automática, sumarización, entre otras. La figura \ref{fig:attention_mechanism} ilustra esta arquitectura.
 
 La técnica de auto-atención o intra-atención \cite{parikh-etal-2016-decomposable} consiste en aproximadamente la misma idea que la atención sólo que teniendo una única secuencia; podemos asumir ecuaciones similares con $\overline{h_i} = h_i$. La auto-atención genera representaciones de los distintos vectores de entrada observando la totalidad de la secuencia, a diferencia de las redes recurrentes que sólo construyen una representación en base al paso anterior. Esta capa se utiliza en arquitecturas para clasificación de texto encima de una capa recurrente para generar representaciones con dependencias sin distinción de la distancia entre los distintos tokens.
 
@@ -224,9 +204,9 @@ La técnica de auto-atención o intra-atención \cite{parikh-etal-2016-decomposa
 
 Mencionamos el sesgo de la secuencialidad como uno de los problemas de los modelos recurrentes. Otro de los grandes obstáculos para las arquitecturas autorregresivas es la paralelización. El modelo de cómputo secuencial donde $h_t$ se calcula en base a $h_{t-1}$ inhibe un cálculo paralelo, donde las diferentes representaciones puedan ser generadas simultáneamente. \citet{parikh-etal-2016-decomposable} es uno de los primeros trabajos que proponen una arquitectura para el problema de inferencia (NLI) enteramente basada en modelos de atención, sin modelos recurrentes.
 
-\citet{vaswani2017attention} introdujeron la arquitectura \emph{Transformer} para la tarea de traducción automática. Esta arquitectura no utiliza capas recurrentes ni convolucionales, basándose enteramente en el mecanismo de auto-atención. La figura \ref{fig:transformer_architecture} muestra la arquitectura de los modelos basados en Transformer, organizado en forma de encoder-decoder, con 6 capas de cada uno.
+\citet{vaswani2017attention} introdujeron la arquitectura \tbf{Transformer} para la tarea de traducción automática. Esta arquitectura no utiliza capas recurrentes ni convolucionales, basándose enteramente en el mecanismo de auto-atención. La figura \ref{fig:transformer_architecture} muestra la arquitectura de los modelos basados en Transformer, organizado en forma de encoder-decoder, con 6 capas de cada uno.
 
-Cada capa del encoder utiliza un mecanismo de auto-atención múltiple seguido de una capa feed-forward punto a punto. Las dos capas de auto-atención o feed-forward están sucedidas por una conexión residual \cite{he2016deep} \footnote{El fin de estas conexiones residuales es facilitar el flujo del gradiente en arquitecturas profundas} y una normalización, de manera que la salida se expresa como:
+Cada capa del encoder utiliza un mecanismo de auto-atención múltiple seguido de una capa feed-forward punto a punto. Las dos capas de auto-atención o feed-forward están sucedidas por conexiones residuales \cite{he2016deep} para facilitar el flujo del gradiente en una arquitectura profunda y una capa de normalización, de manera que la salida se expresa como:
 
 \begin{equation*}
     \text{Layer}(x) = \text{Norm}(x + \text{subLayer}(x))
@@ -240,7 +220,7 @@ El cálculo de atención utilizado en este trabajo es similar al visto en la ecu
     Attention(Q, K, V) = \text{softmax}(\frac{Q^T K}{\sqrt{d_k}}) V
 \end{equation*}
 
-Cada capa utiliza varias cabezas de auto-atención, las cuales concatena y proyecta en su salida en su salida. La salida de cada una de capa pasa por una regularización de tipo dropout \cite{srivastava2014dropout}.
+Cada capa utiliza varias cabezas de auto-atención, cuyas salidas son concatenadas y proyectadas. A su vez, la salida de cada una de las capa pasa por una regularización de tipo dropout \cite{srivastava2014dropout}.
 
 Un punto no menor es que el modelo Transformer, siendo que no tiene ningún tipo de recurrencia y convolución, carece de cualquier ordenamiento de la secuencia de tokens. Para inyectar ese conocimiento en la red, utilizan \emph{vectores de posicionamiento} (positional embeddings) que se suman a los vectores de entrada de la capa de embeddings, como se ilustra en la figura \ref{fig:transformer_architecture}. Estos vectores no son parámetros entrenados (como sí lo son en \bert{}) sino que se calculan mediante funciones sinusoidales.
 
@@ -252,7 +232,7 @@ No nos extenderemos más en la explicación de esta arquitectura, y referimos pa
 
 \label{sec:02_bert}
 
-Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de modelado de lenguaje-- y la arquitectura Transformer --removiendo las redes recurrentes y facilitando la paralelización del cálculo-- en \citet{radford2018improving} se introduce GPT (\emph{generative pre-training}). Esta técnica consiste de un pre-entrenamiento sobre un gran corpus no etiquetado y luego un fine-tuning discriminativo para cada tarea, muy en la línea de \citet{howard-ruder-2018-universal}, introduciendo parámetros específicos únicamente para cada una de estas. El modelo que usa esta tarea es el de \tbf{modelado de lenguaje causal} -- es decir, de izquierda a derecha. Este modelo obtuvo para muchas tareas como el benchmark GLUE \cite{wang-etal-2018-glue} el estado del arte.
+Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de modelado de lenguaje-- y la arquitectura Transformer --removiendo las redes recurrentes y facilitando la paralelización del cálculo-- en \citet{radford2018improving} se introduce GPT (\emph{generative pre-training}). Esta técnica consiste de un pre-entrenamiento sobre un gran corpus no etiquetado seguido de un fine-tuning discriminativo para cada tarea, muy en la línea de \citet{howard-ruder-2018-universal}, introduciendo unos pocos parámetros específicos para cada una de estas. El modelo que usa esta tarea es el de \tbf{modelado de lenguaje causal} -- es decir, de izquierda a derecha. Este modelo obtuvo el estado de arte para el benchmark GLUE \cite{wang-etal-2018-glue}, superando otros modelos como \elmo{}.
 
 
 \begin{figure}[t]
@@ -263,7 +243,7 @@ Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de mo
 \end{figure}
 
 
-\bert{} \cite{devlin2018bert} (Bidirectional Encoder Representations from Transformers) plantea una modificación sobre GPT: en lugar de pre-entrenar el modelo sobre la tarea de modelado de lenguaje \tbf{causal} --de izquierda a derecha-- entrenar sobre la tarea de modelado de lenguaje \tbf{enmascarado}. Esta tarea (usualmente llamada \emph{Cloze task} \cite{taylor1953cloze}) consta de enmascarar una cierta cantidad de palabras de una frase, y luego intentar predecir las palabras faltantes. Por ejemplo, en la siguiente frase, consta de reemplazar los dos tokens \verb|[MASK]|:
+\bert{} \cite{devlin2018bert} (Bidirectional Encoder Representations from Transformers) plantea una modificación sobre GPT: en lugar de pre-entrenar el modelo sobre la tarea de modelado de lenguaje \tbf{causal} --de izquierda a derecha-- hacerlo sobre la tarea de modelado de lenguaje \tbf{enmascarado}. Esta tarea (usualmente llamada \emph{Cloze task} \cite{taylor1953cloze}) consta de enmascarar una cierta cantidad de palabras de una frase, y luego intentar predecir las palabras faltantes. Por ejemplo, en la siguiente frase, consta de reemplazar los dos tokens \verb|[MASK]|:
 
 \begin{center}
     El \verb|[MASK]| es celeste y el pasto \verb|[MASK]|
@@ -272,7 +252,7 @@ Combinando las ideas de ULMFit --entrenaje semi-supervisado sobre la tarea de mo
 
 A diferencia de la tarea de modelado de lenguaje causal, los autores argumentan que esta tarea permite generar representaciones bidireccionales ricas. La figura \ref{fig:gpt_vs_bert_vs_elmo} muestra una comparación entre los distintos tipos de pre-entrenamiento de GPT.
 
-BERT es entrenado conjuntamente sobre dos tareas: una, la ya mencionada tarea de modelado de lenguaje enmascarado; la otra, la tarea de \emph{predicción de próxima oración} (Next Sentence Prediction, NSP). Esta tarea consiste en predecir si, dado un par de oraciones, la segunda es la que sigue a la primera. El 50\% de las ocasiones, las dos oraciones de entrada son contiguas. Esta tarea debiera guardar cierta relación con la semántica de las oraciones y su interrelación, necesaria en tareas como NLI y Question Answering.
+BERT es pre-entrenado conjuntamente sobre dos tareas: una, la ya mencionada tarea de modelado de lenguaje enmascarado; la otra, la tarea de \emph{predicción de próxima oración} (Next Sentence Prediction, NSP). Esta tarea consiste en predecir si, dado un par de oraciones, la segunda es la que sigue a la primera. El 50\% de las ocasiones, las dos oraciones de entrada son contiguas en el texto de origen, y el 50\% restante son dos oraciones aleatorias concatenadas. Esta tarea debiera guardar cierta relación con la semántica de las oraciones y su interrelación, necesaria en tareas como NLI y Question Answering.
 
 \newcommand{\clstok}[0]{\texttt{[CLS]}}
 \newcommand{\septok}[0]{\texttt{[SEP]}}
@@ -291,6 +271,6 @@ Dos caracteres especiales son utilizados en \bert{}: \clstok{} y \septok{}. Esto
 El proceso de pre-entrenamiento es realizado sobre la concatenación de dos corpus: BooksCorpus \cite{zhu2015bookscorpus} y la versión en inglés de Wikipedia. Estas dos fuentes son utilizadas ya que permiten extraer pares de palabras contiguas, algo necesario para la tarea de NSP.
 
 
-\citet{liu2019roberta} propone dos modificaciones al pre-entrenamiento de \bert{}: en primer lugar, remover la tarea de NSP; y en segundo lugar, realizar un pre-entrenamiento más extenso y con batch sizes más grandes, pasando de lotes de 512 a 8,192 oraciones. Este modelo pre-entrenado (al cual se denomina \roberta{}) obtuvo mejor desempeño en el dataset de GLUE y otras tareas que \bert{}.
+\citet{liu2019roberta} propone dos modificaciones al pre-entrenamiento de \bert{}: en primer lugar, remover la tarea de NSP; y en segundo lugar, realizar un pre-entrenamiento más extenso y con batch sizes más grandes, pasando de lotes de 512 a 8,192 oraciones. Este modelo pre-entrenado (al cual se denomina \roberta{}) obtuvo mejor desempeño que \bert{} en el dataset de GLUE y otras tareas.
 
-Luego de estos modelos de lenguaje, una suerte de guerra armamentística tuvo lugar para entrenar modelos más grandes y con más parámetros al observar que aumentando la cantidad de estos mejoraba la performance en distintas tareas --sin observarse aún un techo más que los recursos disponibles en el planeta. Sólo para ilustrar el punto, la versión \emph{base} de \bert{} tiene 110M parámetros, su versión large 330M, GPT-2 1,500M, Turing NLG de Microsoft 17,000M y finalmente GPT-3 \cite{brown2020language} tiene la asombrosa cantidad de 175,000M parámetros.
+Luego de estos modelos de lenguaje, una suerte de guerra armamentística tuvo lugar para entrenar modelos más grandes y con más parámetros al observar que aumentando la cantidad de estos mejoraba la performance en distintas tareas --sin observarse aún un techo más que los recursos computacionales y energéticos disponibles en el planeta. Sólo para ilustrar el punto, la versión \emph{base} de \bert{} tiene 110M parámetros, su versión large 330M, GPT-2 1,500M, Turing NLG de Microsoft 17,000M y finalmente GPT-3 \cite{brown2020language} tiene la asombrosa cantidad de 175,000M parámetros.
