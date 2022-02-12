@@ -43,31 +43,31 @@ El análisis de sentimientos, opinion mining u opinion extraction suscitó inter
 
 Dentro de los recursos para tareas de opinion mining, \citet{maas-EtAl:2011:ACL-HLT2011} presenta un dataset de análisis de polaridad con dos etiquetas (positivo y negativo) sobre películas en la plataforma de IMDb, extensamente utilizado para la tarea de análisis de sentimientos. El Stanford Sentiment Treebank (SST) \cite{socher-etal-2013-recursive} es un dataset que contiene información granular en una escala símil Likert de polaridad sobre las distintas subpartes de cada oración. Esta tarea forma parte del benchmark de General Language Understanding Evaluation (GLUE) \cite{wang-etal-2018-glue}. El workshop SemEval \footnote{\url{https://semeval.github.io/}} ha generado numerosos recursos para tareas de opinion mining en redes sociales, como Análisis de Polaridad, Análisis de Polaridad basado en aspectos, análisis de emociones, entre otras.
 
-Centrándonos en los recursos y tareas en español, uno de los principales polos de esto es el Taller de Análisis de Sentimientos (TASS) \cite{overview_tass2018,garcia2020overview,cumbreras2016overview} organizado por la Sociedad Española de Procesamiento Natural (SEPLN) y a partir de 2020 en el marco del evento Iberian Languages Evaluation Forum (IberLEF). En este foro se presentaron tareas y datasets de análisis de sentimiento \cite{garcia2020overview}, de emociones\cite{plaza-del-arco-etal-2020-emoevent}, de toxicidad \cite{taule2021detoxis}, entre otras.
+Centrándonos en los recursos y tareas en español, uno de los principales polos de esto es el Taller de Análisis de Sentimientos (TASS) \cite{overview_tass2018,garcia2020overview,cumbreras2016overview} organizado por la Sociedad Española de Procesamiento Natural (SEPLN) y a partir de 2020 en el marco del evento Iberian Languages Evaluation Forum (IberLEF). En este foro se presentaron tareas y datasets de análisis de sentimiento \cite{garcia2020overview}, de emociones \cite{plaza-del-arco-etal-2020-emoevent}, de toxicidad \cite{taule2021detoxis}, entre otras.
 
 
 \section{Tareas analizadas}
 \large
 \begin{table}[t]
     \centering
-    \begin{tabular}{| l | ll ll|}
+    \begin{tabular}{ p{0.30\textwidth}  p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.1\textwidth}}
         \hline
-        Tarea                     &  Dataset                   & Tamaño         & Clases   &\\
+        Tarea                     &  Dataset                   & \#Mensajes     & Clases   &\\
         \hline
-        \mr{3}{Análisis de Sentimientos}  &  \mr{3}{TASS 2020} & \mr{3}{14,509} & Neg      & (39.80\%)\\
-                                          &                    &                & Neu      & (29.52\%)\\
-                                          &                    &                & Pos      & (30.68\%)\\
+        \mr{3}{Análisis de Sentimientos}  &  \mr{3}{TASS 2020} & \mr{3}{$14,509$} & Neg      & (39.8\%)\\
+                                          &                    &                & Neu      & (29.5\%)\\
+                                          &                    &                & Pos      & (30.7\%)\\
         \hline
-        \mr{7}{Análisis de emociones}&\mr{7}{TASS 2020/EmoEvent}&\mr{7}{8,409}  & Otra     & (49.08\%)  \\
-                                          &                    &                & Alegría  & (21.58\%)  \\
-                                          &                    &                & Tristeza & (12.00\%)  \\
-                                          &                    &                & Ira      & (10.19\%)  \\
-                                          &                    &                & Sorpresa & (4.10\%)  \\
-                                          &                    &                & Disgusto & (1.91\%)  \\
-                                          &                    &                & Miedo    & (1.14\%)  \\
+        \mr{7}{Análisis de Emociones}&\mr{7}{EmoEvent}&\mr{7}{$8,409$}  & Otra    & (49.08\%)  \\
+                                          &                    &                & Alegría  & (21.6\%)  \\
+                                          &                    &                & Tristeza & (12.0\%)  \\
+                                          &                    &                & Ira      & (10.2\%)  \\
+                                          &                    &                & Sorpresa & (4.1\%)  \\
+                                          &                    &                & Disgusto & (1.9\%)  \\
+                                          &                    &                & Miedo    & (1.1\%)  \\
         \hline
-        \mr{2}{Detección de ironía}  & \mr{2}{IroSVa 2019}     & \mr{2}{9,000}  & No irónico   & (66.68\%)\\
-                                          &                    &                & Irónico      & (33.32\%)\\
+        \mr{2}{Detección de Ironía}  & \mr{2}{IroSVa 2019}     & \mr{2}{$9,000$}  & No irónico   & (66.7\%)\\
+                                          &                    &                & Irónico      & (33.3\%)\\
         %Análisis de Emociones     &  TASS 2020/EmoEvent\cite{plaza-del-arco-etal-2020-emoevent} & 7 & 1,879 \\
         \hline
     \end{tabular}
@@ -75,22 +75,21 @@ Centrándonos en los recursos y tareas en español, uno de los principales polos
     \label{tab:03_tasks}
 \end{table}
 
-Analizamos 3 tareas de extracción de opiniones sobre redes sociales y las usamos como benchmark para las diferentes técnicas de clasificación. La tabla \ref{tab:03_tasks} contiene información sobre las distintas tareas analizadas y los datasets utilizados para ellas. Una de las tareas analizadas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Utilizamos el dataset de TASS 2020 \cite{garcia2020overview}, anotado con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las 3 particiones correspondientes de entrenamiento, validación, y test).
+Tres tareas de extracción de opiniones sobre redes sociales fueron utilizadas como benchmark para las diferentes técnicas de clasificación. La tabla \ref{tab:03_tasks} contiene información sobre las tareas analizadas y los datasets utilizados para ellas. Una de las tareas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Utilizamos el dataset de TASS 2020 \cite{garcia2020overview}, anotado con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las tres particiones correspondientes de entrenamiento, validación, y test).
+
+Para el \tbf{análisis de emociones}, también usamos el conjunto de datos de TASS 2020 \emph{EmoEvent} \cite{plaza-del-arco-etal-2020-emoevent}. Este dataset multilingual (español e inglés) contiene tweets etiquetados con las seis emociones básicas de Ekman :\emph {ira}, \emph {disgusto}, \emph {miedo}, \emph {alegría}, \emph {tristeza}, \emph {sorpresa} y también una emoción \emph{neutral} \cite{ekman1992argument}. El dataset fue recolectado en base a a ocho eventos globales de diferentes dominios (políticos, entretenimiento, catástrofes o incidentes, conmemoraciones globales, etc.) por lo que las emociones siempre están relacionadas con un fenómeno en particular. Solo conservamos la parte en español, que contiene $8,409$ tweets.
 
 
-Para el análisis de emociones, también usamos el conjunto de datos de TASS 2020 \emph{EmoEvent} \cite{plaza-del-arco-etal-2020-emoevent}. Este dataset multilingual (español e inglés) contiene tweets etiquetados con las seis emociones básicas de Ekman \cite{ekman1992argument} :\emph {ira}, \emph {disgusto}, \emph {miedo}, \emph {alegría}, \emph {tristeza}, \emph {sorpresa} y también una emoción \emph{neutral}. El dataset fue recolectado en base a a ocho eventos globales diferentes de diferentes dominios (políticos, entretenimiento, catástrofes o incidentes, conmemoraciones globales, etc.) por lo que las emociones siempre están relacionadas con un fenómeno en particular. Solo conservamos la parte en español, que contiene 8.409 tweets.
-
-
- La \textbf{detección de ironía} también es una tarea que ha ganado popularidad recientemente. Algunos trabajos han mostrado que tiene importantes implicaciones en otras tareas de NLP de caracter semántico, como por ejemplo \citet{gupta-yang-2017-crystalnest} muestran que el uso de funciones derivadas de la detección de sarcasmo mejora el rendimiento en la tarea de análisis de sentimientos. Además de esto, el contenido generado por los usuarios es una rica y vasta fuente de ironía, por lo que esta tarea es de particular importancia para el dominio de las redes sociales. IroSVa \cite {ortega2019overview} es un dataset en Español (publicado en el contexto de TASS 2019) que tiene la particularidad de considerar los mensajes no como textos aislados sino con un contexto dado (un titular o un tema). Consta de 7.200 instancias y 1.800 ejemplos de prueba divididos en tres variantes geográficas de Cuba, España y México, cada una con una etiqueta binaria que indica si el comentario contiene ironía o no. A diferencia de las tres tareas anteriores mencionadas aquí, este conjunto de datos contiene no solo mensajes de Twitter, sino también de comentarios de noticias y foros de debate como 4forums.com y Reddit.
+ La \textbf{detección de ironía} es una tarea que ha ganado popularidad recientemente. Algunos trabajos han mostrado que tiene importantes implicaciones en otras tareas de NLP de caracter semántico: para citar uno, \citet{gupta-yang-2017-crystalnest} muestran que el uso de funciones derivadas de la detección de sarcasmo mejora el rendimiento de ciertos modelos en la tarea de análisis de sentimientos. Además de esto, el contenido generado por los usuarios es una rica y vasta fuente de ironía, por lo que esta tarea es de particular importancia para el dominio de las redes sociales. IroSVa \cite {ortega2019overview} es un dataset en Español (publicado en el contexto de TASS 2019) que tiene la particularidad de considerar los mensajes no como textos aislados sino con un contexto dado (un titular o un tema). Consta de $7,200$ instancias y $1,800$ ejemplos de prueba divididos en tres variantes geográficas de Cuba, España y México, cada una con una etiqueta binaria que indica si el comentario contiene ironía o no. A diferencia de las dos tareas anteriores mencionadas aquí, este conjunto de datos contiene no solo mensajes de Twitter, sino también de comentarios de noticias y foros de debate como 4forums.com y Reddit.
 
  La tabla \ref{tab:03_datasets_examples} ilustra algunos ejemplos seleccionados para las distintas tareas y sus clases. En el caso de la tarea de detección de emociones, podemos ver que algunos ejemplos han sido preprocesados por sus autores para ocultar los hashtags y urls.
 
 \begin{table}
     \centering
     \begin{tabularx}{\textwidth}{l l X}
-        Tarea                          & Clase        &            \\
-        \hline
-        \mr{7}{Emociones}              & Neutral        & Espectantes para ver el tercer capitulo de HASHTAG. El principio empieza bien.	\\
+        Tarea                          & Clase        & Ejemplos         \\
+        \Xhline{4\arrayrulewidth}
+\rule{0pt}{4ex}\mr{7}{Emociones}       & Neutral        & Espectantes para ver el tercer capitulo de HASHTAG. El principio empieza bien.	\\
                                        & Alegría        & Lo de Messi ha sido increíble! HASHTAG        \\
                                        & Tristeza       & Un día lamentable. Se perdieron años de historia, de cultura, de arquitectura... Me siento devastada al ver las imágenes del incendio de la catedral de HASHTAG en HASHTAG URL \\
                                        & Ira            & URL que discurso para ponerlo a llorar, Putos humanos, para cuando la extinción?? \\
@@ -98,19 +97,18 @@ Para el análisis de emociones, también usamos el conjunto de datos de TASS 202
                                        & Miedo          & Joder, izquierda venció ¿y qué? A mi me preocupa y mucho que Vox haya pasado de 0 a 24!! ¿a nadie le parece un montón? No sé, debo ser idiota. HASHTAG	\\
                                        & Disgusto       & Como se nota que HASHTAG ya no tiene el apoyo de los libros. Vaya mierda de temporada se están sacando.	 \\
         \hline
-        \hline
-        \mr{3}{Sentimientos}           & Negativo       & que triste es la realidad	\\
+\rule{0pt}{4ex}\mr{3}{Sentimientos}    & Negativo       & que triste es la realidad	\\
                                        & Positivo       & Hola a todos corazones, buen día Y FELIZ NAVIDAD A TODOS USTEDES! DIOS ME LOS BENDIGA Y ME LOS LLENE DE TODO SU AMOR \\
                                        & Neutral        & $@$AlfonsoEmilioL La próxima vez que no vea lo entrevisto y pregunto que escucha.	\\
         \hline
-        \hline
-        \mr{4}{Ironía}                 &\mr{3}{Irónico} & Pues, noticia de última hora, eres un anormal que no sabe escribir. Es LESIONARAN.    \\
+
+\rule{0pt}{4ex}\mr{4}{Ironía}          &\mr{3}{Irónico} & Pues, noticia de última hora, eres un anormal que no sabe escribir. Es LESIONARAN.    \\
                                        &                & El juez paraliza la exhumación de Franco alegando peligro para los operarios. Pues me parece muy bien, porque con las ratas hay que ser muy precavido.	\\
-                                       &                & $@$CristinaSegui\_ $@$Pablo\_Iglesias\_ Doctorado en cambiar pañales.....	\\
-                                       & No irónico     & No me sirvió para nada todo fue en vano. Espero mejore la calidad.	\\
-        \hline
+
+                        \rule{0pt}{2ex}& No irónico     & No me sirvió para nada todo fue en vano. Espero mejore la calidad.	\\
+        \Xhline{4\arrayrulewidth}
     \end{tabularx}
-    \caption{Tareas evaluadas en este capítulo, junto a datos estadísticos de los datasets utilizados}
+    \caption{Ejemplos de instancias para las distintas tareas y clases.}
     \label{tab:03_datasets_examples}
 \end{table}
 
@@ -178,7 +176,7 @@ Si bien en algunas secciones (como en \ref{sec:04_preprocessing}) usaremos varia
 
 Describimos a continuación los clasificadores utilizados para las tareas. Podemos, a grandes rasgos, describir a todos nuestros clasificadores como compuestos de dos partes: un \emph{codificador} (o \emph{encoder} en inglés) que genera una representación contínua de longitud fija del texto de entrada, y un \emph{decodificador} que toma esa codificación y la convierte a la salida deseada.
 
-Todas las tareas analizadas son de clasificación multiclase: elegir exactamente una clase entre varias. Para ello, nuestro decodificador será de la forma $\softmax(Wx + b)$, donde $W$ es una matriz de pesos y $b$ un vector de bias, ambos parámetros de nuestra red neuronal. Los modelos planteados diferirán entonces en los codificadores. Proponemos las siguientes variantes:
+Todas las tareas analizadas son de clasificación multiclase: elegir exactamente una clase entre varias. Para ello, nuestro decodificador será de la forma $\softmax(Wx + b)$, donde $W$ es una matriz de pesos y $b$ un vector de bias, ambos parámetros de nuestra red neuronal. Los clasificadores planteados diferirán entonces en los codificadores. Proponemos las siguientes variantes:
 
 \begin{itemize}
     \item \textbf{FFN}: Un perceptrón multicapa (feed-forward network) con una función de activación intermedia \emph{ReLU}
@@ -186,9 +184,9 @@ Todas las tareas analizadas son de clasificación multiclase: elegir exactamente
     \item \textbf{BETO|mBERT|RoBERTa|BERTin}: un modelo pre-entrenado de lenguaje basado en transformers.
 \end{itemize}
 
-En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de los modelos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\clstok{} en el caso de BERT pero puede variar para RoBERTa u otros modelos)\footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}. La figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
+En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de aquellos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\clstok{} en el caso de BERT pero puede variar para RoBERTa u otros modelos)\footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}. La figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
 
-Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet. Para los dos primeros modelos, los entrenamos usando Adam \cite{kingma2014adam} con un learning rate de 0.001 y un decay de 0.01. Para los modelos basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
+Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet, y usamos como algoritmo de optimización a Adam \cite{kingma2014adam} con un learning rate de 0.001 y un decay de 0.01. Para los clasificadores basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
 
 \section{Resultados}
 
@@ -214,11 +212,11 @@ Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos
         %robertuito     &  0.560 \pm 0.010 &  0.759 \pm 0.007 &  0.739 \pm 0.005 &  0.705 \pm 0.003 &  0.691 \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de los distintos modelos para las 3 tareas analizadas (Análisis de Emociones, Análisis de Emociones, Detección de Ironía). Los 3 resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar. El puntaje de cada modelo es el promedio de las métricas para las 3 tareas}
+    \caption{Resultados de la evaluación de los distintos modelos para las tareas analizadas (Análisis de Emociones, Análisis de Emociones, Detección de Ironía). Los resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar. El puntaje de cada modelo es el promedio de las métricas para las tres tareas}
     \label{tab:03_classification_results}
 \end{table*}
 
-La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos, expresados como la media de diez corridas de los experimentos de clasificación junto a sus desviaciones estándar; esto lo realizamos con motivo de que el entrenamiento es estocástico a diferencia de otros modelos clásicos de Machine Learning. Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las 3 tareas, aunque las diferencias son pequeñas. Todos los modelos basados en modelos pre-entrenados de transformers obtienen mejor performance que los basados en redes neuronales recurrentes.
+La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos, expresados como la media de diez corridas de los experimentos de clasificación junto a sus desviaciones estándar; esto lo realizamos con motivo de que el entrenamiento es estocástico a diferencia de otros modelos clásicos de Machine Learning. Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las tareas, aunque las diferencias son pequeñas. Todos los modelos basados en modelos pre-entrenados de transformers obtienen mejor performance que los basados en redes neuronales recurrentes.
 
 Dentro de los modelos basados en redes recurrentes y feed-forward, aquellos que consumen embeddings entrenados en textos sociales (marcadas como $_{TW}$) obtienen mejor performance que aquellos que consumen embeddings entrenados en Common Crawl (marcados como $_{CC}$). Esta diferencia, en todos los casos, es estadísticamente significa corriendo un test U de Mann-Whitney ($p \leq 0.05$ para el caso de ironía y \emph{biGRU}, para todas las demás comparaciones $p \leq 0.001$ ).
 
