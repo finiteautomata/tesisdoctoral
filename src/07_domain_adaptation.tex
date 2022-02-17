@@ -68,6 +68,8 @@ Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-e
 
 \subsection{Recolección de tweets}
 
+\label{sec:robertuito_data_collection}
+
 A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}. El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es una muestra de alrededor del 1\% de los tweets, supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de la posible manipulación de esta muestra \cite{pfeffer2018tampering}. Muestras no representativas y sesgadas pueden afectar al modelo en tareas finales, algunos de estos errores siendo potencialmente dañinos como sesgos raciales o de género. Por ello, publicamos el conjunto de datos para ser inspeccionado, y queda como trabajo a futuro un análisis más detallado de sus instancias.
 
 En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019 \footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.

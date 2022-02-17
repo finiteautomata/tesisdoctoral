@@ -75,14 +75,14 @@ Centrándonos en los recursos y tareas en español, uno de los principales polos
     \label{tab:03_tasks}
 \end{table}
 
-Tres tareas de extracción de opiniones sobre redes sociales fueron utilizadas como benchmark para las diferentes técnicas de clasificación. La tabla \ref{tab:03_tasks} contiene información sobre las tareas analizadas y los datasets utilizados para ellas. Una de las tareas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Utilizamos el dataset de TASS 2020 \cite{garcia2020overview}, anotado con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las tres particiones correspondientes de entrenamiento, validación, y test).
+Tres tareas de extracción de opiniones sobre redes sociales fueron utilizadas como benchmark para las diferentes técnicas de clasificación. La Tabla \ref{tab:03_tasks} contiene información sobre las tareas analizadas y los datasets utilizados para ellas. Una de las tareas es la de \textbf{análisis de polaridad}: dado un tweet, detectar si tiene una polaridad general positiva, negativa, o neutra. Utilizamos el dataset de TASS 2020 \cite{garcia2020overview}, anotado con estas 3 clases y con información de las diferentes variedades dialectales del español a la que pertenece cada tweet. Para nuestro análisis, ignoramos estas distinciones y fusionamos todos los datos en un solo conjunto de datos (con las tres particiones correspondientes de entrenamiento, validación, y test).
 
 Para el \tbf{análisis de emociones}, también usamos el conjunto de datos de TASS 2020 \emph{EmoEvent} \cite{plaza-del-arco-etal-2020-emoevent}. Este dataset multilingual (español e inglés) contiene tweets etiquetados con las seis emociones básicas de Ekman :\emph {ira}, \emph {disgusto}, \emph {miedo}, \emph {alegría}, \emph {tristeza}, \emph {sorpresa} y también una emoción \emph{neutral} \cite{ekman1992argument}. El dataset fue recolectado en base a a ocho eventos globales de diferentes dominios (políticos, entretenimiento, catástrofes o incidentes, conmemoraciones globales, etc.) por lo que las emociones siempre están relacionadas con un fenómeno en particular. Solo conservamos la parte en español, que contiene $8,409$ tweets.
 
 
  La \textbf{detección de ironía} es una tarea que ha ganado popularidad recientemente. Algunos trabajos han mostrado que tiene importantes implicaciones en otras tareas de NLP de caracter semántico: para citar uno, \citet{gupta-yang-2017-crystalnest} muestran que el uso de funciones derivadas de la detección de sarcasmo mejora el rendimiento de ciertos modelos en la tarea de análisis de sentimientos. Además de esto, el contenido generado por los usuarios es una rica y vasta fuente de ironía, por lo que esta tarea es de particular importancia para el dominio de las redes sociales. IroSVa \cite {ortega2019overview} es un dataset en Español (publicado en el contexto de TASS 2019) que tiene la particularidad de considerar los mensajes no como textos aislados sino con un contexto dado (un titular o un tema). Consta de $7,200$ instancias y $1,800$ ejemplos de prueba divididos en tres variantes geográficas de Cuba, España y México, cada una con una etiqueta binaria que indica si el comentario contiene ironía o no. A diferencia de las dos tareas anteriores mencionadas aquí, este conjunto de datos contiene no solo mensajes de Twitter, sino también de comentarios de noticias y foros de debate como 4forums.com y Reddit.
 
- La tabla \ref{tab:03_datasets_examples} ilustra algunos ejemplos seleccionados para las distintas tareas y sus clases. En el caso de la tarea de detección de emociones, podemos ver que algunos ejemplos han sido preprocesados por sus autores para ocultar los hashtags y urls.
+ La Tabla \ref{tab:03_datasets_examples} ilustra algunos ejemplos seleccionados para las distintas tareas y sus clases. En el caso de la tarea de detección de emociones, podemos ver que algunos ejemplos han sido preprocesados por sus autores para ocultar los hashtags y urls.
 
 \begin{table}
     \centering
@@ -130,11 +130,11 @@ Una de los pasos más importantes para la manipulación de texto proveniente de 
 El trabajo de \citet{eisenstein2013bad} trató desde una perspectiva más amplia los enfoques utilizados hasta el momento para tareas en medios sociales, planteando dos posibilidades: la \textbf{normalización} sería una forma de adaptar el texto a las herramientas, mientras que la \textbf{adaptación de dominio} sería adaptar las herramientas al texto. Con lo primero, el trabajo menciona al conjunto de técnicas que podemos utilizar para acercar la distribución del texto lo más posible a un dominio formal, mientras que por adaptación de dominio a la construcción de datasets y algoritmos particulares para distintas tareas de NLP en redes sociales, como por ejemplo POS tagging \cite{gimpel2010part}, NER \cite{ritter2011named}, entre otros.
 
 
-La alta desnormalización siguió siendo un escollo para los modelos basados en redes neuronales y embeddings (como \emph{GloVe} o \emph{word2vec}) ya que cada representación se calcula sobre las palabras o tokens de la oración. En el caso de un elemento fuera de vocabulario, un mecanismo habitual es asignarles un token especial ``<unk>'', y por lo tanto, una única representación para todas esas palabras OOV. Sin embargo, esto puede ser problemático ya que elimina muchas palabras similares a otras que sí tenemos en el vocabulario. \citet{bojanowski16} propuso una solución a esto al permitir formar la representación de cada palabra mediante una combinación lineal de las representaciones de las ``subpalabras'' de cada una (ver sección \ref{sec:02_representaciones}).
+La alta desnormalización siguió siendo un escollo para los modelos basados en redes neuronales y embeddings (como \emph{GloVe} o \emph{word2vec}) ya que cada representación se calcula sobre las palabras o tokens de la oración. En el caso de un elemento fuera de vocabulario, un mecanismo habitual es asignarles un token especial ``<unk>'', y por lo tanto, una única representación para todas esas palabras OOV. Sin embargo, esto puede ser problemático ya que elimina muchas palabras similares a otras que sí tenemos en el vocabulario. \citet{bojanowski16} propuso una solución a esto al permitir formar la representación de cada palabra mediante una combinación lineal de las representaciones de las ``subpalabras'' de cada una (ver Sección \ref{sec:02_representaciones}).
 
 Con el advenimiento de los modelos basados en transformers, otros tipos de tokenización fueron propuestos que permiten reducir las palabras OOV. Word Piece \cite{schuster2012japanese} y Sentence Piece \cite{kudo-richardson-2018-sentencepiece} son algoritmos de tokenización que, en lugar de partir la palabra en tokens o n-gramas de caracteres fijos como \emph{fasttext}, convierten cada palabra en una tira de subpalabras provenientes de un vocabulario. Estos vocabularios no están prefijados sino que son entrenados sobre conjuntos de datos con variantes de Byte-Pair Encoding (BPE) \cite{sennrich2016neural} que intentan minimizar la cantidad de tokens utilizados para representar el texto. Esta técnica permite reducir la incidencia OOV notablemente, ya que muchas de estas subpalabras entrenadas guardan relación morfológica con el idioma (y el dominio) de los datos de entrenamiento.
 
-En el caso de modelos pre-entrenados sobre texto generado por usuarios, \citet{dat2020bertweet} plantearon experimentos en tareas sobre texto proveniente de redes sociales usando dos formas de normalización: una \textbf{débil}, donde sólo convirtieron nombres de usuario en un token especial \verb|@USER| y a las URLs en otro token especial \verb|HTTPURL|, y otra estrategia \textbf{fuerte} donde utilizaron diccionarios de normalización y otras técnicas para reducir la variabilidad del texto basadas en \citet{han2011lexical}. Para un conjunto de tareas de clasificación sobre Twitter y distintos modelos pre-entrenados, los resultados de los experimentos arrojaron que la normalización fuerte empeora levemente la performance.
+\citet{dat2020bertweet} plantearon experimentos en tareas sobre texto proveniente de redes sociales usando dos formas de normalización: una \textbf{débil}, donde sólo convirtieron nombres de usuario en un token especial \verb|@USER| y a las URLs en otro token especial \verb|HTTPURL|, y otra estrategia \textbf{fuerte} donde utilizaron diccionarios de normalización y otras técnicas para reducir la variabilidad del texto basadas en \citet{han2011lexical}. Para un conjunto de tareas de clasificación sobre Twitter y distintos modelos pre-entrenados, los resultados de los experimentos arrojaron que la normalización fuerte empeora levemente la performance.
 
 Teniendo estas consideraciones en cuenta, adoptamos una estrategia similar a la normalización \textbf{débil} mencionada en el trabajo recién mencionado:
 
@@ -147,7 +147,7 @@ Teniendo estas consideraciones en cuenta, adoptamos una estrategia similar a la 
     \item Limitamos repeticiones de caracteres a 3 ocurrencias
 \end{itemize}
 
-Si bien en algunas secciones (como en \ref{sec:04_preprocessing}) usamos variaciones de estos métodos --particularmente para modelos lineales--, en general seguiremos esta estrategia de normalización a lo largo de toda la tesis.
+Si bien en algunos fragmentos de esta tesis usamos variaciones de estos métodos (como por ejemplo en la Sección \ref{sec:04_preprocessing}), en general seguiremos esta estrategia de normalización.
 
 \section{Modelos de clasificación}
 \label{sec:03_classification}
@@ -175,19 +175,23 @@ Si bien en algunas secciones (como en \ref{sec:04_preprocessing}) usamos variaci
     \label{fig:03_classifiers}
 \end{figure}
 
-Describimos a continuación los clasificadores utilizados para las tareas. Podemos, a grandes rasgos, describir a todos nuestros clasificadores como compuestos de dos partes: un \emph{codificador} (o \emph{encoder} en inglés) que genera una representación contínua de longitud fija del texto de entrada, y un \emph{decodificador} que toma esa codificación y la convierte a la salida deseada.
+Describimos a continuación los clasificadores utilizados para las tareas. Podemos, a grandes rasgos, describir a todos nuestros clasificadores como compuestos de dos partes: un \emph{codificador} (o \emph{encoder} en inglés) que genera una representación continua de longitud fija del texto de entrada, y un \emph{decodificador} que toma esa codificación y la convierte a la salida deseada.
 
-Todas las tareas analizadas son de clasificación multiclase: elegir exactamente una clase entre varias. Para ello, nuestro decodificador será de la forma $\softmax(Wx + b)$, donde $W$ es una matriz de pesos y $b$ un vector de bias, ambos parámetros de nuestra red neuronal. Los clasificadores planteados diferirán entonces en los codificadores. Proponemos las siguientes variantes:
+Todos nuestros problemas son de clasificación múltiple: elegir exactamente una clase entre varias. Para ello, nuestro decodificador será de la forma $\softmax(Wx + b)$, donde $W \in \mathbb{R}^{c \times h}$ es una matriz de pesos y $b \in \mathbb{R}^c$ un vector de sesgo, siendo $c$ la cantidad de clases y $h$ el tamaño de la codificación de entrada. Los clasificadores planteados difieren entonces en los codificadores. Propusimos las siguientes variantes:
 
 \begin{itemize}
-    \item \textbf{FFN}: Un perceptrón multicapa (feed-forward network) con una función de activación intermedia \emph{ReLU}
-    \item \textbf{GRU/biGRU}: Una red neuronal recurrente. La capa oculta es una Gated Recurrent Unit (GRU) unidireccional o bidireccional.
-    \item \textbf{BETO|mBERT|RoBERTa|BERTin}: un modelo pre-entrenado de lenguaje basado en transformers.
+    \item \textbf{FFN}: un perceptrón multicapa (feed-forward network) con una función de activación intermedia \emph{ReLU}
+    \item \textbf{GRU/biGRU}: una red neuronal recurrente donde la capa oculta es una Gated Recurrent Unit (GRU) unidireccional o bidireccional.
+    \item \textbf{Transformers}: un modelo pre-entrenado de lenguaje basado en transformers. Consideramos los modelos \beto{} \cite{canete2020spanish}, \roberta{} en su versión en español \cite{gutierrezfandino2021spanish}, \emph{BERTin} \footnote{\url{https://huggingface.co/bertin-project/bertin-roberta-base-spanish}}, como así también el modelo multilingual \emph{mBERT}
 \end{itemize}
 
-En el caso de la \textbf{FFN}, la codificación se da luego de aplicar la función ReLU a la capa intermedia de la red. En el caso de la \textbf{GRU/biGRU}, la codificación se da como el promedio de los vectores salida de cada paso (podemos pensar cada uno de estos como representaciones contextualizadas de cada palabra). En el caso de aquellos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\clstok{} en el caso de BERT pero puede variar para RoBERTa u otros modelos)\footnote{Si bien podría también tomarse el promedio como en el caso de las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente}. La figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
+La capa de entrada de los modelos \textbf{FFN} y \textbf{GRU/biGRU} fueron entrenados con embeddings no contextualizados basados en \fasttext{}. Utilizamos dos versiones de estas representaciones: las canónicas generadas por los autores, entrenadas sobre Common Crawl en español; y también una versión generada por nosotros, entrenada sobre tweets en español, cuya recolección describimos en la Sección \ref{sec:robertuito_data_collection}.
 
-Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos los casos un dropout \cite{srivastava2014dropout} de 0.1 sobre la codificación del tweet, y usamos como algoritmo de optimización a Adam \cite{kingma2014adam} con un learning rate de 0.001 y un decay de 0.01. Para los clasificadores basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
+La codificación final que utilizamos para la red \textbf{GRU/biGRU} se da como el promedio de los vectores salida de cada paso. Para los modelos basados en transformers, la codificación se da tomando la salida del caracter de inicio (\clstok{}). Si bien podría también tomarse el promedio como en las redes recurrentes, los modelos basados en transformers no sufren el cuello de botella que se genera tomando la última representación de la red recurrente. La Figura \ref{fig:03_classifiers} ilustra la arquitectura de los clasificadores recurrentes y basados en transformers.
+
+
+Usamos un tamaño oculto de 512 para los modelos exceptuando los basados en Transformers --que suelen tener $768$ como valor estándar-- y para todos los casos una regularización del tipo dropout \cite{srivastava2014dropout} de $0.1$ sobre la codificación del tweet. Como algoritmo de optimización utilizamos \emph{Adam} \cite{kingma2014adam} con un learning rate de $0.001$ y un decay de $0.01$. Para los clasificadores basados en transformers, usamos Adam con un learning rate triangular de $10^{-5}$ y un warmup del 10\% de los pasos. Entrenamos todos los modelos por 5 epochs y nos quedamos con los modelos que mejor performance tengan sobre el split de validación en términos de la métrica correspondiente a la tarea.
+
 
 \section{Resultados}
 
@@ -198,42 +202,51 @@ Usamos un tamaño oculto de 512 para los modelos recurrentes y FFN, y para todos
         \toprule
         Modelo         &  Polaridad         & Emociones         &   Ironía        &  Puntaje \\
         \hline
-        RoBERTa        &  $0.670 \pm 0.006$ &  $0.527 \pm 0.015$& $0.721 \pm 0.008$ &  0.665 \\
-        BERTin         &  $0.666 \pm 0.005$ &  $0.524 \pm 0.007$& $0.713 \pm 0.012$ &  0.660 \\
-        BETO$_U$       &  $0.651 \pm 0.006$ &  $0.532 \pm 0.012$& $0.701 \pm 0.007$ &  0.653 \\
-        BETO$_C$       &  $0.662 \pm 0.005$ &  $0.516 \pm 0.012$& $0.705 \pm 0.009$ &  0.652 \\
-        mBERT          &  $0.617 \pm 0.003$ &  $0.493 \pm 0.010$& $0.681 \pm 0.010$ &  0.627 \\
+        RoBERTa        &  $67.0 \pm 0.6$ &  $52.7 \pm 1.5$ & $72.1 \pm 0.8$ & $66.46$ \\
+        BERTin         &  $66.6 \pm 0.5$ &  $52.4 \pm 0.7$ & $71.3 \pm 1.2$ & $66.01$ \\
+        BETO$_U$       &  $65.1 \pm 0.6$ &  $53.2 \pm 1.2$ & $70.1 \pm 0.7$ & $65.26$ \\
+        BETO$_C$       &  $66.2 \pm 0.5$ &  $51.6 \pm 1.2$ & $70.5 \pm 0.9$ & $65.17$ \\
+        mBERT          &  $61.7 \pm 0.3$ &  $49.3 \pm 1.0$ & $68.1 \pm 1.0$ & $62.73$ \\
         \hline
-        biGRU$_{TW}$   &  $0.585 \pm 0.011$ &  $0.264 \pm 0.007$& $0.631 \pm 0.011$ &  0.518 \\
-        biGRU$_{CC}$   &  $0.553 \pm 0.008$ &  $0.231 \pm 0.006$& $0.625 \pm 0.009$ &  0.486 \\
-        GRU$_{TW}$     &  $0.602 \pm 0.004$ &  $0.269 \pm 0.003$& $0.628 \pm 0.014$ &  0.509 \\
-        GRU$_{CC}$     &  $0.564 \pm 0.004$ &  $0.237 \pm 0.005$& $0.581 \pm 0.016$ &  0.474 \\
-        ffn$_{TW}$     &  $0.516 \pm 0.004$ &  $0.203 \pm 0.003$& $0.627 \pm 0.004$ &  0.433 \\
-        ffn$_{CC}$     &  $0.509 \pm 0.003$ &  $0.179 \pm 0.001$& $0.481 \pm 0.003$ &  0.393 \\
+        biGRU$_{TW}$   &  $58.5 \pm 1.1$ &  $26.4 \pm 0.7$ & $63.1 \pm 1.1$ & $51.80$ \\
+        biGRU$_{CC}$   &  $60.2 \pm 0.4$ &  $26.9 \pm 0.3$ & $62.8 \pm 1.4$ & $50.94$ \\
+        GRU$_{TW}$     &  $55.3 \pm 0.8$ &  $23.1 \pm 0.6$ & $62.5 \pm 0.9$ & $48.57$ \\
+        GRU$_{CC}$     &  $56.4 \pm 0.4$ &  $23.7 \pm 0.5$ & $58.1 \pm 1.6$ & $47.44$ \\
+        FFN$_{TW}$     &  $53.8 \pm 0.5$ &  $20.2 \pm 0.2$ & $57.9 \pm 1.2$ & $44.05$ \\
+        FFN$_{CC}$     &  $51.1 \pm 0.3$ &  $17.3 \pm 0.2$ & $51.1 \pm 0.5$ & $39.67$ \\
+
         %robertuito     &  0.560 \pm 0.010 &  0.759 \pm 0.007 &  0.739 \pm 0.005 &  0.705 \pm 0.003 &  0.691 \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de los distintos modelos para las tareas analizadas (Análisis de Emociones, Análisis de Emociones, Detección de Ironía). Los resultados están dados en Macro F1, y expresados como la media de diez corridas junto a su desviación estándar. El puntaje de cada modelo es el promedio de las métricas para las tres tareas}
+    \caption{Resultados de la evaluación de los distintos modelos para las tareas analizadas (Análisis de Emociones, Análisis de Emociones, Detección de Ironía). Los resultados están dados en porcentajes de Macro F1, y expresados como la media de diez corridas junto a su desviación estándar. El puntaje de cada modelo es el promedio de las métricas para las tres tareas}
     \label{tab:03_classification_results}
 \end{table*}
 
-La tabla \ref{tab:03_classification_results} muestra los resultados obtenidos con los distintos modelos, expresados como la media de diez corridas de los experimentos de clasificación junto a sus desviaciones estándar; esto lo realizamos con motivo de que el entrenamiento es estocástico a diferencia de otros modelos clásicos de Machine Learning. Podemos observar que los mejores resultados se obtienen con el modelo \emph{roberta-bne} para las tareas, aunque las diferencias son pequeñas. Todos los modelos basados en modelos pre-entrenados de transformers obtienen mejor performance que los basados en redes neuronales recurrentes.
+La Tabla \ref{tab:03_classification_results} muestra los resultados obtenidos por los distintos modelos, expresados como la media de diez corridas de los experimentos de clasificación junto a sus desviaciones estándar. A su vez, reportamos un puntaje promedio entre todas las tareas. Puede observarse que los modelos basados de transformers obtienen un rendimiento sustancialmente mejor que los basados en redes neuronales recurrentes. Entre los primeros, la versión española de \roberta{} obtiene marginalmente los mejores resultados.
 
-Dentro de los modelos basados en redes recurrentes y feed-forward, aquellos que consumen embeddings entrenados en textos sociales (marcadas como $_{TW}$) obtienen mejor performance que aquellos que consumen embeddings entrenados en Common Crawl (marcados como $_{CC}$). Esta diferencia, en todos los casos, es estadísticamente significa corriendo un test U de Mann-Whitney ($p \leq 0.05$ para el caso de ironía y \emph{biGRU}, para todas las demás comparaciones $p \leq 0.001$ ).
-
-
+Dentro de los clasificadores de redes recurrentes y feed-forward, aquellos que consumen embeddings entrenados en textos sociales (marcadas como $_{TW}$) tienen un rendimiento superior que aquellos que consumen embeddings entrenados en Common Crawl (marcados como $_{CC}$). Esta diferencia, en todos los casos, es estadísticamente significativa luego de realizar un test de Mann-Whitney U ($p \leq 0.05$ para el caso de ironía y \emph{biGRU}, para todas las demás comparaciones $p \leq 0.001$).
 
 
-\section{Librería de análisis de sentimientos}
+
+\section{Discusión}
+
+Para las 3 tareas planteadas, los clasificadores basados en modelos pre-entrenados de transformers obtuvieron mejores resultados que los basados en redes recurrentes y feed-forward. Como es esperable (y se observa en la literatura) los modelos monolinguales (\roberta{}, BERTin y \beto{}) tienen un rendimiento sensiblemente mejor el modelo multilingual \emph{mBERT}. Dentro de los modelos de mejor performance se posiciona primero \roberta{}, aunque su mejora es pequeña respecto de \beto{}.
+
+Algo que observamos es que, entre los modelos recurrentes y feed-forward que consumen word-embeddings, la utilización de representaciones entrenadas directamente sobre textos generados por usuarios resultan en una mejor performance de los clasificadores sobre estas tareas que tienen datos de ese mismo dominio. Si bien puede pensarse que el entorno pequeño o el texto ruidoso de los textos pueden ser un problema a la hora de construir representaciones, los experimentos realizados indican lo contrario. Retomaremos esta idea en el Capítulo \ref{chap:07_domain_adaptation}, donde por un lado generaremos un modelo basado en \roberta{} entrenado sobre tweets, y por otro lado observaremos si podemos replicar su performance intentando adaptar un modelo \beto{} a este nuevo dominio.
+
+% Finalmente, como un pequeño aporte -- principalmente a la comunidad académica, y puntualmente aquella hispanoparlante -- creamos una librería de análisis de sentimientos \textbf{pysentimiento} que provee modelos pre-entrenados y herramientas de preprocesado para textos sociales. En esta herramienta quedarán volcados todos los modelos entrenados de esta tesis.
 
 \newcommand{\pysentimiento}[0]{\textbf{pysentimiento}}
+\section{\pysentimiento: un paquete de python para Análisis de Sentimiento}
 
-Algo que suele obstaculizar la utilización de herramientas de extracción de opinión (como las que acabamos de ver en este capítulo pero así mismo las que veremos más adelante) con fines de investigación es la dificultad a su acceso. O bien estos servicios están detrás de APIs pagas con precios demasiado altos para los presupuestos académicos o están disponibles pero no en español u otros idiomas de bajos recursos\footnote{La definición de bajos recursos es subjetiva, pero tomando en cuenta la cantidad de hablantes nativos de español hay una desproporción abismal con otros idiomas}. En otros casos, estos recursos están disponibles pero no para ser usados de forma de caja negra, lo cual es un escollo para investigadores que no sean expertos en NLP.
 
-Como una pequeñísima contribución de esta tesis y con el objetivo de facilitar el acceso de estos recursos para la investigación, creamos el paquete \textbf{pysentimiento}\footnote{\url{https://github.com/pysentimiento/pysentimiento}}. Esta biblioteca provee modelos pre-entrenados y herramientas de preprocesado para textos sociales. Si bien tiene soporte multilingual tanto en español como inglés, su eje original es el de proveer recursos para el español que tiene una disparidad importante en recursos.
+Algo que suele obstaculizar la utilización de herramientas de extracción de opiniones en redes sociales con fines de investigación es la dificultad a su acceso. O bien estos servicios están detrás de sistemas privados detrás de APIs con precios demasiado altos para los presupuestos académicos o están disponibles pero no en español u otros idiomas de bajos recursos \footnote{La definición de bajos recursos es subjetiva, pero tomando en cuenta la cantidad de hablantes nativos de español hay una desproporción abismal con otros idiomas}. En otros casos, estos recursos están disponibles pero no para ser usados de manera sencilla, lo cual es un escollo para investigadores que no sean expertos en NLP.
 
-\pysentimiento{} utiliza el model hub de \emph{huggingface}\footnote{\url{https://huggingface.co/models}}, un repositorio de modelos pre-entrenados basados en transformers. Allí es donde colocamos todos los modelos que entrenamos, tanto de sentimientos, emociones, y los que mostraremos más adelante como detección de discurso de odio. Cada tweet que es analizado por la librería pasa primero por una etapa de preprocesamiento (siguiendo el proceso explicado en la sección \ref{sec:03_preprocessing}), y luego analizado por el modelo que nos brinda la salida correspondiente.
+Como una pequeña contribución de esta tesis y con el objetivo de facilitar el acceso de estos recursos para la investigación, creamos el paquete \textbf{pysentimiento} \footnote{\url{https://github.com/pysentimiento/pysentimiento}}. Esta biblioteca provee modelos pre-entrenados y herramientas de preprocesado para textos sociales en español e inglés. Si bien tiene soporte multilingual, su eje es el de proveer recursos para el español que tiene una disparidad importante en recursos.
 
+\pysentimiento{} utiliza el model hub de \emph{huggingface} \footnote{\url{https://huggingface.co/models}}, un repositorio de modelos de libre acceso. Allí es donde alojamos todos los modelos entrenados, tanto de sentimientos, emociones, y algunos más que serán discutidos a lo largo de esta tesis. Cada tweet que es analizado por la librería pasa primero por una etapa de preprocesamiento (siguiendo el proceso explicado en la Sección \ref{sec:03_preprocessing}), y luego analizado por el modelo que nos brinda la salida correspondiente.
+
+Al momento de escribir estas líneas, los modelos de \pysentimiento{} se encuentran entre los más descargados de \emph{huggingface} para el idioma español, dando cuenta de la necesidad de estas herramientas de libre acceso.
 
 %
 % Pysentimiento architecture
@@ -241,18 +254,17 @@ Como una pequeñísima contribución de esta tesis y con el objetivo de facilita
 %
 %
 
-\section{Discusión}
-
-Para las 3 tareas planteadas, los clasificadores basados en modelos pre-entrenados de transformers obtuvieron mejores resultados que los basados en redes recurrentes y feed-forward. Como es esperable (y se observa en la literatura) los modelos monolinguales (\roberta{}, BERTin y \beto{}) tienen una performance sensiblemente mejor el modelo multilingual \emph{mBERT}. Dentro de los modelos de mejor performance, \roberta{} obtiene la mejor performance, aunque su mejora es pequeña respecto de \beto{}.
-
-Algo que observamos es que, entre los modelos recurrentes y feed-forward que consumen word-embeddings, la utilización de representaciones entrenadas directamente sobre textos generados por usuario resultan en una mejor performance de los clasificadores. Si bien puede pensarse que el entorno pequeño o el texto ruidoso de los textos pueden ser un problema a la hora de construir representaciones, los experimentos realizados indican lo contrario. Retomaremos esta idea en el capítulo \ref{chap:07_domain_adaptation}, donde por un lado generaremos un modelo basado en RoBERTa entrenado sobre tweets, y por otro lado observaremos si podemos replicar su performance intentando ``adaptar'' un modelo \beto{} a este nuevo dominio.
-
-Finalmente, como un pequeño aporte -- principalmente a la comunidad académica, y puntualmente aquella hispanoparlante -- creamos una librería de análisis de sentimientos \textbf{pysentimiento} que provee modelos pre-entrenados y herramientas de preprocesado para textos sociales. En esta herramienta quedarán volcados todos los modelos entrenados de esta tesis.
 
 \section{Conclusiones}
 
-En este capítulo hemos hecho una introducción a la extracción de opiniones usando técnicas de clasificación basadas en redes neuronales. Analizamos tres problemas de extracción de opiniones en Español --análisis de polaridad, análisis de emociones y detección de ironía-- y utilizamos modelos basados en redes neuronales y otros basados en modelos pre-entrenados. Presentamos el andamiaje básico para tareas de clasificación que utilizaremos en el resto de la presente tesis. En los siguientes capítulos centraremos nuestra atención en una tarea particular: la detección de discurso de odio.
+En este capítulo hemos hecho una introducción a la extracción de opiniones usando técnicas de clasificación basadas en redes neuronales. Analizamos tres problemas de extracción de opiniones en Español: análisis de polaridad, análisis de emociones y detección de ironía. Presentamos el andamiaje básico para tareas de clasificación que utilizaremos en el resto de la presente tesis, puntualmente sobre el preprocesamiento de textos provenientes de redes sociales y arquitecturas básicas de clasificadores basados en redes neuronales.
+
+Algo que observamos en nuestros experimentos es que las representaciones generadas sobre textos de este dominio mejoran el rendimiento de nuestros algoritmos de clasificación. Retomaremos estas ideas en el Capítulo \ref{chap:07_domain_adaptation} utilizando técnicas del estado del arte, concretamente modelos pre-entrenados de lenguaje.
+
+En los siguientes capítulos centraremos nuestra atención en una tarea particular: la detección de discurso de odio.
 
 \section{Notas}
 
-Gran parte de este trabajo está basado en nuestra participación en TASS 2018\cite{overview_tass2018} resumida en \citet{atalaya_tass2018}. Los resultados en esta sección no son comparables con los de ese trabajo ya que decidimos utilizar la versión del dataset de TASS 2020\cite{garcia2020overview}, que por un lado unifica las dos posibles clases neutrales de TASS 2018 y además brinda el nuevo dataset de análisis de emociones. Omitimos el análisis de data augmentation y nos centramos en dar una breve introducción al tema y a analizar el impacto de los word-embeddings generados en textos sociales.
+Gran parte de este trabajo está basado en nuestra participación en TASS 2018 \cite{overview_tass2018} resumida en \citet{atalaya_tass2018}. Los resultados en esta sección no son comparables con los de ese trabajo ya que decidimos utilizar la versión del dataset de TASS 2020 \cite{garcia2020overview} que unifica las dos posibles clases neutrales (\emph{neutral} y \emph{nula}) del dataset del mencionado trabajo.
+
+Respecto a aquella publicación, omitimos el análisis de data augmentation mediante traducción bidireccional y nos centramos en dar una breve introducción al tema y en analizar el impacto de los embeddings generados en textos provenientes de redes sociales.
