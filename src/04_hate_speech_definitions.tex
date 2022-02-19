@@ -84,3 +84,40 @@ No todo ataque a un individuo o una persona de algún colectivo discriminado es 
 Como vemos, no solamente es difusa la frontera fijada sobre qué es discurso de odio o insultos, sino que incluso también es difícil definir qué característica es protegida o no. En el siguiente capítulo hablaremos más de esto al describir los criterios utilizados a la hora de anotar un conjunto de datos sobre comentarios en Twitter.
 
 
+\subsection{Definiciones utilizadas desde NLP}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/04/poletto_hs_vs_offensive.pdf}
+    \caption{Discurso de odio y conceptos relacionados. Fuente: \citet{poletto2021resources}}
+    \label{fig:hate_speech_definition_and_other_concepts}
+\end{figure}
+
+
+
+Debido a las razones comentadas en el Capítulo \ref{chap:01_intro}, la comunidad de NLP ha observado en los últimos años un creciente interés en la investigación de técnicas automáticas para combatir el discurso de odio en redes sociales. Una de las primeras dificultades de esta tarea es la mencionada dificultad para definir unívocamente este discurso, algo que ha provocado que los investigadores del área aún no tengan un marco teórico común acerca de su definición. Esta falta de una teoría unificada, a su vez, se debe en parte a que la investigación de técnicas automáticas de reconocimiento se encuentra aún en una etapa relativamente prematura \footnote{la gran mayoría de los trabajos y recursos son de los últimos 5 años}, y a la relación de este discurso con otros fenómenos de las redes, como ser el lenguaje tóxico, grosero, entre otras distinciones, que también es de interés estudiar. La Figura \ref{fig:hate_speech_definition_and_other_concepts} ilustra el marco teórico utilizado por \citet{poletto2021resources} en relación al discurso de odio: mientras éste es un subconjunto del lenguaje abusivo y tóxico, algunos discursos racistas o misóginos \footnote{Los autores utilizan el término \emph{microagresiones}} no configurarían discurso de odio.
+
+
+
+\begin{table}
+    \centering
+    \small
+    \begin{tabular}{p{0.65\textwidth} p{0.30\textwidth}}
+        Definición & Fuente \\
+        \Xhline{2\arrayrulewidth}
+        Cualquier comunicación que menosprecia a una persona o grupo en base a su raza, etnia, género, orientación sexual, nacionalidad, religión u otra característica & \citet{warner2012detecting}, \citet{hateval2019semeval} \\
+        \hline
+        Uso de insultos racistas o sexistas; ataques a minorías; promoción de discurso de odio o crímenes violentos; distorsiones o mentiras acerca de minorías; apoyo a hashtags racistas o sexistas; defender xenofobia o sexismo; contener nombre de usuario ofensivo & \citet{waseem2016hateful} \\
+        \hline
+        Lenguaje que es usado para expresar odio hacia un grupo objetivo o que pretende ser despectivo, o humillar o insultar sus miembros & \citet{Davidson2017AutomatedHS} \\
+        \hline
+        Acto de ofender, insultar o amenazar a una persona o grupo de acuerdo a su religión, raza, casta, orientación sexual, género, o pertenencia a alguna comunidad estereotipada & \citet{schmidt2017survey} \\
+        \hline
+        Contenido definido por: primero, su intención de diseminar odio, incitar a la violencia, o amenazar la libertad, dignidad o integridad de las personas; segundo, su objetivo, que debe ser un grupo protegido o un miembro de tal grupo & \citet{sanguinetti2018italian} \\
+        \Xhline{2\arrayrulewidth}
+    \end{tabular}
+    \caption{Definiciones de discurso de odio para diferentes trabajos del área. Fuente: \citet{poletto2021resources}}
+    \label{tab:hate_speech_definitions}
+\end{table}
+
+La Tabla \ref{tab:hate_speech_definitions} muestra las definiciones de discurso de odio utilizadas en algunos trabajos del área. Podemos ver que las definiciones tienen diferencias sustanciales,  algunas siendo directamente operacionales, y algunas otras con matices respecto a la intención o su intensidad.
