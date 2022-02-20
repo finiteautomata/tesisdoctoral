@@ -104,16 +104,16 @@ La primer tarea es la versión más básica de la detección de discurso de odio
 
 \section{Método}
 
-En esta sección describimos los distintos modelos planteados para atacar a las dos tareas de clasificación descriptas, así como detalles de preprocesamiento introducidos en \citet{perez-2019-atalaya} para optimizar las representaciones de modelos lineales de clasificación.
+En esta sección describimos los distintos modelos planteados para abordar las dos tareas de clasificación de discurso de odio, así como detalles de preprocesamiento introducidos en \citet{perez-2019-atalaya} para optimizar las representaciones de modelos lineales de clasificación.
 
 \subsection{Preprocesamiento}
 \label{sec:04_preprocessing}
 
-Definimos dos niveles de preprocesamiento: básico y orientado a sentimientos, dependiendo del modelo a utilizar. El preprocesamiento básico de tweets es el mismo que describimos en la Sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales.
+Definimos dos niveles de preprocesamiento: básico y orientado a sentimientos, dependiendo del modelo a utilizar. El preprocesamiento básico de tweets es el mismo que describimos en la Sección \ref{sec:03_preprocessing}, y es el usado con los modelos pre-entrenados o modelos neuronales.
 
 El preprocesamiento orientado a sentimientos incluye además lematización (usando TreeTagger \cite{schmid95}) y manejo de negación. Para el manejo de la negación, seguimos un enfoque simple:
 % \cite {das01, pang02}:
-Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra. Este preprocesamiento es utilizado en el modelo de SVM.
+Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes tokens. Se niegan hasta tres tokens, o menos si se encuentra un token que no sea una palabra.
 
 \subsection{Modelos de clasificación}
 \label{sec:04_classifiers}
@@ -135,39 +135,37 @@ La tarea de multidetección de discurso de odio (\subtaskb{}) podemos pensarla d
     \item Un problema de clasificación de 5 clases
 \end{enumerate}
 
-En el primer caso, el enfoque es el de predecir por separado cada una de las variables HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
-
-Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en Support Vector Machines que consume la misma entrada que detallamos anteriormente. No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí, considerando que evaluaremos modelos que han demostrado tener mejor performance para numerosas tareas de clasificación de texto.
+En el primer caso, el enfoque es el de predecir por separado cada una de las variables HS, AG, y TR. La segunda formulación se basa en observar que no tenemos 8 combinaciones permitidas sino sólo cinco: si no hay HS no nos interesa observar las otras dos variables. Con esta observación, convertimos cada combinación en una clase de un problema de clasificación estándar. En \citet{perez-2019-atalaya} propusimos un modelo basado en Support Vector Machines que consume la misma entrada que detallamos anteriormente y con una salida de cinco clases. No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación ni tampoco lo haremos aquí, considerando que evaluamos opciones que han demostrado tener mejor desempeño para numerosas tareas de clasificación de texto.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{img/bert_model_hateval.pdf}
+    \includegraphics[width=0.8\textwidth]{img/05/bert_model_hateval.pdf}
     \caption{Modelo basado en BERT para la tarea de clasificación múltiple. Cada variable (HS, TR, AG) representa un problema de clasificación en sí mismo}
     \label{fig:bert_hateval_classifier}
 \end{figure}
 
 
-Así mismo, proponemos para esta subtarea modelos basados en transformers basado en multi-clasificación. La arquitectura usual de modelos basados en BERT para clasificación constan de poner como última capa una  ``cabeza'' que consume la salida del token \verb|[CLS]|. Esto agrega una matriz de parámetros $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers, y usando softmax como función de activación.
+Asimismo, considerando la opción de multiclasificación, proponemos para la \subtaskb{} modelos de lenguaje pre-entrenados con tres salidas. Recordemos que la arquitectura usual de clasificación basada en \bert{} consta de poner como última capa una softmax que consume como entrada la salida del token \verb|[CLS]|. Esto, además, agregando como parámetro una matriz de proyección $W \in \mathbb{R}^{m \times 768}$ donde $m$ es la cantidad de clases de nuestro problema y 768 corresponde a la dimensión de cada vector del modelo de transformers.
 
-Para construir un modelo de multi-clasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, $softmax(W x + b)$ nos da para el elemento i-ésimo el score de que la instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)$\footnote{Esta expresión es elemento a elemento} nos da el score de predecir la etiqueta positiva para el (en nuestro caso,  $\sigma(W x + b)_1$ nos da $P( HS = 1 \mid x)$,  $\sigma(W x + b)_2$ nos da  $P(TR = 1 \mid x)$, etc). La figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
+Para construir un modelo de multiclasificación, mantenemos la misma arquitectura pero, en lugar de usar como activación la función softmax, utilizamos la función sigmoidea elemento a elemento. En el caso de clasificación de $n$ clases, interpretamos a $\text{softmax}(W x + b)_i$ como la probabilidad\footnote{Estrictamente hablando, más bien sería un puntaje entre 0 y 1} instancia pertenezca a la clase $i$. Por otro lado, en el caso de multiclasificación de $n$ variables, $\sigma(W x + b)_i$ \footnote{Esta expresión es elemento a elemento} nos da la probabilidad de predecir la etiqueta positiva para la variable i-ésima: en nuestro caso, $\sigma(W x + b)_1$ nos da $P(HS = 1\mid x)$,  $\sigma(W x + b)_2$ nos da  $P(TR = 1 \mid x)$ y finalmente el tercer subíndice nos da  $P(AG = 1\mid x)$. La Figura \ref{fig:bert_hateval_classifier} ilustra el modelo utilizado.
 
-Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma o promedio\footnote{Es equivalente optimizar una u otra} de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la función de costo es:
+Para entrenar el modelo de clasificación, evaluamos dos tipos de funciones de costo. En primer lugar, utilizamos la suma de las entropías cruzadas binarias. Concretamente, si $y = (y_{HS}, y_{TR}, y_{AG})$ son las etiquetas de una instancia e $\widehat{y}$ la predicción del modelo, la función de costo es:
 
 \begin{equation}
 \label{eq:multi_loss}
-L(y, \widehat{y}) = \sum\limits_{k \in \{HS, TR, AG\}} J(y_k, \widehat{y_k})
+L(y, \widehat{y}) = \sum\limits_{\mathclap{k \in \{HS, TR, AG\}}} J(y_k, \widehat{y_k})
 \end{equation}
 
-donde $J$ es la entropía cruzada. Esta función de costo, sin embargo, ignora cualquier tipo de jerarquía entre las variables; por ejemplo, si para una instancia tenemos $HS = 0$, calcula el costo también de las variables $TR$ y $AG$. Contemplamos entonces una variante de esta función para tener en cuenta esta jerarquía:
+\noindent donde $J$ es la entropía cruzada binaria. Esta función de costo, sin embargo, ignora cualquier tipo de jerarquía entre las variables; por ejemplo, si para una instancia tenemos $HS = 0$, calcula el costo también de las variables $TR$ y $AG$. Contemplamos entonces una variante de la función descripta en la ecuación \ref{eq:multi_loss} para tener en cuenta esto:
 
 \begin{equation}
     \label{eq:hierarchical_loss}
-    L(y, \widehat{y}) =  J(y_{HS}, \widehat{y_{HS}}) + \beta(y_{HS})\sum\limits_{k \in \{TR, AG\}} J(y_k, \widehat{y_k})
+    L(y, \widehat{y}) =  J(y_{HS}, \widehat{y_{HS}}) + \beta(y_{HS})\sum\limits_{\mathclap{k \in \{TR, AG\}}} J(y_k, \widehat{y_k})
 \end{equation}
 
-donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR, AG$ cuando no hay discurso discriminatorio. Análogamente, $\beta(y) = 1$ sería el caso descripto en la ecuación \ref{eq:multi_loss}. Una forma de generalizar esto es agregando un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$.
+\noindent donde $\beta(y_{HS})$ pondera la pérdida de las variables del segundo nivel de nuestra jerarquía. Una opción puede ser considerar $\beta(1) = 1, \beta(0) = 0$, donde ignoramos las pérdidas de las variables $TR$ y $AG$ cuando no hay discurso discriminatorio. Análogamente, $\beta(y) = 1$ sería el caso descripto en la ecuación \ref{eq:multi_loss}. Una forma de generalizar esto es agregando un hiperparámetro $\gamma \in [0, 1]$ para escribir $\beta(y) = (1-y) \gamma + y$. Optimizamos este hiperparámetro realizando una búsqueda lineal entre $0$ y $1$ utilizando pasos de $0.1$.
 
-Las evaluaciones de los modelos las realizamos poniendo una máscara por encima de estos modelos de clasificación múltiple de manera de evitar salidas incoherentes (por ejemplo, $HS = 0, TR = 1, AG= 0$).
+Al momento de realizar inferencia, realizamos las evaluaciones de los modelos realizamos poniendo una máscara por encima de estos modelos de clasificación múltiple de manera de evitar salidas incoherentes (por ejemplo, $HS = 0, TR = 1, AG= 0$).
 
 
 \section{Resultados}
