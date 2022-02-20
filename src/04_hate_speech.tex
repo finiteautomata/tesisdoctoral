@@ -65,10 +65,10 @@ Las instancias del dataset poseen las siguientes etiquetas:
         Texto & HS & TR & AG \\
         \hline
         Los tomas asi puro como si fuera jugo y cuando te querés rescatar estas hablando en árabe URL & 0 & 0 & 0 \\
-        \rule{0pt}{4ex} Como son españoles nada... sin fueran refugiados...GLORIA \#migrates \#refugiados \#EspañaLoPrimero URL & 1 & 0 & 0 \\
-        \rule{0pt}{4ex} @OmarPrietoGob ``Extranjero sin identificación será puesto en la frontera'' ENVÍA AL EJERCITO A TOMAR CONTROL DE LAS PULGAS PLATANEROS Y CURVA DE AHÍ PARA QUE VEAS COMO HAY COLOMBIANOS INDOCUMENTADOS COMO MONTE AHÍ DE BUHONERS PORQUE LA POLICÍA & 1 & 0 & 1 \\
-        \rule{0pt}{4ex} Inmigrante da una brutal paliza a una joven por no dejarse besar en Ciudad Real.\#stopinvasion \#YoSiTeCreo \#NoesNo lo peor que no han salido a la calle las feminas del Twitter que tanto se indignaron con la salida de La Manda a la calle. & 1 & 1 & 0 \\
-        \rule{0pt}{4ex} @elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
+        \rule{0pt}{4ex}Como son españoles nada... sin fueran refugiados...GLORIA \#migrates \#refugiados \#EspañaLoPrimero URL & 1 & 0 & 0 \\
+        \rule{0pt}{4ex}@OmarPrietoGob ``Extranjero sin identificación será puesto en la frontera'' ENVÍA AL EJERCITO A TOMAR CONTROL DE LAS PULGAS PLATANEROS Y CURVA DE AHÍ PARA QUE VEAS COMO HAY COLOMBIANOS INDOCUMENTADOS COMO MONTE AHÍ DE BUHONERS PORQUE LA POLICÍA & 1 & 0 & 1 \\
+        \rule{0pt}{4ex}Inmigrante da una brutal paliza a una joven por no dejarse besar en Ciudad Real.\#stopinvasion \#YoSiTeCreo \#NoesNo lo peor que no han salido a la calle las feminas del Twitter que tanto se indignaron con la salida de La Manda a la calle. & 1 & 1 & 0 \\
+        \rule{0pt}{4ex}@elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
         \hline
     \end{tabularx}
     \caption{Ejemplos del dataset de SemEval 2019 Task 5: \hateval{}. HS indice la presencia de discurso de odio, TR la presencia de discriminación individualizada, y AG la presencia de discriminación agresiva}
@@ -173,54 +173,52 @@ Al momento de realizar inferencia, realizamos las evaluaciones de los modelos re
 \newcommand{\esrow}[1]{\multirow{#1}{*}{es}}
 \newcommand{\enrow}[1]{\multirow{#1}{*}{en}}
 
-\begin{table}[ht]
+\begin{table}[ht!]
     \centering
-    \begin{tabular}{l l| l l l l}
-        Modelo          & Idioma      & Precision  & Recall      & F1            & Macro-F1 \\
+    \begin{tabular}{l c c c c c}
+        Modelo       & Idioma      & Precision    & Recall       & F1            & Macro F1 \\
         \hline
-        SVM$^*$         & \mr{3}{es}  & 0.639       & 0.800       & 0.711       & 0.730  \\
-        ELMO-RNN        &             & 0.661       & 0.753       & 0.704       & 0.735  \\
-        \beto{}         &             & \tbf{0.674} & \tbf{0.839} & \tbf{0.747} & \tbf{0.764} \\
-        \hline
-        bert            & \mr{3}{en}  & 0.474       & \tbf{0.968} & 0.637       &  0.496 \\
-        roberta         &             & 0.470       & 0.967       & 0.632       &  0.486 \\
-        bertweet        &             & \tbf{0.495} & 0.959       & \tbf{0.653} & \tbf{0.546} \\
+        SVM$^*$      & \mr{3}{es}  & $63.9$       & $80.0$       & $71.1$       & $73.0$  \\
+        ELMO-RNN     &             & $66.1$       & $75.3$       & $70.4$       & $73.5$  \\
+        BETO         &             & $\mbf{67.4}$ & $\mbf{83.9}$ & $\mbf{74.7}$ & $\mbf{76.4}$ \\
+\rule{0pt}{4ex}BERT  & \mr{3}{en}  & $47.4$       & $\mbf{96.8}$ & $63.7$       & $49.6$ \\
+        RoBERTa      &             & $47.0$       & $96.7$       & $63.2$       & $48.6$ \\
+        BERTweet     &             & $\mbf{49.5}$ & $95.9$       & $\mbf{65.3}$& $\mbf{54.6}$ \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación para la detección de discurso de odio en datasets de desarrollo y test, medidas por precisión y sensitividad sobre la clase positiva (discurso de odio) y por la métrica macro F1. Con $^*$ están marcados los resultados presentados en \citet{atalaya_tass2018}. En negrita, el mejor resultado.}
+    \caption{Resultados de la evaluación para la detección de discurso de odio en el dataset de test, medidas por \% de precisión, sensitividad y F1 sobre la clase positiva (discurso de odio) y por la métrica Macro F1. Con $^*$ están marcados los resultados presentados en \citet{perez-2019-atalaya}. En negrita, el mejor resultado.}
     \label{tab:hateval_task_a}
 \end{table}
 
 
 
-La tabla \ref{tab:hateval_task_a} muestra los resultados de evaluación para los modelos propuestos en la detección de discurso de odio binaria (\subtaska{}). Marcamos con un asterisco aquellos modelos presentados en \citet{atalaya_tass2018}. Respecto a los resultados en español, el modelo basado en SVMs obtiene una buena performance, aún contra aquel basado en embeddings contextualizados, habiendo obtenido el mejor desempeño en la competencia con $0.730$ de Macro F1. La pobre performance de ELMo contra un modelo mucho más simple puede deberse a un mal pre-entrenamiento del modelo base \footnote{No queda claro que en entrenar este modelo sobre 20M palabras sea suficiente, ni que sea un dataset suficientemente general} y también debido al cambio de dominio, a los cuales los modelos pre-entrenados previos a BERT son sumamente sensibles \cite{hendrycks-etal-2020-pretrained}.
+La Tabla \ref{tab:hateval_task_a} muestra los resultados de la evaluación para la detección de discurso de odio binaria (\subtaska{}), marcando con un asterisco aquellos modelos presentados en \citet{perez-2019-atalaya}. Respecto a los resultados en español, el clasificador basado en SVMs obtiene una buena performance, aún comparado con aquel basado en embeddings contextualizados. Este algoritmo basado en SVMs obtuvo el mejor desempeño en la competencia con $0.730$ de Macro F1 \cite{hateval2019semeval}. El pobre desempeño de \elmo{} contra un algoritmo mucho más simple puede deberse a un mal pre-entrenamiento del modelo base en español\footnote{No queda claro que en entrenar este modelo sobre 20M palabras sea suficiente, ni que sea un dataset suficientemente general} y también debido al cambio de dominio, a los cuales los modelos pre-entrenados previos a BERT son sumamente sensibles \cite{hendrycks-etal-2020-pretrained}.
 
-Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs. Particularmente, en el caso del inglés, \bertweet{} \cite{dat2020bertweet} obtiene la mejor Macro-F1. En el capítulo 7 presentaremos un modelo similar a \bertweet{} para español que mejora la performance sobre \beto{}, a la vez que evaluaremos sobre versiones de \beto{} ajustadas al dominio social \footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su performance}.
+Para ambos idiomas, los modelos basados en Transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs \footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su rendimiento en esta tarea}. Particularmente, en el caso del inglés, \bertweet{} \cite{dat2020bertweet} obtiene la mejor Macro F1, algo esperable considerando que está particularmente diseñado para Twitter.
 
 
-\begin{table}[t]
+\begin{table}[ht!]
     \centering
-    \small
-    \begin{tabular}{lll rrr rr}
-        Modelo            &        & Idioma      &  HS F1     & TR F1        &  AG F1        &   EMR       &  Macro F1       \\
+    \begin{tabular}{lll ccc cc}
+        Modelo            &        & Idioma      &  HS F1       & TR F1        &  AG F1      &  Macro F1    &   EMR           \\
+        \thline{2.5}
+        \mr{3}{BETO}      & multi  & \mr{3}{es}  & $74.1$       & $\mbf{76.5}$&$\mbf{68.8}$  & $\mbf{73.1}$ & $68.5$          \\
+                          & hier   &             & $73.5$       & $75.8$       & $67.4$      & $72.2$       & $\mbf{70.3}$    \\
+                          & combi  &             & $\mbf{74.2}$ & $76.3$       & $66.8$      & $72.4$       & $69.8$          \\
+
         \hline
-        \mr{3}{\beto{}}      & multi  & \mr{3}{es}  &  0.741     &  \tbf{0.765} &  \tbf{0.688}  & 0.685       &     \tbf{0.731} \\
-                          & hier   &             &  0.735     &  0.758       &  0.674        & \tbf{0.703} &     0.722          \\
-                          & combi  &             &  \tbf{0.742} &  0.763       &  0.668        & 0.698       &     0.724          \\
+              \mr{3}{BERT}& multi & \mr{3}{en}  & $63.8$       & $60.0$       & $44.3$      & $56.0$       & $38.0$          \\
+                          & hier   &             & $64.2$       & $59.2$       & $45.1$      & $56.2$       & $38.8$          \\
+                          & combi  &             & $64.4$       & $59.3$       & $44.2$      & $56.0$       & $39.8$          \\
         \hline
+        \mr{3}{RoBERTa}   & multi  & \mr{3}{en}  & $63.4$       & $57.8$       & $45.4$      & $55.5$       & $36.5$          \\
+                          & hier   &             & $63.7$       & $57.2$       & $45.6$      & $55.5$       & $37.0$          \\
+                          & combi  &             & $63.6$       & $57.6$       & $44.2$      & $55.1$       & $37.7$          \\
         \hline
-        \mr{3}{BERT}      & multi  & \mr{3}{en}  &  0.638     &  0.600       &  0.443        & 0.380       &     0.560       \\
-                          & hier   &             &  0.642     &  0.592       &  0.451        & 0.388       &     0.562       \\
-                          & combi  &             &  0.644     &  0.593       &  0.442        & 0.398       &     0.560       \\
-        \hline
-        \mr{3}{RoBERTa}   & multi  & \mr{3}{en}  &  0.634     &  0.578       &  0.454        & 0.365       &     0.555       \\
-                          & hier   &             &  0.637     &  0.572       &  0.456        & 0.370       &     0.555       \\
-                          & combi  &             &  0.636     &  0.576       &  0.442        & 0.377       &     0.551       \\
-        \hline
-        \mr{3}{\bertweet{}}  & multi  &\mr{3}{en}   &  0.658     &  0.629       &\tbf{0.462}    & 0.426       & \tbf{0.583}     \\
-                          & hier   &             &  0.656     &  0.617       &  0.450        & 0.423       &     0.574       \\
-                          & combi  &             & \tbf{0.666}&\tbf{0.637}   &  0.444        & \tbf{0.449} &     0.582       \\
-        \hline
+        \mr{3}{BERTweet}  & multi  & \mr{3}{en}  & $65.8$       & $62.9$       &$\mbf{46.2}$ &$\mbf{58.3}$  & $42.6$          \\
+                          & hier   &             & $65.6$       & $61.7$       & $45.0$      & $57.4$       & $42.3$          \\
+                          & combi  &             & $\mbf{66.6}$ &$\mbf{63.7}$   & $44.4$     & $58.2$       &$\mbf{44.9}$     \\
+        \thline{2.5}
     \end{tabular}
 
     \caption{Resultados de la evaluación para para \subtaskb{} en términos de las F1 de las clases HS (Hate Speech), TR (Targeted), AG (Aggressive), el Exact Match Ratio (EMR), las Macro F1 de las clases en cuestión, y la Macro F1 de la clase HS. Las 3 variaciones de los modelos son: \emph{multi} es la salida de multiclasificación estándar, \emph{hier} es la salida de multiclasificación con una jerarquía de clasificación, y \emph{combi} es la salida de multiclasificación con una combinación de clasificaciones. Los resultados están expresados como las medias de 10 corridas independientes.}
@@ -228,33 +226,32 @@ Para ambos idiomas, los modelos basados en transformers \cite{vaswani2017attenti
 \end{table}
 
 
-La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por el Macro F1 de HS y el Macro F1 de las 3 variables mencionadas. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: \emph{multi} refiere a clasificación múltiple, \emph{hier} a clasificación múltiple con la función de costo jerárquica, y \emph{combi} a la conversión del problema en una clasificación de 5 clases.
+La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por la Macro F1 de las 3 variables mencionadas y el Exact Match Ratio. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: \emph{multi} refiere a clasificación múltiple, \emph{hier} a clasificación múltiple con la función de costo jerárquica, y \emph{combi} a la conversión del problema en una clasificación de cinco clases.
 
-Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenada con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, esta diferencia la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro-F1, la mejor performance es de \beto{} con el problema de clasificación múltiple y sin la función de costo jerárquica, pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
+Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenado con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro F1, la mejor performance es de \beto{} con la salida múltiple y sin la función de costo jerárquica (\emph{multi}) pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
 
-Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con \bertweet{} con la salida de 5 clases en el caso del EMR, y con la salida múltiple (sin pérdida jerárquica) para la Macro-F1. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline, y cercano en términos de Macro F1 a los mejores resultados de la competencia. En \citet{gertner-etal-2019-mitre}, se basaron en un ensemble de modelos entrenados con BERT y usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y de que las particiones de train y test no son idénticamente distribuidas. \footnote{En\citet{gertner-etal-2019-mitre} dan evidencia de esto en su trabajo algo que perjudica el desempeño de estos modelos}
+Respecto al inglés, los mejores resultados pueden observarse en el modelo entrenado con \bertweet{} con la salida de cinco clases en el caso del EMR, y con la salida múltiple (sin pérdida jerárquica) para la Macro-F1. Este resultado, sin embargo, queda en términos de EMR por debajo del baseline propuesto por los autores del dataset \cite{hateval2019semeval}, aunque cercano en términos de Macro F1 a los mejores resultados de la competencia. En \citet{gertner-etal-2019-mitre}, se basaron en un ensemble de modelos entrenados con BERT y usando también un ajuste de dominio sobre tweets. Esta baja performance de nuestros modelos (y de los modelos en general sobre ese dataset) puede deberse a problemas de anotación y a que las particiones de train y test no son idénticamente distribuidas. \footnote{En \citet{gertner-etal-2019-mitre} dan evidencia de esto, algo que perjudica el desempeño de estos modelos}
 
 
 
 \begin{table}[t]
     \centering
-    \small
     \begin{tabular}{l  l l | c c c c}
         \toprule
-        Modelo              & Idioma        &  Tarea  &     Precision     &          Recall    &              F1    &        Macro F1    \\
+        Modelo              & Idioma        &  Tarea  &     Precision  &   Recall        &          F1    &  Macro F1       \\
         \hline
-        \mr{2}{\bertweet{}} & \mr{2}{en}    &  A      & 0.495 $\pm$ 0.012 &  0.959 $\pm$ 0.012 &  0.653 $\pm$ 0.009 &  0.546 $\pm$ 0.027 \\
-                            &               &  B      & 0.505 $\pm$ 0.011 &  0.948 $\pm$ 0.018 &  0.658 $\pm$ 0.005 &  0.567 $\pm$ 0.022 \\
+        \mr{2}{BERTweet}    & \mr{2}{en}    &  A      & $49.5 \pm 1.2$ &  $95.9 \pm 1.2$ & $65.3 \pm 0.9$ &  $54.6 \pm 2.7$ \\
+                            &               &  B      & $50.5 \pm 1.1$ &  $94.8 \pm 1.8$ & $65.8 \pm 0.5$ &  $56.7 \pm 2.2$ \\
         \hline
-        \mr{2}{\beto{}}     & \mr{2}{es}    &  A      & 0.674 $\pm$ 0.021 &  0.839 $\pm$ 0.026 &  0.747 $\pm$ 0.007 &  0.764 $\pm$ 0.011 \\
-                            &               &  B      & 0.713 $\pm$ 0.042 &  0.778 $\pm$ 0.054 &  0.741 $\pm$ 0.013 &  0.771 $\pm$ 0.015 \\
+        \mr{2}{BETO}        & \mr{2}{es}    &  A      & $67.4 \pm 2.1$ &  $83.9 \pm 2.6$ & $74.7 \pm 0.7$ &  $76.4 \pm 1.1$ \\
+                            &               &  B      & $71.3 \pm 4.2$ &  $77.8 \pm 5.4$ & $74.1 \pm 1.3$ &  $77.1 \pm 1.5$ \\
         \bottomrule
     \end{tabular}
     \caption{Comparación de la performance sobre la detección de discurso de odio para los clasificadores entrenados sobre \subtaska{} y \subtaskb{}. Resultados expresados como la media de 10 corridas independientes del experimento junto a sus desviaciones estándar. Ambos clasificadores de la \subtaskb{} están entrenados sobre el problema de multi-clasificación}
     \label{tab:hateval_task_a_vs_b}
 \end{table}
 
-Lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir más de una variable pareciera mantener el desempeño e incluso mejorarlo levemente. La tabla \ref{tab:hateval_task_a_vs_b} muestra la comparativa para la detección de discurso de odio (HS) para aquellos clasificadores que obtuvieron mejores resultados para \subtaska{} y \subtaskb{} (en ambos casos, \beto{} y \bertweet{}). En ambos casos, hay ligeras diferencias para a favor de uno u otro clasificador pero no parecieran ser significativas.
+La Tabla \ref{tab:hateval_task_a_vs_b} muestra la comparativa para la detección de discurso de odio (HS) para aquellos clasificadores que obtuvieron mejores resultados para \subtaska{} y \subtaskb{} (\beto{} y \bertweet{}). Consideramos para la \subtaskb{} al clasificador \emph{multi} de cada modelo de lenguaje. Lejos de dañarse la performance de la detección de lenguaje discriminatorio (lo que analizamos en la \subtaska{}), predecir más de una variable pareciera mantener el desempeño general; más aún, podemos observar que en términos de Macro F1, incluso parecieran tener una ligera mejora al ser entrenados sobre una tarea más compleja.
 
 
 
