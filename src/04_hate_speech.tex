@@ -1,3 +1,4 @@
+
 \label{chap:04_hate_speech}
 
 El discurso de odio contra mujeres, inmigrantes y otros grupos protegidos es un fenómeno generalizado en la Internet y que resulta importante monitorear dada su potencial relación con actos violentos, como hemos comentado en la introducción de esta tesis. En los primeros días de la World Wide Web, algunos académicos se aventuraron a decir a que los prejuicios y el odio serían removidos en este espacio mediante la disolución de identidades en el ámbito virtual \cite{levy2001cyberculture, rheingold1993virtual}. Veinte años después de esta hipótesis, podemos decir que no ha sido el caso. La prevalencia del racismo en la ``World White Web''  y  en las redes sociales ha sido estudiada en numerosos trabajos \cite{adams2005white, kettrey2014staking}, como así también la misoginia en el mundo virtual \cite{filipovic2007blogging, mantilla2013gendertrolling}, entre otros ataques discriminatorios.
@@ -5,7 +6,7 @@ El discurso de odio contra mujeres, inmigrantes y otros grupos protegidos es un 
 Si bien el discurso racista y sexista es una constante en las redes sociales, muchos picos se documentan luego de eventos detonantes, como pueden ser asesinatos con motivos religiosos o políticos \cite{burnap2015cyber}. Debido a esto, algunos estados y organizaciones supranacionales han tomado cartas en el asunto instando a las empresas de redes sociales a que tomen medidas para bajar la incidencia del discurso de odio. Debido a la enorme cantidad de contenido generado por usuarios en estos medios, es necesario desarrollar herramientas que faciliten la labor humana en la detección y prevención de este fenómeno, con particular foco de aquel que incita a la violencia física.
 
 
-En este capítulo haremos una introducción a este problema desde varias ópticas. Analizaremos las diversas definiciones de discurso de odio y haremos una breve reseña desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. En base al dataset de la competencia HatEval \cite{hateval2019semeval}, analizaremos de técnicas de detección de discurso de odio, algunas de ellas presentadas en \citet{atalaya_tass2018}. Finalmente, marcaremos algunos problemas en los enfoques actuales de la detección de discurso discriminatorio y algunas oportunidades de mejora que abordaremos en capítulos subsiguientes.
+En este capítulo haremos una introducción a este problema desde varias ópticas. Analizaremos las diversas definiciones de discurso de odio y haremos una breve reseña desde un marco legal y de tratados internacionales para luego centrarnos en este problema desde una perspectiva del procesamiento de lenguaje natural. En base al dataset de la competencia \hateval{} \cite{hateval2019semeval}, analizaremos de técnicas de detección de discurso de odio, algunas de ellas presentadas en \citet{perez-2019-atalaya}. Finalmente, marcaremos algunos problemas en los enfoques actuales de la detección de discurso discriminatorio y algunas oportunidades de mejora que abordaremos en capítulos subsiguientes.
 
 
 \section{¿Qué es el discurso de odio?}
@@ -25,57 +26,62 @@ En cuanto a las tareas compartidas, \citet{fersini2018overview} presentaron un d
 
 Una de las herramientas más utilizadas, no sólo para la detección de discurso de odio sino para la detección de contenido tóxico en general es Perspective API de Google, desarrollada originalmente por Jigsaw \footnote{\url{https://developers.perspectiveapi.com/s/}}. Esta API de acceso libre brinda un analizador muy potente para la detección de lenguaje tóxico, con información granular sobre los tipos de ataques. Algunos trabajos lo utilizan como algoritmo de detección en modalidad zero-shot, obteniendo mejores resultados que modelos entrenados sobre los propios datos \cite{pavlopoulos2020toxicity}. Sin embargo, algunas de sus debilidades han sido marcadas mediante ejemplos adversariales, algo que obviamente es propio de las actuales limitaciones de las técnicas de NLP \cite{hosseini2017deceiving,jain2018adversarial}. Más aún, la información de grano fino --e.g. si es un ataque a un grupo protegido y a cuál se ataca-- sólo está disponible para el inglés.
 
-Dentro de los trabajos en español, \citet{plaza2021pretrained} evalúan distintos modelos pre-entrenados de lenguaje sobre la tarea de detección de discriminación usando dos datasets: el primero, \citet{pereira2019detecting} que consta de 6000 tweets, recolectado por el Estado Español para monitorear el discurso de odio en redes sociales; y el segundo, el dataset de SemEval 2019 Task 5 (hatEval) \cite{hateval2019semeval}, presentado en contexto de una shared-task y que comprende ataques contra inmigrantes y mujeres.
+Dentro de los trabajos en español, \citet{plaza2021pretrained} evalúan distintos modelos pre-entrenados de lenguaje sobre la tarea de detección de discriminación usando dos datasets: el primero, \citet{pereira2019detecting} que consta de 6000 tweets, recolectado por el Estado Español para monitorear el discurso de odio en redes sociales; y el segundo, el dataset de SemEval 2019 Task 5 (\hateval{}) \cite{hateval2019semeval}, presentado en contexto de una shared-task y que comprende ataques contra inmigrantes y mujeres.
 
 
-\section{Descripción del dataset}
+\section{Descripción del dataset utilizado}
 \begin{table}[t]
     \centering
-    \small
-    \begin{tabular}{l|l l l | l l l}
+    \begin{tabular}{l c c c  c c c}
         Categoría  &    \mc{3}{Español}                          & \mc{3}{Inglés}                                \\
-                   &    Train      & Dev          & Test         &    Train      & Dev          & Test           \\
-        No HS      &2,643 (58.7\%) & 278 (55.6\%) & 940 (58.8\%) &5,217 (58.0\%) & 573 (57.3\%) & 1,740 (58.0\%) \\
-        HS         &1,857 (41.3\%) & 222 (44.4\%) & 660 (41.2\%) &3,783 (42.0\%) & 427 (42.7\%) & 1,260 (42.0\%) \\
-        TR         &1,129 (60.8\%) & 137 (61.7\%) & 423 (64.1\%) &1,341 (35.4\%) & 219 (51.3\%) & 529 (42.0\%)   \\
-        AG         &1,502 (80.9\%) & 176 (79.3\%) & 474 (71.8\%) &1,559 (41.2\%) & 204 (47.8\%) & 594 (47.1\%)   \\
-        Total      &4,500          & 500          & 1,600        &9,000          & 1,000        & 3,000          \\
+                   &Train   & Dev    & Test   &Train   & Dev   & Test           \\
+        \thline{2.5}
+        No HS      &$2643$  & $278$  & $940$  &$5217$  & $573$ & $1740$  \\
+        HS         &$1857$  & $222$  & $660$  &$3783$  & $427$ & $1260$  \\
+        TR         &$1129$  & $137$  & $423$  &$1341$  & $219$ & $529$    \\
+        AG         &$1502$  & $176$  & $474$  &$1559$  & $204$ & $594$    \\
+        \hline
+        Total      &$4500$  & $500$  & $1600$ &$9000$  & $1000$& $3000$  \\
+        \thline{2.5}
     \end{tabular}
     \caption{Números del dataset de \citet{hateval2019semeval}, por idioma y por partición. No HS representa los tweets que no tienen contenido odioso, HS aquellos que sí, TR aquellos que son individualizados, y AG aquellos que son agresivos. Entre paréntesis encontramos los porcentajes de incidencia, considerando TR y AG dentro de aquellos que son discriminatorios}
     \label{tab:hateval_dataset}
 \end{table}
 
-El dataset que utilizamos en este capítulo es el provisto por \citet{hateval2019semeval}. Este dataset está orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter, tanto en inglés como en español. Nuestro trabajo estuvo centrado en el dataset en español, aunque también propusimos modelos de clasificación para el problema en inglés. Las instancias del dataset poseen las siguientes etiquetas:
+Utilizamos en este capítulo el dataset provisto por \citet{hateval2019semeval}, presentado en SemEval 2019 y orientado a la detección de discurso de odio contra mujeres e inmigrantes en Twitter. Los autores recopilaron comentarios en inglés y en español de dicha red social mediante tres estrategias combinadas: monitoreando a las posibles víctimas de cuentas de odio; chequeando el historial de usuarios creadores de contenido discriminatorio; y filtrando contenido mediante palabras clave. A su vez, este trabajo distingue entre el discurso de odio dirigido a individuos y el discurso de odio genérico, y entre mensajes agresivos y no agresivos. En el Capítulo \ref{chap:05_dataset_creation} construiremos un conjunto de datos contextualizado de discurso de odio en base a algunas de las limitaciones observadas sobre en este capítulo.
+
+Las instancias del dataset poseen las siguientes etiquetas:
 
 \begin{itemize}
-    \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio (0 si no lo tiene, 1 si hay discurso de odio contra mujeres o inmigrantes)
-    \item \textbf{Target}: Si hay HS, una etiqueta binaria que marca si el objetivo del discurso de odio es un objetivo genérico (0) o si se refiere a un individuo específico (1)
-    \item \textbf{Agresividad}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
+    \item \textbf{HS}: una etiqueta binaria que marca si el tweet tiene contenido discriminatorio contra mujeres o inmigrantes (0 si no lo tiene, 1 si hay discurso de odio)
+    \item \textbf{TR}: Si hay HS, una etiqueta binaria que marca si el objetivo del discurso de odio es un objetivo genérico (0) o si se refiere a un individuo específico (1)
+    \item \textbf{AG}: Si hay HS, una etiqueta binaria que marca si el tweet es agresivo
 \end{itemize}
 
 \begin{table}
     \centering
-    \footnotesize
+    \small
     \begin{tabularx}{\textwidth}{X c c c}
         Texto & HS & TR & AG \\
         \hline
         Los tomas asi puro como si fuera jugo y cuando te querés rescatar estas hablando en árabe URL & 0 & 0 & 0 \\
-        Como son españoles nada... sin fueran refugiados...GLORIA \# migrates \# refugiados \# EspañaLoPrimero URL & 1 & 0 & 0 \\
-        @OmarPrietoGob ``Extranjero sin identificación será puesto en la frontera'' ENVÍA AL EJERCITO A TOMAR CONTROL DE LAS PULGAS PLATANEROS Y CURVA DE AHÍ PARA QUE VEAS COMO HAY COLOMBIANOS INDOCUMENTADOS COMO MONTE AHÍ DE BUHONERS PORQUE LA POLICÍA & 1 & 0 & 1 \\
-        Inmigrante da una brutal paliza a una joven por no dejarse besar en Ciudad Real.\#stopinvasion \#YoSiTeCreo \#NoesNo lo peor que no han salido a la calle las feminas del Twitter que tanto se indignaron con la salida de La Manda a la calle. & 1 & 1 & 0 \\
-        @elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
+        \rule{0pt}{4ex} Como son españoles nada... sin fueran refugiados...GLORIA \#migrates \#refugiados \#EspañaLoPrimero URL & 1 & 0 & 0 \\
+        \rule{0pt}{4ex} @OmarPrietoGob ``Extranjero sin identificación será puesto en la frontera'' ENVÍA AL EJERCITO A TOMAR CONTROL DE LAS PULGAS PLATANEROS Y CURVA DE AHÍ PARA QUE VEAS COMO HAY COLOMBIANOS INDOCUMENTADOS COMO MONTE AHÍ DE BUHONERS PORQUE LA POLICÍA & 1 & 0 & 1 \\
+        \rule{0pt}{4ex} Inmigrante da una brutal paliza a una joven por no dejarse besar en Ciudad Real.\#stopinvasion \#YoSiTeCreo \#NoesNo lo peor que no han salido a la calle las feminas del Twitter que tanto se indignaron con la salida de La Manda a la calle. & 1 & 1 & 0 \\
+        \rule{0pt}{4ex} @elisacarrio Callate hija de puta gorda falopera & 1 & 1 & 1 \\
         \hline
     \end{tabularx}
-    \caption{Ejemplos del dataset de SemEval 2019 Task 5: HatEval. HS indice la presencia de discurso de odio, TR la presencia de discriminación individualizada, y AG la presencia de discriminación agresiva}
+    \caption{Ejemplos del dataset de SemEval 2019 Task 5: \hateval{}. HS indice la presencia de discurso de odio, TR la presencia de discriminación individualizada, y AG la presencia de discriminación agresiva}
     \label{tab:hateval_dataset_examples}
 \end{table}
 
 
-La tabla \ref{tab:hateval_dataset} posee los números del dataset. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar en ambos idiomas (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los datasets. La tabla \ref{tab:hateval_dataset_examples} posee algunos ejemplos para cada una de las características en cuestión.
 
-\section{Tareas de clasificación propuestas}
+La Tabla \ref{tab:hateval_dataset} muestra los números para cada partición, cada idioma, y cada una de las etiquetas. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español que para el inglés. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los tweets. La tabla \ref{tab:hateval_dataset_examples} posee algunos ejemplos para cada una de las características en cuestión para la porción en español, que es la de nuestro interés.
 
-Sobre el dataset de hatEval, los autores propusieron dos tareas:
+\section{Tareas de clasificación}
+
+Sobre los datos mencionados en la anterior sección, los autores propusieron dos tareas de clasificación:
 
 \newcommand{\subtaska}[0]{\textbf{Tarea A}}
 \newcommand{\subtaskb}[0]{\textbf{Tarea B}}
@@ -86,22 +92,24 @@ Sobre el dataset de hatEval, los autores propusieron dos tareas:
 \end{itemize}
 
 
-La primer tarea es la versión clásica de la detección de discurso de odio, donde predecimos una etiqueta binaria. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno: por ejemplo, si es agresivo y si es individualizado, lo que puede indicar alguna incitación a un ataque.
+La primer tarea es la versión más básica de la detección de discurso de odio, donde predecimos una etiqueta binaria que marca la presencia de contenido de esta índole. La segunda es una versión más rica, de grano fino, donde predecimos varias características de particular interés para distinguir algunas formas potencialmente más peligrosas de este fenómeno: por ejemplo, si es agresivo y si es individualizado, lo que puede indicar alguna incitación a un ataque de un individuo o miembros de algún grupo protegido.
 
-La performance de \subtaska{} es medida mediante la Macro F1 de la clase positiva y negativa. En el caso de \subtaskb{}, se mide por la Macro F1 de las 3 clases (HS, TR, AG) y también por la medida Exact Match Ratio:
+\citet{hateval2019semeval} propusieron para medir el desempeño en la \subtaska{} la Macro F1 de las clases positiva y negativa. Para el caso de la \subtaskb{}, utilizaron dos métricas: Macro F1 de las 3 clases (HS, TR, AG) y también la medida Exact Match Ratio:
 
 \begin{equation*}
     EMR = \frac{1}{n} \sum\limits_{i=1}^{n} I(Y_i, Y_i^*)
 \end{equation*}
 
-siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$; $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero usamos la terminología de Exact Match Ratio como \citet{zhang-2014-multilabel} para referirse a esta métrica.
+\noindent siendo $Y_i$ las etiquetas respectivas $(HS, TR, AG)$, $Y_i^*$ las etiquetas que predice nuestro sistema, e  $I$ la función indicadora ($I(x, x) = 1$; $0$ en cualquier otro caso). Observado más de cerca, esto puede entenderse la accuracy sobre la 3-upla de la salida de los clasificadores, pero para evitar confusiones usamos el nombre de Exact Match Ratio (EMR). \cite{zhang-2014-multilabel}
 
 \section{Método}
+
+En esta sección describimos los distintos modelos planteados para atacar a las dos tareas de clasificación descriptas, así como detalles de preprocesamiento introducidos en \citet{perez-2019-atalaya} para optimizar las representaciones de modelos lineales de clasificación.
 
 \subsection{Preprocesamiento}
 \label{sec:04_preprocessing}
 
-Definimos dos niveles de preprocesamiento: preprocesamiento básico y orientado a sentimientos, dependiendo el modelo a utilizar. El preprocesamiento básico de tweets es el mismo que describimos en la sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales.
+Definimos dos niveles de preprocesamiento: básico y orientado a sentimientos, dependiendo del modelo a utilizar. El preprocesamiento básico de tweets es el mismo que describimos en la Sección \ref{sec:03_preprocessing}, y es el que utilizaremos con los modelos pre-entrenados o modelos neuronales.
 
 El preprocesamiento orientado a sentimientos incluye además lematización (usando TreeTagger \cite{schmid95}) y manejo de negación. Para el manejo de la negación, seguimos un enfoque simple:
 % \cite {das01, pang02}:
@@ -110,26 +118,26 @@ Buscamos palabras de negación y agregamos el prefijo 'NOT \_' a los siguientes 
 \subsection{Modelos de clasificación}
 \label{sec:04_classifiers}
 
-Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{atalaya_tass2018}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de \bert{} \cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, \beto{}}. Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
+Para las tareas propuestas, analizamos el desempeño de diversos modelos de clasificación. Algunos de ellos son los presentados para la shared-task \hateval{} en \citet{perez-2019-atalaya}, a las cuales agregamos modelos basados en transformers. \footnote{Estos modelos no estaban disponibles al momento de presentar dicho trabajo. El trabajo de \bert{} \cite{devlin2018bert} es de finales de 2018, y hasta finales de 2019 no fue publicada una versión entrenada en español, \beto{}} Para la tarea de detección binaria (\subtaska{}) planteamos 3 tipos de clasificadores:
 
-\begin{itemize}
-    \item Modelos lineales: regresiones logísticas y SVM con kernel lineales, consumiendo como entrada bolsas de palabras, bolsas de caracteres, y tweet embeddings (
-    \item Redes neuronales recurrentes: usando como entrada word-embeddings y embeddings contextualizados (\elmo{})
-    \item Modelos pre-entrenados basados en LM: ídem sección \ref{sec:03_classification}.
-\end{itemize}
+\begin{enumerate}
+    \item Modelos lineales: regresiones logísticas y SVM con kernel lineales, consumiendo como entrada bolsas de palabras, bolsas de caracteres, y tweet embeddings
+    \item Redes neuronales recurrentes: usando como entrada representaciones no contextualizadas (\fasttext{}) y  contextualizadas (\elmo{})
+    \item Modelos pre-entrenados de lenguaje.
+\end{enumerate}
 
-Para los modelos lineales, utilizamos tweets embeddings calculados con SIF (ver sección \ref{sec:02_tweet_embeddings}) para más detalles). Utilizamos como base embeddings de \fasttext{} entrenados sobre tweets utilizando el preprocesado orientado a sentimientos descripto en la sección \ref{sec:04_preprocessing}. Para el resto de los modelos, utilizamos el preprocesado básico.
+Para los modelos lineales, utilizamos representaciones de cada tweet calculadas con Smooth Inverse Frequency (ver Sección \ref{sec:02_tweet_embeddings} para más detalles), usando como base los vectores de \fasttext{} entrenados sobre tweets con preprocesamiento orientado a sentimientos. Los modelos recurrentes consumieron como entrada la concatenación de representaciones de \fasttext{} que describimos en la Sección \ref{sec:03_classification} a las cuales adosamos vectores contextualizados basados en \elmo{}. \cite{peters2018} Para esta última técnica, usamos la versión en español entrenada por \citet{che-EtAl:2018:K18-2}. Finalmente, consideramos los siguientes modelos pre-entrenados: para el español \beto{} \cite{canete2020spanish}, y para el inglés \bert{} \cite{devlin2018bert}, \roberta{} \cite{liu2019roberta} y \bertweet{}. \cite{dat2020bertweet}
 
-Para el caso de la tarea de multidetección (\subtaskb{}), podemos pensar este problema de dos maneras:
+La tarea de multidetección de discurso de odio (\subtaskb{}) podemos pensarla de dos maneras:
 
 \begin{enumerate}
     \item Un problema de clasificación múltiple
     \item Un problema de clasificación de 5 clases
 \end{enumerate}
 
-En el primer caso, el enfoque es el de predecir por separado HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
+En el primer caso, el enfoque es el de predecir por separado cada una de las variables HS, AG, y TR. La segunda formulación se basa en observar que no todas las 8 combinaciones son permitidas, sino sólo 5: si no hay HS no nos interesa observar las otras dos variables. Tenemos entonces 5 clases a predecir.
 
-Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en SVM (consumiendo la misma entrada que detallamos anteriormente). No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí, considerando que evaluaremos modelos que han demostrado tener mejor performance para numerosas tareas de clasificación de texto.
+Con esta última observación, propusimos en \citet{atalaya_tass2018} un modelo basado en Support Vector Machines que consume la misma entrada que detallamos anteriormente. No evaluamos en dicho trabajo un modelo recurrente con este esquema de clasificación, ni tampoco lo haremos aquí, considerando que evaluaremos modelos que han demostrado tener mejor performance para numerosas tareas de clasificación de texto.
 
 \begin{figure}
     \centering
