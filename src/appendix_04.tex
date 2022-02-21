@@ -60,3 +60,30 @@ Una recopilación de definiciones realizada por un informe de la UNESCO
     Mientras que el sistema interamericano de derechos humanos ha desarollado determinados estándares, no existe una definición universalmente aceptada de “discurso de odio” en el derecho internacional. Según un reciente informe emitido por la UNESCO que estudió las distintas definiciones de discurso de odio en el derecho internacional, el concepto con frecuencia se refiere a “expresiones a favor de la incitación a hacer daño (particularmente a la discriminación, hostilidad o violencia) con base en la identificación de la víctima como perteneciente a determinado grupo social o demográfico. Puede incluir, entre otros, discursos que incitan, amenazan o motivan a cometer actos de violencia. No obstante, para algunos el concepto se extiende también a las expresiones que alimentan un ambiente de prejuicio e intolerancia en el entendido de que tal ambiente puede incentivar la discriminación, hostilidad y ataques violentos dirigidos a ciertas personas
 \end{displayquote}
 
+
+\section{Incidencia de keywords en el dataset}
+
+\begin{table}
+    \centering
+    \small
+    \begin{tabular}{l c}
+    Palabra   &  \#tweets\\
+    \thline{2}
+    puta      &  $2226$ \\
+    callate   &  $1223$ \\
+    migra     &  $ 802$ \\
+    perra     &  $ 640$ \\
+    arabe     &  $ 483$ \\
+    zorra     &  $ 367$ \\
+    sudac     &  $ 355$ \\
+    ceuta     &  $ 310$ \\
+    acoso     &  $ 284$ \\
+    polla     &  $ 272$ \\
+    \thline{2}
+    \end{tabular}
+    \caption{Palabras del dataset y su cantidad de incidencia en tweets del dataset de HatEval.}
+    \label{tab:keywords}
+\end{table}
+
+
+La Tabla \ref{tab:keywords} muestra un listado de palabras obtenido por observación de instancias del dataset de \citet{hateval2019semeval}. Podemos observar que algunas palabras (como \emph{puta, callate, migrante, árabe}) tienen una altísima tasa de incidencia en tweets, dando cuenta de un posible sesgo de recolección de los datos.
