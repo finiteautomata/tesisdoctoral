@@ -83,13 +83,13 @@ Dividiremos la construcción del dataset en tres etapas:
 
 \begin{enumerate}
     \item Recolección: Proceso de recolección de datos de Twitter y de los artículos periodísticos
-    \item Selección: Dado el conjunto de artículos y comentarios recolectados, tomar una muestra de artículos y comentarios a etiquetar
+    \item Selección: Proceso de selección del conjunto de artículos y comentarios recolectados a etiquetar
     \item Anotación: Proceso de etiquetado de los artículos seleccionados
 \end{enumerate}
 
-Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la selección se limita a una muestra aleatoria de la recolección, este procedimiento sería muy ineficiente en el caso de discurso de odio. Esto se debe a que en nuestro dominio de comentarios periodísticos y discurso de odio, encontramos este tipo de discurso distribuido de manera muy poco uniforme, usualmente concentrada alrededor de ciertos tópicos. Para construir un dataset con una proporción no marginal del fenómeno estudiado, estudiamos algunas posibilidades para seleccionar los artículos y sus respectivos comentarios.
+Si bien en muchos casos las dos primeras etapas suelen ser la misma o bien la selección se limita a una muestra aleatoria de la recolección, este procedimiento sería muy ineficiente para nuestro estudio. Esto se debe a que en el dominio de comentarios periodísticos y discurso de odio, encontramos este tipo de discurso distribuido de manera muy poco uniforme, usualmente concentrado alrededor de ciertos tópicos disparadores. Para poder recolectar datos con una proporción razonable del fenómeno estudiado, evaluamos algunas posibilidades de selección de los artículos y sus respectivos comentarios.
 
-En algunos trabajos previos (como por ejemplo \citet{waseem2016hateful,hateval2019semeval}) la recolección y selección constan conjuntamente de usar ciertos keywords y, o bien recolectar tweets que usen esas palabras, o bien sirven para preseleccionar usuarios de los cuales luego extraer tweets para ser etiquetados. En nuestro caso, la selección de artículos y comentarios presenta cierta novedad y complejidad, con lo cual separamos este procedimiento para explicarlo detalladamente en las siguientes secciones.
+En algunos trabajos previos, la recolección y selección constan conjuntamente de la búsqueda en base a ciertas palabras clave, que son utilizadas para recolectar tweets o bien para preseleccionar usuarios productores de discurso de odio \cite{waseem2016hateful,hateval2019semeval}. En nuestro caso, la selección de artículos y comentarios presenta cierta novedad y complejidad, con lo cual separamos este procedimiento para explicarlo detalladamente en las siguientes secciones.
 
 % COLECCIÓN
 \input{src/05_sec_coleccion.tex}
