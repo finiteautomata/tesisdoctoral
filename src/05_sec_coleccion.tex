@@ -5,7 +5,7 @@
 \begin{table*}[t]
     \centering
     \large
-    \begin{tabular}{ lll }
+    \begin{tabular}{ l l r }
         Nombre     &  username          & \#Followers \\
         \hline
         La Nación  &  @LANACION         & 3.6M            \\
@@ -15,16 +15,16 @@
         Crónica    &  @cronica          & 0.80M     \\
         \hline
     \end{tabular}
-    \caption{Cuentas de medios utilizadas para la recolección de datos.}
+    \caption{Cuentas de medios utilizadas para la recolección de datos, junto a sus nombres de usuarios y la cantidad de seguidores en Twitter (al momento de la recolección)}
     \label{tab:medios_analizados}
 \end{table*}
 
 
-En esta sección describiremos el proceso de recolección de datos. La salida de esta etapa será un conjunto de artículos y sus comentarios extraídos de Twitter. Describiremos a continuación las decisiones realizadas respecto a las fuentes y a decisiones técnicas realizadas.
+En esta sección detallaremos el proceso de recolección de datos, cuya salida es un conjunto de artículos mencionados en Twitter y sus comentarios respectivos realizados por usuarios. Describiremos a continuación las decisiones realizadas respecto a las fuentes y a otros detalles técnicos.
 
-Limitamos nuestra recolección de datos a cuentas de medios de la República Argentina y, puntualmente, nos centramos en diarios con comunidad mayormente rioplatense ya que (como comentaremos más adelante) los anotadores son nativos de esa variedad dialectal. Esto es teniendo en cuenta que esta tarea depende fuertemente de la jerga y de las variaciones dialectales de cada país decidimos realizar sólo anotación de estos diarios. Esto además se debe a que, habiendo buscando en otros medios de Argentina (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja: pocos usuarios comentan sus notas.  Centrándonos en diarios que generen interacción. Los cinco diarios sobre los que anotamos datos están listados en la tabla \ref{tab:medios_analizados}.
+En primer lugar, limitamos nuestra recolección de datos a cuentas de medios de la República Argentina y, puntualmente, nos centramos en diarios con comunidad mayormente rioplatense. Esto lo realizamos teniendo en mente que los anotadores serían nativos de esta variedad dialectal ya que, como mencionamos anteriormente, el discurso de odio contra mujeres, grupos nacionales y otros depende fuertemente de la jerga y de las variaciones dialectales de cada lugar. Esta elección, se debe además a que, habiendo buscando en otros medios de Argentina (como por ejemplo ``La voz del Interior'', diario dirigido mayormente a un público fuera de la Metrópolis de Buenos Aires) observamos que la interacción en Twitter de estos medios es muy baja, con muy pocos usuarios comentando sus notas. Centrándonos en diarios que generen interacción, seleccionamos medios periodísticos de gran llegada y tradicionales, los cuales listamos en la Tabla \ref{tab:medios_analizados}.
 
-Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. Los medios elegidos son medios formales y tradicionales, 4 de ellos con soporte escrito, siendo Infobae el único medio enteramente digital. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la derecha ``alternativa''. Estos medios son altamente generadores de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de la etapa de anotación.
+Si bien recolectamos notas de otros medios, no los consideraremos a partir de ahora, y los dejamos para análisis posteriores. De los cinco medios elegidos, todos son medios formales y con varios años en el medio, siendo cuatro de ellos con soporte escrito y uno sólo (Infobae) enteramente digital. Consideramos la posibilidad de elegir medios no tradicionales y más orientados a grupos de la ``derecha alternativa'', dada su alta incidencia de contenido de odio. Sin embargo, finalmente tomamos la decisión de descartarlos de la etapa de anotación.
 
 
 \subsection{Método de recolección}
