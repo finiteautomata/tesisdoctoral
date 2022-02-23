@@ -1,20 +1,21 @@
 \section{Selección de datos a anotar}
 
 
-Un problema que se nos presenta antes de comenzar el etiquetado es el de seleccionar los artículos que vamos a etiquetar, considerando la gran cantidad de datos recolectados y los recursos disponibles. Una primera posibilidad para hacer esto es realizar una selección aleatoria de artículos y comentarios; sin embargo, los comentarios discriminatorios no se distribuyen de manera uniforme entre los artículos sino que se concentran sobre algunos temas. Es mucho más probable encontrar comentarios de índole discriminatoria en notas que tengan temas cercanos a alguna de las características protegidas: por ejemplo, es esperable que encontremos contenido discriminatorio en notas sobre China y el Coronavirus o sobre una chica transgénero antes que en un artículo de fútbol o economía. Si bien una selección aleatoria preservaría una tasa de incidencia mucho más cercana a la observada en el universo de comentarios, es más importante poder obtener una mayor cantidad de observaciones que reflejen el fenómeno estudiado.
+Un problema que se presenta antes de comenzar el etiquetado es el de seleccionar los artículos que vamos a etiquetar, teniendo en consideración la gran cantidad de datos recolectados y los recursos disponibles. Una primera posibilidad para esto es realizar una selección aleatoria de artículos y comentarios. Sin embargo, los comentarios discriminatorios no se distribuyen de manera uniforme entre los artículos sino que se concentran sobre algunos temas que generan este tipo de contenido. Es mucho más probable encontrar comentarios de índole discriminatoria en notas que tengan temas cercanos a alguna de las características protegidas: por ejemplo, es esperable que encontremos contenido discriminatorio en notas sobre China y el Coronavirus o sobre una chica transgénero antes que en un artículo de fútbol o economía. Si bien una selección aleatoria preservaría una tasa de incidencia mucho más cercana a la observada en el universo de comentarios, es más importante poder obtener una mayor cantidad de observaciones que reflejen el fenómeno estudiado.
 
-Teniendo esto en cuenta, evaluamos varias alternativas para realizar la selección de artículos. La primera fue intentar seleccionar aquellos artículos que consideremos que puedan tener contenido potencialmente discriminatorio. Una posibilidad para esto sería usar algunas palabras ``semilla'' para seleccionar artículos interesantes.
+Teniendo esto en cuenta, evaluamos varias alternativas para realizar la selección de artículos. La primera fue intentar seleccionar aquellos artículos que consideramos como candidatos a fomentar contenido discriminatorio. Una posibilidad para esto sería usar algunas palabras semilla para seleccionar artículos interesantes en base a ciertos temas que consideramos relevantes.
 
-Otra posibilidad que evaluamos fue la de buscar directamente comentarios que nos marquen que ese artículo suscita contenido discriminatorio. Para ello, podemos listar algunos insultos comunes o expresiones peyorativas hacia los grupos protegidos considerados. Es necesario remarcar que esto lo hacemos para seleccionar \tbf{artículos} y no los comentarios que contengan esos insultos; hacer esto último nos genera una muestra muy distorsionada y tendiente a encontrar el fenómeno más explícito de la discriminación (el insulto racista, homofóbico, etc.).
+Otra posibilidad evaluada fue la de buscar directamente comentarios que marquen que ese artículo suscita contenido discriminatorio. Para ello, podemos listar algunos insultos comunes o expresiones peyorativas hacia los grupos protegidos considerados. Es necesario remarcar que esto lo hacemos para seleccionar \tbf{artículos} y no los comentarios que contengan esos insultos; hacer esto último nos genera una muestra muy distorsionada y tendiente a encontrar el fenómeno más explícito de la discriminación (el insulto racista, homofóbico, etc.). Esta estrategia guarda relación con la descripta por \citet{hateval2019semeval} para seleccionar usuarios generadores de contenido discriminatorio.
 
 Describimos a continuación las alternativas analizadas para seleccionar los artículos y sus respectivos comentarios.
 
 
 \subsection{Selección en base a artículos}
 
-\begin{table}[t]
+\begin{table}[b!]
     \centering
-    \begin{tabular}{l  l  l  l}
+    \small
+    \begin{tabular}{p{0.21\textwidth}  p{0.26\textwidth} p{0.23\textwidth} p{0.19\textwidth}}
     \hline
     China        &  piqueteros              &  mamá                & domésticas            \\
     Cuba         &  villas                  &  de género           & la modelo             \\
@@ -28,21 +29,23 @@ Describimos a continuación las alternativas analizadas para seleccionar los art
     criminal     &  mapuches                &  Ofelia              &                       \\
     \hline
     \end{tabular}
-    \caption{Palabras utilizadas para la selección de artículos. Cada palabra se busca sobre el cuerpo del artículo para seleccionarlo como candidato a ser etiquetado}
+    \caption{Palabras semilla utilizadas para la selección de artículos. Cada palabra se busca sobre el cuerpo del artículo candidato a ser etiquetado}
     \label{tab:palabras_articulos}
 \end{table}
-En primer lugar, consideramos la posibilidad de hacer una selección en base al contenido de los artículos. Luego de realizar algunos experimentos usando LDA \cite{blei2003latent} para buscar tópicos posibles de las notas, decidimos realizar una selección un poco más controlada y determinística en base a la utilización de palabras clave. Es decir, seleccionar artículos en base a la aparición o no de ciertas keywords.
 
-Para ello, indexamos todos nuestros artículos en MongoDB \footnote{\url{https://www.mongodb.com/}}, una base de datos no relacional y desestructurada. MongoDB permite la utilización de índices en base a texto, y realizar búsquedas en base a textos, palabras, e inflexiones. Cada artículo fue indexado en base al contenido de su cuerpo.
+En primer lugar, consideramos la posibilidad de hacer una selección en base al contenido de los artículos. Luego de hacer un análisis exploratorio de los datos usando LDA \cite{blei2003latent} para buscar tópicos posibles de las notas, decidimos realizar una selección controlada y determinística en base a la utilización de palabras y expresiones clave. Estas expresiones las recolectamos de manera subjetiva y en base a la observación de los tópicos y de nuestra percepción de la generación de discurso discriminatorio en los comentarios de los usuarios.
 
-La tabla \ref{tab:palabras_articulos} muestra el conjunto utilizado para recolectar artículos. Como vemos, hay diversas palabras que recogen distintas temáticas de posibles tópicos ``calientes'', algunos muy locales respecto a eventos concretos durante la pandemia. Si algún artículo contiene una de las frases mencionadas, se selecciona el artículo para ser etiquetado.
+La Tabla \ref{tab:palabras_articulos} muestra el conjunto de expresiones utilizado para recolectar artículos. Como vemos, hay diversas palabras que recogen temáticas de posibles tópicos generadores de contenido discriminatorio, algunos muy locales respecto a eventos concretos durante la pandemia. Si algún artículo contiene una de las expresiones mencionadas, es seleccionado para ser etiquetado.
+
+Para realizar esta búsqueda de términos en el cuerpo de los artículos, indexamos los textos en \emph{MongoDB}\footnote{\url{https://www.mongodb.com/}}, una base de datos no relacional. Este motor de bases de datos permite la utilización de índices en base a texto, permitiendo realizar búsquedas en base a expresiones, palabras, e inflexiones.
+
 
 
 \subsection{Selección en base a comentarios}
 \label{subsec:seleccion_comentarios}
 
 
-\begin{table*}[t!]
+\begin{table*}[h]
     \centering
     \small
     \begin{tabular}{l l l l l l l}
@@ -58,22 +61,20 @@ La tabla \ref{tab:palabras_articulos} muestra el conjunto utilizado para recolec
     \label{tab:palabras_comentarios}
 \end{table*}
 
-Otra posibilidad evaluada fue la de observar los comentarios de los artículos en lugar del contenido del artículo, y seleccionarlos en base a esto. En este punto, la idea es únicamente seleccionar los artículos y no los comentarios; estos últimos son sólo usados como ``pistas'' para encontrar comentarios con posible contenido discriminatorio, y como tal identificar a ese artículo como un posible generador de este tipo de contenido.
+Otra posibilidad para seleccionar artículos candidatos a ser etiquetados es la de observar los comentarios de usuarios en lugar del texto completo de éste. En base a los comentarios, podemos tener alguna medida de si el artículo suscita reacciones potencialmente discriminatorias. Por ejemplo, si observamos que en un artículo hay comentaristas que usan expresiones discriminatorias contra la comunidad LGBTI, podemos pensar que el contenido de la noticia es interesante para nuestro estudio.
 
-La idea es similar a la de la selección con artículos, sólo que aplicada a comentarios: buscamos comentarios que contengan alguna de las palabras semilla listadas en la Tabla \ref{tab:palabras_comentarios}. Estas palabras fueron recolectadas a base de experimentación y observación de los datos, y tratan de contener diversas expresiones de contenido mayormente discriminatorio. El procedimiento de selección consta de --dado un artículo-- marcar sus comentarios que contengan una o más de las expresiones listadas. Si el artículo tiene tres o más comentarios marcados, entonces seleccionamos el artículo; caso contrario, es descartado.
+El procedimiento para este tipo de selección es similar al mencionado anteriormente con artículos, sólo que aplicado a comentarios: buscamos respuestas de usuarios que contengan alguna de las expresiones semilla listadas en la Tabla \ref{tab:palabras_comentarios}. Estas palabras fueron recolectadas de manera subjetiva en base a la observación y a la experimentación sobre los datos, tratando de contener diversas expresiones de contenido mayormente discriminatorio. La lista contiene expresiones ofensivas para diversas características de interés: insultos racistas, homofóbicos, misóginos; insultos dirigidos dirigidos a algún personaje particularmente atacado en las redes sociales; expresiones de odio de clase; etc.
 
-Remarcamos nuevamente que este proceso de selección es para los \emph{artículos}, no para los comentarios. Hacer esto para los comentarios implicaría necesariamente que tengan alguna de las expresiones, algo que sesgaría nuestro dataset.
+Dado un artículo, marcamos los comentarios que contengan una o más de las expresiones listadas. Si el artículo tiene tres o más comentarios marcados, entonces el artículo es seleccionado; caso contrario, es descartado. Vale remarcar que este proceso de selección es para los \emph{artículos}, no para los comentarios. De lo contrario, sólo buscaríamos respuestas que contengan alguna de estas expresiones.
 
 Luego de algunos análisis experimentales y observacionales de las dos posibles metodologías, decidimos utilizar el muestreo de artículos en base a comentarios. En base a un análisis subjetivo, los artículos seleccionados parecían tener mayor incidencia de mensajes discriminatorios y eso nos decantó hacia esa opción.
 
-Una posibilidad que tuvimos en cuenta fue la de usar un clasificador pre-entrenado que nos señale posibles comentarios discriminatorios y luego usar eso para seleccionar artículos candidatos a etiquetar. Para ello, aplicamos un clasificador basado en BETO \citet{canete2020spanish} (ver sección \ref{chap:04_hate_speech}) sobre los comentarios de los artículos. Una evaluación subjetiva de esto nos dio pobres resultados, tanto porque no captaba algunas agresiones discriminatorias (de características no incluídas en el dataset de \citet{hateval2019semeval}) como muchos falsos positivos o errores debido al cambio de dominio (temático y también dialectal). Si bien descartamos este método, puede ser de relevancia usar algún método que no esté basado en palabras semillas o utilizar algún método semi-automático para encontrar candidatos a etiquetar.
+Una posibilidad adicional analizado fue utilizar un clasificador que nos señale posibles comentarios discriminatorios, usando esta información para seleccionar artículos candidatos a etiquetar. Para ello, aplicamos un clasificador basado en BETO \cite{canete2020spanish} entrenado sobre el dataset de \hateval{} (ver sección \ref{chap:04_hate_speech}) sobre los comentarios de los artículos. Una evaluación subjetiva de esto nos dio pobres resultados, tanto porque no captaba algunas agresiones discriminatorias (de características no incluídas en el dataset de \citet{hateval2019semeval}) como muchos falsos positivos o errores debido al cambio de dominio (temático y también dialectal). Si bien descartamos este método, puede ser de relevancia usar algún método que no esté basado en palabras semillas o utilizar algún método semi-automático para encontrar candidatos a etiquetar.
 
 
 \subsection{Muestreo de comentarios}
 
-Una vez que seleccionamos los artículos, resta decidir qué comentarios vamos a anotar. No podemos seleccionar todos ya que muchos artículos cuentan con una cantidad importante de comentarios (en el orden de los cientos) y es deseable mantener un balance entre los comentarios anotados por artículo. Tampoco es deseable (en pos de maximizar el producto de la anotación) seleccionar comentarios de artículos escasamente discutidos.
+Una vez que seleccionamos los artículos, resta decidir qué comentarios vamos a anotar. No podemos seleccionar todos ya que muchos artículos cuentan con una cantidad importante de comentarios (en el orden de los cientos) y es deseable mantener un balance entre los comentarios anotados por artículo. Tampoco es deseable (en pos de maximizar el producto de la anotación) seleccionar comentarios de artículos escasamente discutidos. Teniendo esto en mente, conservamos sólo los comentarios de artículos que tengan al menos 20 comentarios. Luego, para cada artículo, seleccionamos aleatoriamente hasta 50 comentarios entre aquellos que no contengan URLs u otro contenido no textual.
 
-Teniendo esto en mente, realizamos lo siguiente: primero, nos quedamos sólo con los comentarios de artículos que tengan al menos 20 comentarios. Luego, para cada artículo, seleccionamos aleatoriamente hasta 50 comentarios que no contengan URLs u otro contenido no textual. En este punto, consideramos el muestreo aleatorio como la forma menos sesgada para seleccionar nuestros comentarios. Observemos que en estos pasos no tuvimos en cuenta en ningún momento
-
-Mencionamos así mismo algunas de las posibilidades que evaluamos para la selección de comentarios. Una fue la de considerar todo el universo de comentarios y seleccionar la muestra de allí. Sin embargo, esto sobrerrepresentaría a aquellos temas muy comentados (muchos de ellos, de temas políticos que se filtran en nuestra selección). Otra consideración posible es la de utilizar información de usuarios y sus conexiones, información que Twitter nos brinda a través de los followers de cada usuario. Muchos usuarios que generan contenido discriminatorio en redes sociales se agrupan en comunidades, y usar algún tipo de información sobre esto (posiblemente, sectorizando en comunidades con algún algoritmo como el de Louvain \cite{blondel2008fast}) podría auxiliar al balance de comentarios posiblemente discriminatorios. Para la tarea de stance detection, \citet{lai2018stance} y \citet{furman2021you} usan este tipo de algoritmos para detectar de una manera semi-automática las posturas de los usuarios respecto a distintos temas.
+En este punto, consideramos el muestreo aleatorio como la forma menos sesgada para seleccionar nuestros comentarios, pero mencionamos de todas formas algunas alternativas evaluadas. Una fue la de considerar todo el universo de comentarios y seleccionar la muestra de allí. Sin embargo, esto sobrerrepresentaría a aquellos temas muy comentados, siendo muchos de ellos acerca de temas políticos que se filtraron en nuestra selección. Otra consideración posible es la de utilizar información de usuarios y sus conexiones, información que Twitter nos brinda a través de los followers de cada usuario. Muchos usuarios que generan contenido discriminatorio en redes sociales se agrupan en comunidades: subgrafos de usuarios altamente conectados entre sí. Usar algún tipo de información sobre esto (por ejemplo, con algún algoritmo como el de Louvain \cite{blondel2008fast}) podría auxiliar al balance de comentarios posiblemente discriminatorios. Para un ejemplo de la utilización de esta técnica, \citet{lai2018stance} y \citet{furman2021you} usan este tipo de algoritmos como manera semi-supervisada de detectar las posturas de los usuarios respecto a distintos temas.
 
