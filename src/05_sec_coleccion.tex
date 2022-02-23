@@ -11,8 +11,8 @@
         La Nación  &  @LANACION         & 3.6M            \\
         Clarín     &  @clarincom        & 3.2M        \\
         Infobae    &  @infobae          & 3.0M   \\
-        Perfil     &  @perfilcom        & 0.81M    \\
-        Crónica    &  @cronica          & 0.80M     \\
+        Perfil     &  @perfilcom        & 0.8M    \\
+        Crónica    &  @cronica          & 0.8M     \\
         \hline
     \end{tabular}
     \caption{Cuentas de medios utilizadas para la recolección de datos, junto a sus nombres de usuarios y la cantidad de seguidores en Twitter (al momento de la recolección)}
@@ -34,13 +34,13 @@ Si bien recolectamos notas de otros medios, no los consideraremos a partir de ah
 La API de Twitter, en su versión gratuita, nos brinda dos modos de recolectar tweets de su plataforma\footnote{Usamos la versión 1.1 de la API. La versión 2.0 parece facilitar la recopilación de conversaciones. Recomendamos investigar mejor esta versión actualizada para esquivar muchas de las dificultades técnicas que incursionamos para lo descripto en esta sección}:
 
 \begin{enumerate}
-    \item Search API: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
-    \item Stream API: permite buscar tweets en tiempo real sobre una muestra de cerca del 1\% de todos los tweets de la red social
+    \item \emph{Search API}: permite buscar tweets en base a términos, de hasta 15 días atrás sobre una pequeña muestra, recreando lo que vemos en la UI de Twitter
+    \item \emph{Stream API}: permite buscar tweets en tiempo real sobre una muestra de cerca del 1\% de todos los tweets de la red social
 \end{enumerate}
 
-La API Stream (también conocida como Spritzer), mientras por un lado limita temporalmente la recolección de datos, por el otro nos brinda la posibilidad de recolectar una mayor cantidad de información en tiempo real. Más aún, dada la naturaleza de nuestros datos (discurso de odio), se corre el riesgo de que con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la API Search.
+La \emph{Stream API} (también conocida como \emph{Spritzer}), mientras por un lado limita temporalmente la recolección de datos, por el otro nos brinda la posibilidad de recolectar una mayor cantidad de información en tiempo real. Más aún, dada la naturaleza de nuestro problema (discurso de odio), se corre el riesgo de que ciertos tweets con el tiempo sean moderados e inaccesibles para cualquier búsqueda con la \emph{Search API}.
 
-Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de estas cuentas. Si estamos entonces recolectando tweets sobre \verb|@medio|, el proceso de recolección nos da:
+Por lo explicado, usamos la \emph{Stream API} de Twitter, buscando tweets que mencionen a cualquiera de las cuentas de medios periodísticos listadas en la Tabla \ref{tab:medios_analizados}. Si estamos entonces recolectando tweets sobre \verb|@medio|, la \emph{Search API} nos da:
 
 \begin{enumerate}
     \item Tweets de \verb|@medio|
@@ -50,37 +50,35 @@ Por lo explicado, usamos la API de Twitter Stream mencionando cualquiera de esta
     \item Citas de tweets de \verb|@medio|
 \end{enumerate}
 
-Los RTs y tweets que arroben a \verb|@medio| carecen de interés para nuestro estudio, con lo cual los descartamos. Por otro lado, también descartamos las citas, aunque podrían entenderse como ``respuestas'' a los tweets originales. Nos quedamos con tweets de \verb|@medio| y las respuestas a estos. Si bien la API nos da estos tweets desestructuradamente, reconstruimos el árbol de la discusión mediante el campo \verb|in_reply_to_status_id|\footnote{Ver la documentación y la referencia al campo en \url{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}}.
+Los RTs y tweets que simplemente arroben a \verb|@medio| carecen de interés para nuestro estudio, con lo cual los descartamos. Por otro lado, también descartamos las citas, aunque podrían entenderse en algún punto como respuestas a los tweets originales. Nos quedamos finalmente con tweets de \verb|@medio| y las respuestas a estos. Si bien la API nos da estos tweets de manera desestructurada, reconstruimos el árbol de la discusión mediante el campo \verb|in_reply_to_status_id|\footnote{Ver la documentación y la referencia al campo en \url{https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet}}, que marca el tweet al que responde.
 
-Algo importante a remarcar es que para el propósito de este trabajo, solo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporaremos hilos de respuestas. Trabajo futuro debería explorar este nivel adicional de complejidad incorporando contexto conversacional adicional.
+Algo importante a remarcar es que, para el propósito de este trabajo, sólo estamos interesados en el primer nivel de respuestas al tweet original, y no incorporamos hilos de respuestas. Trabajo futuro debería explorar este nivel adicional de complejidad incorporando contexto conversacional adicional.
 
-Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Por ese motivo, y dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se volcó el foco hacia artículos relacionados con el coronavirus. Para ello seleccionamos artículos buscando una cantidad de palabras en su cuerpo, por lo que seleccionamos específicamente artículos relacionados con COVID-19. Utilizamos las siguientes palabras: coronavirus, encierro, síntomas, covid, fase, fiebre, cuarentena, infectados, distanciamiento, normalidad,  Wuhan, aislamiento.
+Accidentalmente, la recolección de datos se dio al mismo tiempo del estallido de la pandemia del COVID-19. Dadas las implicancias de la pandemia sobre el discurso discriminatorio en las redes sociales, se volcó el foco de la recolección hacia artículos relacionados con el coronavirus. Para ello seleccionamos artículos buscando la ocurrencia de ciertas palabras en el cuerpo del artículo, específicamente relacionadas al COVID-19: \emph{coronavirus, encierro, síntomas, covid, fase, fiebre, cuarentena, infectados, distanciamiento, normalidad,  Wuhan, aislamiento}.
 
-Por último, nos quedamos con aquellos tweets de los medios periodísticos que tuvieran un link a un artículo. Para ello, utilizamos la librería \emph{newspaper3k}\footnote{\url{https://newspaper.readthedocs.io/en/latest/}}, que nos permite acceder a la información relacionada a los artículos en cuestión, en particular siendo lo que más nos interesa el cuerpo del artículo. Esto vamos a utilizarlo posteriormente como el contexto ``largo'' para los comentarios. Aquellos tweets de medios periodísticos que no contengan un link a un artículo fueron descartados de las siguientes etapas.
+Por último, nos quedamos con aquellos tweets de los medios periodísticos que tuvieran un link a un artículo. Para ello, utilizamos el módulo de Python \emph{newspaper3k}\footnote{\url{https://newspaper.readthedocs.io/en/latest/}}, que permite acceder a la información relacionada a los artículos en cuestión, en particular siendo lo que más nos interesa el cuerpo del artículo. Aquellos tweets de medios periodísticos que no contengan un link a un artículo fueron descartados por considerar que no representaban una noticia en sí.
 
 \subsection{Datos recolectados}
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{l|c|c}
+    \begin{tabular}{l rr}
     Medio      & \#Artículos & \#Comentarios \\
     \hline
-    @infobae   &  45,652   &  822,462 \\
-    @clarincom &  29,050   &  672,401 \\
-    @perfilcom &  8,764    &  61,203  \\
-    @LANACION  &  16,040   &  506,091 \\
-    @cronica   &  17,250   &  70,872 \\
+    @infobae   &  $45,652$   &  $822,462$ \\
+    @clarincom &  $29,050$   &  $672,401$ \\
+    @perfilcom &   $8,764$   &   $61,203$  \\
+    @LANACION  &  $16,040$   &  $506,091$ \\
+    @cronica   &  $17,250$   &   $70,872$ \\
     \hline
-    Total      & 116,756  & 2,133,029 \\
+    Total      & $116,756$  & $2,133,029$ \\
     \end{tabular}
-    \caption{Artículos recoletados por medio}
+    \caption{Elementos recolectados por cada medio, medidos en cantidad de artículos (tweets de los medios + artículos correspondientes) y cantidad de comentarios (respuestas en Twitter a los primeros)}
     \label{tab:articulos_recoletados_por_medio}
 \end{table}
 
 
-La tabla \ref{tab:articulos_recoletados_por_medio} contiene los números de los artículos recolectados por cada medio, luego de aplicado el filtro de palabras mencionado en la anterior sección. Si bien recolectamos más artículos de otros medios, no son enumerados. Infobae es el medio que más producción de artículos genera, y también será finalmente sobre el que más comentarios etiquetemos.
+La Tabla \ref{tab:articulos_recoletados_por_medio} contiene la cantidad de artículos recolectados por cada medio, luego de ser aplicado el filtro de palabras mencionado en la anterior sección, y cantidad de comentarios por medio. Si bien recolectamos más artículos de otros medios, no son enumerados, aunque fueron conservados para otros experimentos. Entre los medios seleccionados, Infobae fue el más prolífico en artículos y también será finalmente sobre el que más comentarios etiquetemos. En el apéndice \ref{app:distribucion_datos} puede encontrarse la distribución temporal de los datos. Si bien tenemos un pequeño bache en los datos por un problema técnico en la recolección, los artículos de este conjunto datan de Marzo del 2020 hasta Febrero del 2021.
 
-En el apéndice \ref{app:distribucion_datos} mostramos la distribución temporal de los datos. Si bien tenemos un pequeño gap en los datos por un problema técnico en la recolección, tenemos datos desde Marzo de 2020 hasta Febrero de 2021.
-
-En siguientes secciones realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación, pero este conjunto de datos no filtrado será utilizado para efectuar ajustes de dominio, y es liberado como se recomienda en \citet{gururangan-etal-2020-dont}. Hablaremos más sobre esto en los capítulos \ref{chap:06_contextualized_hate_speech} y \ref{chap:07_domain_adaptation}.
+En la siguiente sección realizaremos un filtrado de la mayoría de estos artículos previamente a la anotación. En conjunto a los datos de otros medios, estos artículos y comentarios no etiquetados son preservados para efectuar ajustes de dominio, y serán liberados como se recomienda en \citet{gururangan-etal-2020-dont}. Hablaremos más sobre esto en los Capítulos \ref{chap:06_contextualized_hate_speech} y \ref{chap:07_domain_adaptation}.
 
