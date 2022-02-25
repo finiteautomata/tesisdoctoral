@@ -1,12 +1,12 @@
 \section{Anotación}
 
-Hasta este momento describimos la recolección de los datos, al cual le siguió la selección de los artículos y comentarios a anotar. Pasamos ahora a detallar el proceso de anotación, describiendo el modelo utilizado, dando información sobre los etiquetadores, y las herramientas utilizadas para este fin. Comenzamos detallando qué es lo que queremos anotar.
+Hasta este momento describimos la recolección de los datos, proceso al cual le siguió la selección de los artículos y comentarios a anotar. Pasamos ahora a detallar el etiquetado del dataset, describiendo el modelo utilizado (¿qué queremos etiquetar?), el proceso de selección de etiquetadores y las herramientas utilizadas para este fin.
 
 
 \subsection{Modelo de etiquetado}
 
 
-Un modelo de anotación es una representación práctica del objetivo de anotación \cite{pustejovsky2012natural}. En base a la discusión del capítulo anterior, queremos marcar comentarios discriminatorios y marcar granularmente a qué grupos y/o características se está ofendiendo. También, queremos identificar llamados a tomar alguna acción contra los objetos de esos discursos.
+Un modelo de anotación es una representación práctica del objetivo de anotación; es decir, del fenómeno que queremos capturar \cite{pustejovsky2012natural}. En base a la discusión del capítulo anterior, es de interés marcar comentarios discriminatorios de manera granular de modo de tener información de qué grupos y/o características se está ofendiendo. Para identificar formas más graves de discurso de odio, también es de interés identificar llamados a tomar alguna acción (violenta o no violenta) contra esa persona o grupo.
 
 \begin{figure}
     \centering
@@ -16,25 +16,25 @@ Un modelo de anotación es una representación práctica del objetivo de anotaci
 \end{figure}
 
 
-En \citet{zampieri2019predicting} se introdujo un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado en las competiciones OffensEval \cite{zampieri2019semeval2019} y hatEval \cite{hateval2019semeval}. La idea de la anotación jerárquica es realizar anotaciones adicionales sólo para algunos casos de anotaciones del nivel anterior. En el caso de \emph{hatEval}, tenemos un primer nivel que consta de anotar si un tweet contiene o no discurso de odio (nivel 1). Si el tweet tiene discurso de odio, entonces anotamos si está dirigido a un individuo o a un grupo, y también anotamos si es agresivo o no (ambos nivel 2). En el caso de \emph{OffensEval}, primero anotamos si es ofensivo (nivel 1), luego si está dirigido o es un insulto no dirigido (nivel 2) y finalmente, si es dirigido y ofensivo, marcamos su objetivo (nivel 3). En la figura \ref{fig:modelos_offenseval_hateval} ilustramos ambos modelos.
+\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado tanto en los datasets de OffensEval \cite{zampieri2019semeval2019} y HatEval \cite{hateval2019semeval}. La idea de este modelo es realizar anotaciones en varios niveles, sólo marcando algunas variables de acuerdo a las respuestas del nivel predecesor. Por ejemplo, en el caso de \hateval{}, tenemos un primer nivel que consta de marcar si un tweet contiene o no discurso de odio. Si el tweet tiene discurso de odio, entonces se anota en primer lugar si está dirigido a un individuo o a un grupo, y también si es agresivo o no. En el caso de \emph{OffensEval}, primero se anota si es ofensivo, en caso de ser ofensivo se marca si está dirigido o es un insulto no dirigido, y finalmente, si es dirigido y ofensivo, marcamos si su objetivo es un grupo o un individuo.  La Figura \ref{fig:modelos_offenseval_hateval} ilustra en modo de diagrama de flujo el modelo de anotación de ambos conjuntos de datos.
 
 
 %
 %
-% Link: https://docs.google.com/drawings/d/1ZgTmvRwMWn0B-kokfw87jfSa7eY5-OSBHwltetnNT08/edit
+% Link: https://docs.google.com/drawings/d/14TKSC4QmZhksnlFvQcHUaZup-q3AL0Up1cNKJUr5toI/edit
 %
 
 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{img/Annotation Model.png}
-    \caption{Modelo de anotación}
+    \includegraphics[width=0.5\textwidth]{img/05/annotation_model.pdf}
+    \caption{Modelo de anotación para el dataset construido en este capítulo. El modelo jerárquico consta de dos niveles: el primero, donde se anota si es odioso. El segundo consta de anotar --en caso de haber sido marcado como odioso-- si contiene un llamado a la acción y a qué características ofende.}
     \label{fig:annotation_model}
 \end{figure}
 
 
-Basándonos en esto planteamos nuestro modelo, ilustrado en la figura \ref{fig:annotation_model}. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. Si es así, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida marcada como ofendida.
+Basándonos en esta estructura jerárquica planteamos nuestro modelo, ilustrado en la Figura \ref{fig:annotation_model}. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. En caso de haberse marcado como odioso, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida marcada como ofendida.
 
 
 \subsection{Definición de discurso de odio y manual de etiquetado}
