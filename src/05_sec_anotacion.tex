@@ -41,7 +41,7 @@ Con esta definición confeccionamos un manual de referencia para los anotadores.
 
 
 \subsection{Modelo de etiquetado}
-
+\label{sec:modelo_etiquetado}
 
 \begin{figure}[t]
     \centering
@@ -183,7 +183,7 @@ Como resultado de este esquema, cada comentario de nuestro dataset puede tener d
     \label{fig:labeler_example}
 \end{figure}
 
-Al no optar por utilizar servicios de etiquetado tercerizado, optamos por desarrollar nuestra propia aplicación para esta tarea. Cada etiquetador tuvo acceso a un sitio web donde se le mostraron uno a uno los artículos asignados, de acuerdo al orden establecido por los administradores de la interfaz. La Figura \ref{fig:labeler_example} ilustra la interfaz presentada a los usuarios del sistema. Cada artículo es presentado junto a su tweet correspondiente, al texto replegado de la noticia --en caso de que un anotador requiera su lectura-- y a los comentarios.
+Al no optar por utilizar servicios de etiquetado tercerizado, desarrollamos nuestra propia aplicación para esta tarea. Cada etiquetador tuvo acceso a un sitio web donde se le mostraron uno a uno los artículos asignados, de acuerdo al orden establecido por los administradores de la aplicación. La Figura \ref{fig:labeler_example} ilustra la interfaz de anotación presentada a los usuarios del sistema. Cada artículo es presentado junto a su tweet correspondiente, al texto replegado de la noticia --en caso de que un usuario requiera su lectura-- y a los comentarios.
 
 Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, debe para cada comentario marcar usando un control de tipo interruptor:
 
@@ -201,17 +201,16 @@ Cada tweet fue presentado con un preprocesado básico que consistió en reemplaz
 
 \subsection{Asignación}
 
-Llamamos \tbf{asignación} al procedimiento de asignar \tbf{gold labels} al dataset anotado \cite{pustejovsky2012natural}. Nuestro modelo consta de una etiqueta binaria marcando si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias: una para la llamadas a la acción (CALLS) y otras 8 para las características ofendidas. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características restantes.
+Llamamos \tbf{asignación} al procedimiento de colocar \tbf{etiquetas} (también llamadas \emph{gold labels}) a las instancias de nuestro conjunto de datos \cite{pustejovsky2012natural}. El modelo descripto en la Sección \ref{sec:modelo_etiquetado} consta de una etiqueta binaria que marca si el contenido es discriminatorio o no (notamos HS) en el primer nivel, y luego 9 etiquetas binarias para el segundo: una para las llamadas a la acción (notamos CALLS) y otras ocho para las características ofendidas listadas en la Tabla \ref{tab:caracteristicas_protegidas}. Recordemos que una anotación negativa sólo consta de HS negativo, mientras que una positiva consta de un HS positivo, una etiqueta para CALLS y al menos una etiqueta positiva de las características ofendidas.
 
-Para este dataset, tomamos las siguientes decisiones:
+Pensamos el proceso de asignación de etiquetas como una votación, donde cada anotador da un voto para cada variable a asignar. Detallamos a continuación cómo fueron asignadas las etiquetas del conjunto de datos:
 
 \begin{enumerate}
-    \item Para la etiqueta de HS, realizamos la votación mayoritaria (2 o más votos para HS positivo, caso contrario HS negativo)
-    \item Si hay HS, CALLS es positivo sii es votación mayoritaria (ídem anterior)
-    \item Si hay HS, marco como positivas todas aquellas características marcadas por los anotadores
+    \item Para la etiqueta de HS, asignamos mediante votación mayoritaria: 2 o más votos para HS positivo, caso contrario HS negativo.
+    \item En caso de haber marcado que hay HS: marcamos CALLS es positivo por votación mayoritaria.
+    \item En caso de haber marcado que hay HS: marcamos como positivas todas aquellas características marcadas por los anotadores.
 \end{enumerate}
 
-La primer decisión es la más obvia y razonable, pero las otras dos decisiones merecen alguna discusión. Para que sea un comentario considerado como HS, tiene que ocurrir que al menos dos etiquetadores lo marquen como tal. En ese caso, para que haya votación mayoritaria de CALLS, tiene que haber dos o más votos marcados como tal; en caso de empate, es decir, que un anotador marca que hay llamado a la acción y otro que no, marcamos que no hay llamado a la acción.
+La primer decisión es la más obvia y razonable: para que un comentario sea considerado como odioso (HS positivo) tiene que ocurrir que al menos dos etiquetadores lo marquen como tal. Si se anota HS positivo, para que CALLS sea positivo tiene que haber al menos dos votos en tal sentido. Si un anotador marcó que hay llamado a la acción y otro que no, asignamos CALLS negativo. \todo{Acá Agus pregunta por qué no asignamos CALLS si al menos uno marca. Me parece que no es la idea: corresponde que haya cierto consenso sobre que está dado este fenómeno. Con el mismo criterio, deberíamos marcar así HS}
 
-En el caso de las características, marcamos todas las que hayan marcado aquellos anotadores que hayan etiquetado HS. Esta decisión podría haberse tomado de otra manera; por ejemplo, sólo tomando aquellos casos donde haya cierto grado de coincidencia entre los comentarios. Sin embargo, al considerar que los límites entre las características son difusos (por ejemplo, apariencia y mujer tienen un grado de coincidencia, y a veces clasismo y racismo también) preferimos optar por este esquema.
-
+En el caso de las características no realizamos votación mayoritaria, sino que la anotamos si al menos un etiquetador lo hizo. Esta decisión podría haberse tomado de otra manera; por ejemplo, sólo tomando aquellos casos donde haya cierto grado de coincidencia entre los comentarios. Sin embargo, al considerar que los límites entre las características son difusos (por ejemplo, APARIENCIA y MUJER tienen una intersección no nula y a veces CLASE y RACISMO también) preferimos anotarlas de esta manera.
