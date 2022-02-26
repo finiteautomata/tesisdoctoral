@@ -3,46 +3,12 @@
 Hasta este momento describimos la recolección de los datos, proceso al cual le siguió la selección de los artículos y comentarios a anotar. Pasamos ahora a detallar el etiquetado del dataset, describiendo el modelo utilizado (¿qué queremos etiquetar?), el proceso de selección de etiquetadores y las herramientas utilizadas para este fin.
 
 
-\subsection{Modelo de etiquetado}
-
-
-Un modelo de anotación es una representación práctica del objetivo de anotación; es decir, del fenómeno que queremos capturar \cite{pustejovsky2012natural}. En base a la discusión del capítulo anterior, es de interés marcar comentarios discriminatorios de manera granular de modo de tener información de qué grupos y/o características se está ofendiendo. Para identificar formas más graves de discurso de odio, también es de interés identificar llamados a tomar alguna acción (violenta o no violenta) contra esa persona o grupo.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{img/05/modelos_jerarquicos.pdf}
-    \caption{Modelos jerárquicos de anotación. A la izquierda, tenemos el modelo jerárquico propuesto para HatEval \cite{hateval2019semeval}, a la derecha el modelo propuesto para OffensEval \cite{zampieri2019semeval2019}}
-    \label{fig:modelos_offenseval_hateval}
-\end{figure}
-
-
-\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado tanto en los datasets de OffensEval \cite{zampieri2019semeval2019} y HatEval \cite{hateval2019semeval}. La idea de este modelo es realizar anotaciones en varios niveles, sólo marcando algunas variables de acuerdo a las respuestas del nivel predecesor. Por ejemplo, en el caso de \hateval{}, tenemos un primer nivel que consta de marcar si un tweet contiene o no discurso de odio. Si el tweet tiene discurso de odio, entonces se anota en primer lugar si está dirigido a un individuo o a un grupo, y también si es agresivo o no. En el caso de \emph{OffensEval}, primero se anota si es ofensivo, en caso de ser ofensivo se marca si está dirigido o es un insulto no dirigido, y finalmente, si es dirigido y ofensivo, marcamos si su objetivo es un grupo o un individuo.  La Figura \ref{fig:modelos_offenseval_hateval} ilustra en modo de diagrama de flujo el modelo de anotación de ambos conjuntos de datos.
-
-
-%
-%
-% Link: https://docs.google.com/drawings/d/14TKSC4QmZhksnlFvQcHUaZup-q3AL0Up1cNKJUr5toI/edit
-%
-
-
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/05/annotation_model.pdf}
-    \caption{Modelo de anotación para el dataset construido en este capítulo. El modelo jerárquico consta de dos niveles: el primero, donde se anota si es odioso. El segundo consta de anotar --en caso de haber sido marcado como odioso-- si contiene un llamado a la acción y a qué características ofende.}
-    \label{fig:annotation_model}
-\end{figure}
-
-
-Basándonos en esta estructura jerárquica planteamos nuestro modelo, ilustrado en la Figura \ref{fig:annotation_model}. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. En caso de haberse marcado como odioso, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida marcada como ofendida.
-
-
 \subsection{Definición de discurso de odio y manual de etiquetado}
 \label{sec:05_hate_speech_definition}
 \begin{table}[t]
     \centering
     \small
-    \begin{tabularx}{\textwidth}{l X}
+    \begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
         Nombre & Descripción \\
         \hline
         MUJER        & Misoginia, agresiones basadas en ser mujer  \\
@@ -54,21 +20,54 @@ Basándonos en esta estructura jerárquica planteamos nuestro modelo, ilustrado 
         CRIMINAL     & Criminales, presos, y personas en conflicto con la ley \\
         DISCAPACIDAD & Discapacidades y problemas de adicciones \\
         \hline
-    \end{tabularx}
+    \end{tabular}
     \caption{Características protegidas consideradas en este trabajo. Consideramos una agrupación de ciertas características bajo una misma denominación: por ejemplo, LGBTI contempla homofobia, transfobia, entre otras; análogamente racismo puede contemplar xenofobia, y otras variantes de este fenómeno. }
     \label{tab:caracteristicas_protegidas}
 \end{table}
 
 
-Teniendo en cuenta la discusión realizada en la sección \ref{sec:hate_speech_definitions} realizamos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo, siendo estos objetivos de estas expresiones por poseer (o aparentar poseer) una característica protegida. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es necesario solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita a al menos una característica protegida.
+Teniendo en cuenta la discusión y consideraciones de la Sección \ref{sec:hate_speech_definitions}, elaboramos nuestra propia definición de discurso de odio. Entendemos que hay discurso de odio en un texto social si éste contiene declaraciones de carácter intenso e irracional de rechazo, enemistad y aborrecimiento contra un individuo o contra un grupo por poseer (o aparentar poseer) una característica protegida \footnote{Ver Sección \ref{sec:hate_speech_definitions} para la definición de característica protegida}. Esta expresión puede manifestarse de manera explícita como insultos directos, celebraciones de crímenes, incitaciones a tomar medidas contra el individuo o grupo, o también expresiones más veladas. Siempre, considerando, que no es suficiente solamente un insulto o una agresión: es necesario hacer una apelación explícita o implícita al menos a una característica protegida.
 
-A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser ``protegidas''. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (a veces conocido como aporofobia), por su aspecto físico, y otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, el discurso de odio ``político'', que de acuerdo a \citet{CIDH2015} (ver sección \ref{sec:hate_speech_definitions}) es difícil considerar como protegida ya que puede dar lugar a censura y restricciones de la libertad de expresión.
+A diferencia de otros trabajos, nuestra definición comprende varias características, incluso algunas que están en la frontera de ser protegidas. Mientras en otros trabajos se centran mayormente en racismo y misoginia, aquí agregaremos homofobia y transfobia, odio de clase (a veces conocido como aporofobia); por su aspecto físico; por discapacidad o problemas de salud; entre otras. En particular, hay dos características no convencionales que tuvimos en cuenta. En primer lugar, consideramos el \tbf{discurso de odio político}, que de acuerdo a la CIDH \cite{CIDH2015} es difícil considerar como protegida ya que puede dar lugar a censura y restricciones de la libertad de expresión. Por otro lado, consideramos el \tbf{discurso de odio contra criminales}, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como protegido en ninguno de los tratados mencionados en la Sección \ref{sec:hate_speech_definitions}, agregamos esta característica debido a la enorme cantidad de contenido alentando la violencia contra criminales en las noticias policiales. Teniendo en cuenta que nos interesa detectar particularmente incitaciones a realizar acciones violentas contra individuos o grupos, consideramos estas expresiones.
 
-Por otro lado, consideramos el discurso de odio contra criminales, presos, y otras personas en situación de conflicto con la ley. Si bien este punto ni siquiera es considerado como una característica protegida en ninguno de los trabajos mencionados en la sección \ref{sec:hate_speech_definitions}, agregamos esta característica debido a la enorme cantidad de contenido alentando la violencia contra criminales en las noticias de policiales, teniendo en cuenta que nos interesa detectar la incitación a la violencia.
-
-Tenemos entonces 8 características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás odio por aspecto; por su ideología política; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la tabla \ref{tab:caracteristicas_protegidas} junto a nombres de referencia que usaremos en éste y el próximo capítulo.
+Tenemos entonces ocho características que agrupan tipos de discurso de odio: contra las mujeres; racismo y xenofobia; contra la comunidad LGBTI; odio de clase; gordofobia, gerontofobia y demás discurso de odio por aspecto; por su ideología política; contra criminales; y finalmente contra discapacitados y adictos. Las características en cuestión son listadas en la Tabla \ref{tab:caracteristicas_protegidas} junto a nombres de referencia que serán usados en éste y el próximo capítulo.
 
 Con esta definición confeccionamos un manual de etiquetado de referencia para los anotadores. Esta definición y el manual de etiquetado fueron desarrollados iterativamente, primero realizando algunas pruebas de etiquetado entre miembros del equipo y rondas de discusión posterior analizando los ejemplos problemáticos y casos borde. De estas iteraciones logramos ir mejorando el manual, agregándole ejemplos y definiciones, hasta llegar a una versión definitiva. Para cada característica agregamos algunas consideraciones adicionales: por ejemplo, para MUJER no basta con que se insulte a la mujer sino que se apele a algo distintivo de la mujer (``algo que no le diría a un hombre'') y para la característica LGBTI mencionamos particularmente las expresiones de asco, incluyendo en esto a los emojis. En el apéndice \ref{app:manual_criterios_anotacion} puede encontrarse el manual de etiquetado completo entregado a los etiquetadores.
+
+
+
+\subsection{Modelo de etiquetado}
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/05/modelos_jerarquicos.pdf}
+    \caption{Modelos jerárquicos de anotación. A la izquierda, tenemos el modelo jerárquico propuesto para HatEval \cite{hateval2019semeval}, a la derecha el modelo propuesto para OffensEval \cite{zampieri2019semeval2019}}
+    \label{fig:modelos_offenseval_hateval}
+\end{figure}
+
+
+Un modelo de anotación es una representación práctica del objetivo de anotación; es decir, del fenómeno que queremos capturar \cite{pustejovsky2012natural}. En base a la discusión del capítulo anterior, es de interés marcar comentarios discriminatorios de manera granular de modo de tener información de qué grupos y/o características se está ofendiendo. Para identificar formas más graves de discurso de odio, también es de interés identificar llamados a tomar alguna acción (violenta o no violenta) contra esa persona o grupo.
+
+\citet{zampieri2019predicting} introdujeron un modelo jerárquico de anotación para la tarea de lenguaje ofensivo, utilizado tanto en los datasets de OffensEval \cite{zampieri2019semeval2019} y HatEval \cite{hateval2019semeval}. La idea de este modelo es realizar anotaciones en varios niveles, sólo marcando algunas variables de acuerdo a las respuestas del nivel predecesor. Por ejemplo, en el caso de \hateval{}, tenemos un primer nivel que consta de marcar si un tweet contiene o no discurso de odio. Si el tweet tiene discurso de odio, entonces se anota en primer lugar si está dirigido a un individuo o a un grupo, y también si es agresivo o no. En el caso de \emph{OffensEval}, primero se anota si es ofensivo, en caso de ser ofensivo se marca si está dirigido o es un insulto no dirigido, y finalmente, si es dirigido y ofensivo, marcamos si su objetivo es un grupo o un individuo.  La Figura \ref{fig:modelos_offenseval_hateval} ilustra en modo de diagrama de flujo el modelo de anotación de ambos conjuntos de datos.
+
+
+%
+%
+% Link: https://docs.google.com/drawings/d/14TKSC4QmZhksnlFvQcHUaZup-q3AL0Up1cNKJUr5toI/edit
+%
+
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/05/annotation_model.pdf}
+    \caption{Modelo de anotación para el dataset construido en este capítulo. El modelo jerárquico consta de dos niveles: el primero, donde se anota si es odioso. El segundo consta de anotar --en caso de haber sido marcado como odioso-- si contiene un llamado a la acción y a qué características ofende.}
+    \label{fig:annotation_model}
+\end{figure}
+
+
+Basándonos en esta estructura jerárquica planteamos nuestro modelo, ilustrado en la Figura \ref{fig:annotation_model}. Para cada comentario y su respectivo contexto (el artículo), requerimos una anotación para decidir si el comentario es odioso o no. Si no es odioso, no se necesita más información. En caso de haberse marcado como odioso, el par artículo-comentario debe contener, además, una anotación por si llama o no a la acción, y al menos una categoría protegida marcada como ofendida.
 
 
 \subsection{Etiquetadores}
@@ -77,7 +76,7 @@ Con esta definición confeccionamos un manual de etiquetado de referencia para l
 % Chequear https://docs.google.com/spreadsheets/d/1PaOVw_tKVRvjZIqRl2YKnaNsvX5tHJjjY0CV9PLrc6g/edit?resourcekey#gid=366330815
 %
 
-\begin{table}[t]
+\begin{table}[b]
     \centering
     \small
     \begin{tabularx}{\textwidth}{l l l l l l l l}
