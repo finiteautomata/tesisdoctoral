@@ -183,20 +183,20 @@ Como resultado de este esquema, cada comentario de nuestro dataset puede tener d
     \label{fig:labeler_example}
 \end{figure}
 
-Al no utilizar ningún servicio de etiquetado, optamos por desarrollar nuestra propia aplicación para el etiquetado de tweets. En ella, a cada etiquetador les fueron asignados progresivamente los artículos a anotar, agrupados en ``lotes'' para facilitar la tarea administrativa de la asignación.
+Al no optar por utilizar servicios de etiquetado tercerizado, optamos por desarrollar nuestra propia aplicación para esta tarea. Cada etiquetador tuvo acceso a un sitio web donde se le mostraron uno a uno los artículos asignados, de acuerdo al orden establecido por los administradores de la interfaz. La Figura \ref{fig:labeler_example} ilustra la interfaz presentada a los usuarios del sistema. Cada artículo es presentado junto a su tweet correspondiente, al texto replegado de la noticia --en caso de que un anotador requiera su lectura-- y a los comentarios.
 
-La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquetadores. Cada artículo es presentado al etiquetador junto a los comentarios asignados. Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, el etiquetador debe para cada comentario marcar usando un control de tipo switch:
+Ante esto, el etiquetador puede elegir saltear el artículo o etiquetarlo. Si decide etiquetarlo, debe para cada comentario marcar usando un control de tipo interruptor:
 
 \begin{enumerate}
-    \item Si el comentario contiene discurso discriminatorio
-    \item En caso de ser discriminatorio, marcar si llama a la acción
-    \item En caso de ser discriminatorio, marcar al menos una característica ofendida
+    \item Si el comentario contiene discurso discriminatorio.
+    \item En caso de ser discriminatorio, marcar si llama a la acción.
+    \item En caso de ser discriminatorio, marcar al menos una característica ofendida.
 \end{enumerate}
 
-Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.djangoproject.com/}}, un framework de python para desarrollo web, y Javascript plano. Como base de datos utilizamos SQLite ya que tenía una baja tasa de concurrencia (sólo 6 usuarios).
+Para el desarrollo de la aplicación usamos \emph{Django} \footnote{\url{https://www.djangoproject.com/}}, un framework de Python para desarrollo web, y Javascript plano. Como base de datos utilizamos \emph{SQLite}, ya que el sistema no tuvo grandes requerimientos de concurrencia (sólo seis o siete usuarios simultáneos).
 
 
-Cada tweet fue presentado con un preprocesado básico, que consistió en reemplazar handles de usuarios por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario conocido como odiador retwittea la noticia y otro responde a ese RT, aparece ese nombre de usuario lo cual podría condicionar al etiquetador.
+Cada tweet fue presentado con un preprocesado básico que consistió en reemplazar handles de usuarios por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario A conocido como difusor de discurso discriminatorio retwittea la noticia y otro responde a ese retweet, en el tweet aparece el nombre de A, lo cual podría condicionar a quien tenga que evaluar ese comentario.
 
 
 \subsection{Asignación}
