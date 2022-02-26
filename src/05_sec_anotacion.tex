@@ -118,27 +118,15 @@ Luego de la entrevista, se les dio una devolución de su anotación y se les rea
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{img/esquema_anotacion.pdf}
+    \includegraphics[width=\textwidth]{img/05/esquema_anotacion.pdf}
     \caption{Esquema de anotación. Caso en que ambos anotadores etiqueten los comentarios del artículo}
     \label{fig:annotation_schema}
 \end{figure}
 
-La unidad de anotación del proceso de etiquetado es el artículo. Cada etiquetador, al serle presentado un artículo, tiene dos opciones: etiquetarlo o saltearlo. La idea de saltear es doble: evitar contenido poco ``interesante'' en términos de comentarios discriminatorios, o evitar contenido sensible para el anotador (algo que afortunadamente no ocurrió). En caso de etiquetarlo, tiene que asignarle las etiquetas correspondientes a cada comentario.
+Pasamos ahora a describir la mecánica del proceso de anotación. Para lo que respecta a este trabajo, tomamos como la unidad de anotación al artículo. Cada etiquetador, al serle presentado un artículo, tuvo dos opciones: etiquetarlo o saltearlo. En caso de decidir etiquetarlo, tuvo que marcar las etiquetas correspondientes a cada uno de los comentarios del artículo de acuerdo al modelo descripto. La idea de permitir el salteado fue doble: evitar contenido poco interesante en términos de comentarios discriminatorios, y también dar la posibilidad al trabajador de evitar contenido sensible o perturbador para su persona.
 
-Una posibilidad que barajamos en un principio fue asignar el artículo completo a 3 anotadores. Sin embargo, esta modalidad sería altamente ineficiente dada la baja cantidad de contenido discriminatorio. Decidimos entonces ir por un esquema de desempate: dos anotadores anotan un artículo, y luego un tercero anota sólo aquellos donde al menos uno marcó que es discriminatorio. Esto da la posibilidad de que haya una tercera anotación incluso cuando dos previas marcaron que el comentario es discriminatorio, y lo hacemos para recolectar más información. Con este esquema de anotación, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo. La figura \ref{fig:annotation_schema} ilustra este flujo de anotación.
+Considerando la dificultad de la tarea y los límites borrosos del discurso de odio, decidimos seguir un esquema de etiquetado similar al de trabajos previos donde múltiples personas anotan una misma instancia. Una posibilidad considerada en un principio fue asignar el artículo completo a tres anotadores; sin embargo, esta modalidad sería ineficiente dada la baja cantidad de contenido discriminatorio observada preliminarmente entre los comentarios seleccionados. Decidimos entonces ir por un esquema de desempate similar al de \citet{hateval2019semeval}: dos personas anotan un artículo, y luego un tercero anota sólo aquellos comentarios donde al menos uno marcó que existe contenido odioso. Esta modalidad permite que haya una tercera anotación incluso cuando las dos previas marcaron contenido odioso, siendo esto realizado para recolectar más información sobre los comentarios. Dada la incidencia de comentarios odiosos (que veremos luego en los resultados) la adición de esta tercera etiqueta en estos casos técnicamente innecesarios tuvo un bajo costo.
 
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.4\textwidth]{img/esquema_anotacion_caso_2.pdf}
-    \caption{Esquema de anotación. Caso en que un anotador saltee}
-    \label{fig:annotation_schema_case_two}
-\end{figure}
-
-Cada artículo es, en primer lugar, asignado a 2 anotadores. Luego de esto, se solicita una tercera anotación pero sólo sobre los comentarios que tengan alguna de las dos etiquetas marcando contenido discriminatorio y no dando la posibilidad de saltear a este tercer etiquetador. Ahora ¿qué pasa si alguno de los dos anotadores saltea el artículo?. Tenemos dos casos. Si los dos saltean el artículo, entonces descartamos ese artículo. Ahora, puede ocurrir el caso de que uno lo saltee y el otro lo anote: en ese caso, y en pos de maximizar el contenido discriminatorio encontrado o uno lo hace y el otro anota menos de 4 comentarios odiosos, entonces no pasa a 3ra anotación y lo descartamos del dataset. Si uno salteó y el otro anotador anotó 4 o más comentarios odiosos, entonces forzamos al primer anotador a anotar el artículo, sin dar esta vez opción de saltear. La figura \ref{fig:annotation_schema_case_two} ilustra el flujo para este caso.
-
-
-Cada tweet es presentado con un preprocesado básico, consistente en reemplazar handles de usuarios por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario conocido como ``odiador'' (llamemos \verb|@hater|) retwittea la noticia y otro responde a ese RT, aparece ese nombre de usuario lo cual podría condicionar al etiquetador.
 
 
 %%
@@ -148,12 +136,34 @@ Cada tweet es presentado con un preprocesado básico, consistente en reemplazar 
 %%
 %%
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/esquema_anotacion_caso_2.pdf}
+    \caption{Esquema de anotación. Caso en que un anotador decida saltear}
+    \label{fig:annotation_schema_case_two}
+\end{figure}
+
+
+La Figura \ref{fig:annotation_schema} ilustra el flujo en el caso de que ninguno de los anotadores asignados decida saltear el artículo. Ahora ¿qué pasa si alguno de los dos anotadores decide saltear el artículo?
+
+\begin{enumerate}
+    \item Si los dos etiquetadores asignados deciden pasar por alto el artículo asignado, entonces lo descartamos del conjunto de datos
+    \item En el caso de que uno lo saltee y el otro lo anote y encuentre menos de 4 comentarios odiosos, entonces también descartamos el artículo
+    \item En el caso de que uno lo saltee y el otro lo anote encontrando cuatro o más comentarios odiosos, entonces reasignamos el artículo al etiquetador que salteó, sin darle esta vez posibilidad a que no lo anote
+\end{enumerate}
+
+Tomamos la decisión de descartar los artículos en los dos primeros casos intentando maximizar la tasa de comentarios discriminatorios encontrados. En caso de reasignar el artículo, revocamos la posibilidad de saltearlo \footnote{Teniendo en cuenta la posibilidad de que hayan salteado por contenido perturbador para el anotador, dimos la posibilidad de que nos avisen que no querían trabajar en ese artículo. No hubo problemas al respecto de todas formas}. La Figura \ref{fig:annotation_schema_case_two} ilustra el esquema de anotación de artículos recién descripto, que se complementa con el de la Figura \ref{fig:annotation_schema}.
+
+
+
+%Con este esquema, y teniendo en cuenta los números finales obtenidos del dataset, dedicamos 2.16 etiquetados por comentarios versus 3 etiquetados por comentario de anotar tres veces todo.
+
 
 Como resultado de este esquema, cada comentario de nuestro dataset puede tener dos o tres anotaciones, siendo los casos posibles los siguientes:
 
 \begin{enumerate}
-    \item Dos anotaciones negativas
-    \item Tres anotaciones, siendo al menos una que marque el comentario como discriminatorio
+    \item Dos anotaciones negativas: es decir, que no encuentran discurso de odio en el comentario
+    \item Tres anotaciones, con al menos una que marque el comentario como odioso
 \end{enumerate}
 
 
@@ -184,6 +194,10 @@ La figura \ref{fig:labeler_example} muestra la interfaz presentada a los etiquet
 \end{enumerate}
 
 Para el desarrollo de la aplicación usamos Django\footnote{\url{https://www.djangoproject.com/}}, un framework de python para desarrollo web, y Javascript plano. Como base de datos utilizamos SQLite ya que tenía una baja tasa de concurrencia (sólo 6 usuarios).
+
+
+Cada tweet fue presentado con un preprocesado básico, que consistió en reemplazar handles de usuarios por un token especial \verb|@usuario| para evitar cualquier sesgo. Por ejemplo, si un usuario conocido como odiador retwittea la noticia y otro responde a ese RT, aparece ese nombre de usuario lo cual podría condicionar al etiquetador.
+
 
 \subsection{Asignación}
 
