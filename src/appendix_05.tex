@@ -1,16 +1,9 @@
-\chapter{Apéndice: Construcción de dataset contextualizado de discurso de odio}
-\label{app:02}
-
-En este apéndice describiremos algunos pormenores de la construcción del dataset descripta en el capítulo \ref{chap:05_dataset_creation}.
-
-
+En este apéndice describiremos algunos pormenores de la construcción del conjunto de datos del Capítulo \ref{chap:05_dataset_creation}.
 
 
 \section{Distribución de datos recolectados}
 \label{app:distribucion_datos}
-La figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando el filtro de palabras listado en la tabla \ref{tab:article_words}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a la caída de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país.
-
-Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas notas contienen links a otras con sus títulos y eso puede interferir en estas estimaciones. Así y todo, decidimos mantener este método ya que consideramos que mayormente las notas en el período referido tienen relación con la pandemia.
+La Figura \ref{fig:fecha_articulos_por_medio_todas} muestra la distribución temporal de los artículos, sin aplicar ningún filtro por palabras, mientras que \ref{fig:fecha_articulos_por_medio_covid} muestra aquellas relacionadas al COVID-19 utilizando filtrando aquellos que mencionen alguna de las siguientes palabras: \emph{coronavirus, encierro, síntomas, covid, fase, fiebre, cuarentena, infectados, distanciamiento, normalidad,  Wuhan, aislamiento}. Podemos observar dos caídas. Hay un pequeño pozo en mayo 2020 que se debió a problemas técnicos de nuestros servidores de recolección. Por otro lado, observamos que algunos medios (particularmente La Nación) parecieran mencionar menos directamente al COVID (al menos con los términos referidos anteriormente) hasta un nuevo pico cerca de fin de año, coincidente con un nuevo rebrote del virus en este país. Sin embargo, estas mediciones pueden contener artefactos del método de filtrado: muchas notas contienen links a otras con sus títulos, pudiendo interferir en estas estimaciones.
 
 
 \begin{figure}
@@ -33,7 +26,7 @@ Sin embargo, todo esto puede ser un artefacto del método de filtrado: muchas no
 
 \section{Recursos utilizados}
 
-El etiquetado constó de XXX horas. A cada etiquetador le fue pagado YYYY por hora, y luego ZZZ por hora en segunda instancia. Esto equivale a WWW USD.
+El etiquetado del conjunto de datos consumió alrededor de 450 horas de trabajo entre todos los anotadores. El gasto total de anotación fue de \num{125000} pesos argentinos, lo cual al tipo de cambio de ese entonces equivale a alrededor de \num{1400} dólares estadounidenses.
 
 \section{Manual de criterios de anotación}
 \label{app:manual_criterios_anotacion}
