@@ -194,36 +194,35 @@ Si bien el acuerdo sobre cada característica tiende a ser alto, debe leerse com
 \end{figure}
 
 
-De los 8715 comentarios odiosos, el 77\% de ellos (6777) tiene una sola característica ofendida marcada. Del resto, cerca del 20\% de ellos tiene 2 características ofendidas, y 220 comentarios tienen 3 o más. En la figura \ref{fig:heatmap_characteristics} podemos observar la matriz de co-ocurrencia entre las distintas características para aquellos comentarios que tengan más de una marcada. En ella podemos ver que la máxima co-ocurrencia se da entre la característica MUJER y APARIENCIA, seguidos por RACISMO y CLASE, POLITICA y CLASE, y RACISMO y POLITICA.
+De los \num{8715} comentarios odiosos, el 77\% de ellos (\num{6777}) contiene una sola característica ofendida de acuerdo al proceso de asignación realizado. Cerca del 20\% tienen dos características ofendidas, y 220 comentarios tienen tres o más. La Figura \ref{fig:heatmap_characteristics} ilustra la matriz de co-ocurrencia entre las distintas características para aquellos comentarios que tengan más de una característica ofendida. En ella podemos ver que la máxima co-ocurrencia se da entre las características MUJER y APARIENCIA, seguidos por RACISMO y CLASE, POLITICA y CLASE, y RACISMO y POLITICA.
 
 
 
-Otra forma de analizar la co-ocurrencia de comentarios es agrupando por artículos para observar como un mismo contexto puede suscitar distintos tipos de comentarios discriminatorios. La figura \ref{subfig:heatmap_characteristics_article} ilustra las interacciones entre las distintas características por artículo. Podemos observar que tenemos en este mapa de calor que tenemos mayor dispersión en las co-ocurrencias que reduciendo al análisis a sólo observar comentarios. Por mencionar algunas que no aparecen en la figura agrupada únicamente por comentarios, puede verse una mayor interacción entre discurso de odio RACISMO y POLITICA, y, quizás inesperadamente entre APARIENCIA y POLITICA. Las interacciones de la característica LGBTI se mantienen muy bajas, indicando que este tema suele estar concentrado en este tipo de ataques.
-
-
+Otra forma de analizar la co-ocurrencia es agrupando por artículos las distintas características de sus comentarios, para así observar como un mismo contexto puede suscitar distintos tipos discriminación. La Figura \ref{subfig:heatmap_characteristics_article} ilustra las interacciones entre las distintas características por artículo. Puede observarse en esta figura mayor dispersión en las co-ocurrencias que en la Figura \ref{subfig:heatmap_characteristics_comment}, apreciándose algunas interacciones adicionales como por ejemplo entre RACISMO y POLITICA y --quizás inesperadamente-- entre APARIENCIA y POLITICA. La característica que parece tener menos interacción con las demás es LGBTI, indicando que está bien delimitada de las demás posibles causas de discurso discriminatorio.
 
 \begin{table}[t]
     \small
-    \begin{tabularx}{\textwidth}{lXX}
+    \begin{tabular}{l p{0.3\textwidth} p{0.5\textwidth}}
         \toprule
         Índice & Contexto        & Comentario \\
         \midrule
-        1 & Ofelia Fernández apoyó al Gobierno en la polémica por los presos y apuntó a la Justicia que ``odia a las mujeres''  & Hijadept,, ojala pronto recibas la visita de alguno de esos gusanos. Te van a quedar. Ganas de apoyar al. Gobierno? Larva rastrera gorda. Decerebrada\\%& MUJER, POLITICA, APARIENCIA, DISCAPACIDAD \\
-        2 & ``Es hora de ponerle límites al odio'' | Por Victoria Donda &  Justo ésta zurda mugrienta, ignorante y altanera... \\% & MUJER, POLITICA, APARIENCIA\\
-        3 &Coronavirus en la Argentina: un video pone en evidencia la violación de la cuarentena en la Villa 1-11-14 & Cierren esa nido de negros y napalm. Hasta reducís el crimen y el gasto público.\\%& CLASE, RACISMO\\
-        4 & Fabiola Yáñez denunció a un periodista por publicaciones agraviantes & Claro si ofendel a la que se cuelga en el caño xq ahora cree ser primera dama?😂 hay que ser peruka para dar asco y ser basuras bigote enseguida ordena como se metió en Facebook y en todo que culpa te.emos que saque la mujer del cabarute? \\ % RACISMO, MUJER
-        5 & Los infectados en villas porteñas crecieron un 80\% en cuatro días & Ojalá que el virus penetre más en las villas y maten a todos esos delincuentes que viven ahi, hay paraguayos narcos, bolivianos que traen la droga de bolivia, y gente de mala vida. También hay travas que van a trabajar de noche a palermo.\\%& RACISMO, CLASE, LGBTI  \\
-        6 & El enojo de Moria Casán contra Rocío Oliva: ``Mucha agua oxigenada, le quedó media neurona para jugar a la pelota'' & Y la vieja Moria, mucha cirugía y estiramiento. de cara que parece un travesti \\
-        7 & Ricky Martin: ``Soy un hombre latino y homosexual viviendo en los Estados Unidos, soy una amenaza'' & Ridículo perdiste tú rumbo das náuseas 🤮 famosos eternos (víctimas) 🙄🤦‍♀️ ándate a Puerto Rico entonces ahí no serás una amenaza\\ %& LGBTI, RACISMO
-    \end{tabularx}
-    \label{tab:multi_char_examples}
+        \rule{0pt}{3ex}1 & Ofelia Fernández apoyó al Gobierno en la polémica por los presos y apuntó a la Justicia que ``odia a las mujeres''  & Hijadept,, ojala pronto recibas la visita de alguno de esos gusanos. Te van a quedar. Ganas de apoyar al. Gobierno? Larva rastrera gorda. Decerebrada\\%& MUJER, POLITICA, APARIENCIA, DISCAPACIDAD \\
+        \rule{0pt}{3ex}2 & ``Es hora de ponerle límites al odio'' | Por Victoria Donda &  Justo ésta zurda mugrienta, ignorante y altanera... \\% & MUJER, POLITICA, APARIENCIA\\
+        \rule{0pt}{3ex}3 &Coronavirus en la Argentina: un video pone en evidencia la violación de la cuarentena en la Villa 1-11-14 & Cierren esa nido de negros y napalm. Hasta reducís el crimen y el gasto público.\\%& CLASE, RACISMO\\
+        \rule{0pt}{3ex}4 & Fabiola Yáñez denunció a un periodista por publicaciones agraviantes & Claro si ofendel a la que se cuelga en el caño xq ahora cree ser primera dama?😂 hay que ser peruka para dar asco y ser basuras bigote enseguida ordena como se metió en Facebook y en todo que culpa te.emos que saque la mujer del cabarute? \\ % RACISMO, MUJER
+        \rule{0pt}{3ex}5 & Los infectados en villas porteñas crecieron un 80\% en cuatro días & Ojalá que el virus penetre más en las villas y maten a todos esos delincuentes que viven ahi, hay paraguayos narcos, bolivianos que traen la droga de bolivia, y gente de mala vida. También hay travas que van a trabajar de noche a palermo.\\%& RACISMO, CLASE, LGBTI  \\
+        \rule{0pt}{3ex}6 & El enojo de Moria Casán contra Rocío Oliva: ``Mucha agua oxigenada, le quedó media neurona para jugar a la pelota'' & Y la vieja Moria, mucha cirugía y estiramiento. de cara que parece un travesti \\
+        \rule{0pt}{3ex}7 & Ricky Martin: ``Soy un hombre latino y homosexual viviendo en los Estados Unidos, soy una amenaza'' & Ridículo perdiste tú rumbo das náuseas 🤮 famosos eternos (víctimas) 🙄🤦‍♀️ ándate a Puerto Rico entonces ahí no serás una amenaza\\ %& LGBTI, RACISMO
+        \hline
+    \end{tabular}
     \caption{Ejemplos con más de una característica ofendida marcada}
+    \label{tab:multi_char_examples}
 \end{table}
 
 
 
 
-La tablas \ref{tab:multi_char_examples} muestra algunos ejemplos de comentarios con más de una característica ofendida marcada. Podemos ver que algunos están muy en el borde, justo en la frontera de las características (por ejemplo, APARIENCIA y MUJER en los ejemplos 1 y 2, o CLASE y RACISMO en el ejemplo 3). Otras instancias son conjunciones de expresiones discriminatorias: en el caso de la 5, tenemos una conjunción de RACISMO, CLASE, y LGBTI; en el caso de la 6, de APARIENCIA y LGBTI.
+La Tabla \ref{tab:multi_char_examples} muestra algunos ejemplos con más de una característica ofendida. Algunos de los comentarios se encuentran en la frontera de las características, como por ejemplo, APARIENCIA y MUJER en los ejemplos 1 y 2, o CLASE y RACISMO en el ejemplo 3. Otras instancias son conjunciones de expresiones discriminatorias, como en el caso del número 5, donde tenemos una conjunción de RACISMO, CLASE, y LGBTI; o bien en el comentario 6, de APARIENCIA y LGBTI.
 
 
 
