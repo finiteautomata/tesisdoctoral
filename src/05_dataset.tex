@@ -113,15 +113,15 @@ En algunos trabajos previos, la recolección y selección constan conjuntamente 
         \toprule
         Característica &  Número &  Llamadas a acción \\
         \midrule
-        RACISMO        &   2469 &              674 \\
-        APARIENCIA     &   1803 &               34 \\
-        CRIMINAL       &   1642 &              722 \\
-        POLITICA       &   1428 &              136 \\
-        MUJER          &   1332 &               18 \\
-        CLASE          &    823 &              135 \\
-        LGBTI          &    818 &               11 \\
-        DISCAPACIDAD   &    580 &                4 \\
-        TOTAL          &   8715 &             1451 \\
+        RACISMO        &   \num{2469} & \num{ 674} \\
+        APARIENCIA     &   \num{1803} & \num{  34} \\
+        CRIMINAL       &   \num{1642} & \num{ 722} \\
+        POLITICA       &   \num{1428} & \num{ 136} \\
+        MUJER          &   \num{1332} & \num{  18} \\
+        CLASE          &   \num{ 823} & \num{ 135} \\
+        LGBTI          &   \num{ 818} & \num{  11} \\
+        DISCAPACIDAD   &   \num{ 580} & \num{   4} \\
+        TOTAL          &   \num{8715} & \num{1451} \\
         \bottomrule
     \end{tabular}
     \caption{Datos desagregados por característica de los comentarios discriminatorios del dataset resultante. Se listan además la cantidad de llamados a la acción dentro de cada una. Notar que el total no corresponde con la suma de las columnas ya que un mismo comentario puede estar asignado a más de una característica.}
@@ -129,9 +129,11 @@ En algunos trabajos previos, la recolección y selección constan conjuntamente 
 
 \end{table}
 
-El dataset resultante consta de 1238 artículos etiquetados, y 56869 comentarios respectivamente, de los cuales 8715 contienen contenido discriminatorio según los criterios de asignación antes referidos. Podemos observar que aproximadamente 1 de cada 6 comentarios es discriminatorio; esto no es representativo del universo de notas periodísticas ya que recordemos que la selección de los datos no fue aleatoria. La tabla \ref{tab:dataset_figures} contiene estos datos estadísticos.
+El conjunto resultante consta de \num{1238} artículos etiquetados, y \num{56869} comentarios respectivamente, de los cuales \num{8715} contienen contenido discriminatorio según los criterios de asignación antes referidos. Aproximadamente 1 de cada 6 comentarios es discriminatorio, aunque vale aclarar que esto no es representativo del universo de notas periodísticas ya que la selección de los datos no fue aleatoria.
 
-De todos los tweets discriminatorios, tenemos en particular los llamados a la acción. La mayoría de estos está dirigido hacia la categoría CRIMINAL, muchos en la forma de llamados a matar a criminales y otros delincuentes. La categoría RACISMO contiene acapara también muchos llamados a la acción, mayormente contra chinos.
+\todo{cambiar todos los números al comando num}
+
+La Tabla \ref{tab:dataset_figures} contiene los números de los comentarios anotados y desagregados por las distintas características consideradas y los llamados a la acción. La categoría con más comentarios es RACISMO, seguido por APARIENCIA y CRIMINAL. Dentro de los tweets que llaman a algún tipo de acción, se coloca en primer lugar los dirigidos hacia la categoría CRIMINAL, muchos en la forma de llamados a matar a criminales y delincuentes. La categoría RACISMO acapara también muchos llamados a la acción, mayormente contra población china a la que se culpa de la pandemia del COVID-19 y conteniendo llamados a tomar distintas sanciones contra sus integrantes.
 
 
 \begin{table}
@@ -140,24 +142,28 @@ De todos los tweets discriminatorios, tenemos en particular los llamados a la ac
         \toprule
         Categoría   & $\alpha$  \\
         \midrule
-        Discurso de odio     &  0.579 \\
-        Llamados a la acción &  0.641 \\
-        \midrule
-        MUJER                &  0.783 \\
-        LGBTI                &  0.920 \\
-        RACISMO              &  0.929 \\
-        CLASE                &  0.706 \\
-        POLITICA             &  0.808 \\
-        DISCAPACIDAD         &  0.849 \\
-        APARIENCIA           &  0.871 \\
-        CRIMINAL             &  0.931 \\
+        Discurso de odio     &  \num{0.58} \\
+        Llamados a la acción &  \num{0.64} \\
+        \hline
+        MUJER                &  \num{0.78} \\
+        LGBTI                &  \num{0.92} \\
+        RACISMO              &  \num{0.93} \\
+        CLASE                &  \num{0.71} \\
+        POLITICA             &  \num{0.81} \\
+        DISCAPACIDAD         &  \num{0.85} \\
+        APARIENCIA           &  \num{0.87} \\
+        CRIMINAL             &  \num{0.93} \\
         \bottomrule
     \end{tabular}
-    \caption{Tabla de acuerdo para la etiqueta de discurso de odio y diferentes características medido por $\alpha$ de Krippendorff. El acuerdo sobre \emph{discurso de odio} es reportado sobre el acuerdo total de la etiqueta respectiva. Para el resto de las características, el acuerdo es calculado sólo sobre aquellas anotaciones que marcaron discurso de odio.}
+    \caption{Tabla de acuerdo para la etiqueta de discurso de odio y diferentes características medido por $\alpha$ de Krippendorff. El acuerdo sobre \emph{discurso de odio} es reportado sobre todos los etiquetadores que hayan analizado cada comentario. Para el resto de las características, el acuerdo es calculado sólo sobre aquellas anotaciones que marcaron discurso de odio.}
     \label{tab:annotation_agreement}
 \end{table}
 
-La tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usando la métrica alpha de Krippendorff \cite{krippendorff2018content} mediante la librería \verb|krippendorff| \footnote{\url{https://github.com/pln-fing-udelar/fast-krippendorff}}. Reportamos el acuerdo para HS sobre todas las etiquetas, y luego todas las etiquetas del segundo nivel del modelo jerárquico (características y llamado a la acción) sólo sobre aquellas que hayan marcado que el comentario contiene HS. Esto es equivalente a calcular el acuerdo con una etiqueta faltante en el segundo nivel para las características y el llamado a la acción. Si bien el acuerdo sobre cada característica tiende a ser alto, debe leerse como el acuerdo sobre la razón detrás del hate speech. La mayor penalización queda reservada a la etiqueta de discurso de odio que tiene $\alpha = 0.58$, algo que podría marcarse como un acuerdo razonable teniendo en cuenta algunos valores observados en la literatura \cite{poletto2021resources}.
+La Tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usando la métrica \emph{alfa de Krippendorff} \cite{krippendorff2018content}. Esta métrica mide el acuerdo entre diversos anotadores, donde $1$ es acuerdo total, y 0 o valores negativos indican ningún tipo de acuerdo. Puede entenderse como una generalización de la métrica \emph{kappa de Fleiss} para el caso en que los anotadores no etiqueten todas las instancias. Utilizamos para su cálculo la implementación en Python de la librería \emph{krippendorff} \footnote{\url{https://github.com/pln-fing-udelar/fast-krippendorff}}.
+
+Reportamos en primer lugar el acuerdo para HS sobre todas las etiquetas. En el caso de las etiquetas del segundo nivel del modelo jerárquico (características y llamado a la acción) calculamos el acuerdo sólo sobre aquellas que hayan marcado que el comentario contiene discurso de odio. Esto es equivalente en términos del cálculo propuesto en \citet{krippendorff2018content} a calcular el acuerdo con una etiqueta faltante en el segundo nivel para aquellos anotadores que hayan marcado que no hay HS.
+
+Si bien el acuerdo sobre cada característica tiende a ser alto, debe leerse como el acuerdo sobre la razón detrás del discurso de odio. La mayor penalización queda reservada a la etiqueta de discurso de odio que tiene $\alpha = 0.58$, algo que podría marcarse como un acuerdo razonable teniendo en cuenta valores observados en la literatura \cite{poletto2021resources}.
 
 
 

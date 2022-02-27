@@ -23,8 +23,12 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{icomma}
+\usepackage{siunitx}
 \usepackage{makecell}
 
+\sisetup{group-separator = {.}}
+\sisetup{group-minimum-digits=4}
+\sisetup{output-decimal-marker = {,}}
 \newcommand{\todo}[1]{\marginpar[]{#1}}
 
 \setlength{\marginparwidth}{2cm}
