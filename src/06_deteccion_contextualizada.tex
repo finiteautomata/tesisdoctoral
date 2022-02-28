@@ -13,7 +13,7 @@ Evaluamos los resultados de los experimentos de clasificación tanto en término
 \section{Trabajo previo}
 \label{sec:06_classification_previous}
 
-Como mencionamos en la Sección \ref{sec:dataset_previous}, no se ha dado demasiada atención en la literatura a la utilización de información contextual en la detección de discurso de odio y otros fenómenos similares. Pasamos ahora a describir los algoritmos de detección utilizados sobre los conjuntos de datos descriptos en dicha sección.
+Como mencionamos en la Sección \ref{sec:dataset_previous}, no se ha dado demasiada atención en la literatura a la utilización de información contextual en la detección de discurso de odio y otros fenómenos similares. Pasamos ahora a repasar los algoritmos de detección utilizados sobre los conjuntos de datos descriptos en dicha sección.
 
 \citet{gao-huang-2017-detecting} proponen utilizar dos tipos de modelos sobre el dataset que ellos mismos recolectaron sobre comentarios de Fox News: regresiones logísticas y redes neuronales recurrentes. Para las regresiones logísticas, usaron como entradas bolsas de palabras, bolsas de caracteres, vectores semánticos producidos con Linguistic Inquiry and Word Count (LIWC) \cite{pennebaker2001linguistic}, y otras variables de un lexicón de emociones \cite{mohammad2013nrc}. Por otro lado, los autores también entrenan LSTM bidireccionales con mecanismo de atención de Bahdanau \cite{bahdanau2014neural} que consumen embeddings \emph{word2vec} de dimensión 100.
 
@@ -54,9 +54,9 @@ Dos versiones de \bert{} fueron utilizadas como base para entrenar los modelos d
 Algunas limitaciones de este trabajo marcadas por los autores son:
 
 \begin{itemize}
-    \item Contexto muy pequeño: sólo se considera el título de la discusión de Wikipedia Talk Pages y adicionalmente el comentario previo
-    \item El hilo completo de los comentarios es ignorado
-    \item Los comentarios fueron muestreados aleatoriamente
+    \item Contexto muy pequeño: sólo se consideraron como contexto el título de la discusión de Wikipedia Talk Pages y adicionalmente el comentario previo.
+    \item El hilo completo de los comentarios es ignorado: sólo se observa el comentario previo.
+    \item Los comentarios fueron muestreados aleatoriamente, sin tener en cuenta algunos ámbitos más propicios para la toxicidad.
 \end{itemize}
 
 \citet{xenos-2021-context} continuaron el trabajo de \citet{pavlopoulos2020toxicity} reetiquetando el conjunto de datos de Civil Comments con información contextual y --como mencionamos en la Sección \ref{sec:dataset_previous}-- presentando una nueva tarea de detección de sensibilidad al contexto. Usando la API Perspective (y la estrategia de concatenación básica de texto y contexto) notaron que la performance del clasificador contextualizado mejora sensiblemente si restringimos nuestra atención a comentarios más sensibles a su entorno de acuerdo a la métrica definida. De esto último puede concluirse que, a diferencia del trabajo anterior, si bien  el contexto no es realmente necesario para comprender la toxicidad del grueso de los comentarios, hay cierto subconjunto para los cuales esta información adicional resulta relevante.
@@ -65,11 +65,11 @@ Algunas limitaciones de este trabajo marcadas por los autores son:
 \section{Tareas de clasificación propuestas}
 \label{sec:tasks}
 
-Para analizar el impacto del contexto en la detección de discurso de odio, y teniendo en cuenta que contamos de un dataset con anotaciones granulares sobre las características ofendidas, proponemos dos tareas de clasificación:
+Para analizar el impacto del contexto en la detección de discurso de odio, y teniendo en cuenta que contamos de un dataset con anotaciones granulares sobre las características ofendidas, propusimos dos tareas de clasificación:
 
 \begin{enumerate}
     \item \textbf{Detección binaria}: Dado un tweet y su contexto, predecir si contiene contenido discriminatorio.
-    \item \textbf{Detección granular}\footnote{En inglés usamos la denominación \emph{fine-grained}, aunque no hay una traducción precisa para este término en español}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción.
+    \item \textbf{Detección granular}: Dado un tweet y su contexto, predecir las características ofendidas (si hay alguna) y si contiene un llamado a la acción.
 \end{enumerate}
 
 %%
@@ -87,20 +87,17 @@ Para analizar el impacto del contexto en la detección de discurso de odio, y te
 
 
 
-Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea detallada: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda nos requiere información más precisa acerca de las características ofendidas. Esta segunda tarea es posible dado que el dataset que construímos contiene esta información, algo usualmente faltante en otros trabajos. La tarea granular nos permite a su vez tener mayor entendimiento de la salida e interpretar mejor sus errores. La figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea binaria sólo debemos decidir la frontera sobre si el contenido es discriminatorio o no, en la tarea granular necesitamos decir en cuál de todas las intersecciones está el comentario y su contexto.
+Puede pensarse la tarea de detección binaria (la que usualmente se aborda en la literatura sobre el tema) como una relajación de la tarea granular: mientras la primera sólo nos permite detectar si hay o no contenido discriminatorio, la segunda requiere información más precisa acerca de las características ofendidas. Esta segunda tarea es posible dado que el conjunto de datos empleado contiene esta información, algo que usualmente se omite en otros trabajos. La tarea granular nos permite a su vez tener mayor información sobre la salida de los clasificadores y la posibilidad de interpretar mejor sus errores. La Figura \ref{fig:hate_detection_tasks} ilustra las dos tareas propuestas. Mientras en la tarea binaria sólo debemos decidir de qué lado de la frontera se encuentra un comentario (si tiene o no discurso de odio) en la tarea granular se debe decidir esto mismo para cada una de las características,
 
 
-Planteándolos como problemas de clasificación, la detección binaria consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de $n$ etiquetas binarias; es decir, $n$ problemas distintos de clasificación. Vale mencionar que, entendiendo una tarea como una relajación de la otra, si tenemos un clasificador entrenado para la tarea granular podemos construir un clasificador para la tarea binaria tomando la disyunción lógica de sus salidas; o dicho más coloquialmente, poniendo una compuerta OR sobre la salida del clasificador granular. Retomaremos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
+Viendo las tareas propuestas como problemas de clasificación, la detección binaria consta de predecir una sola etiqueta binaria, mientras que la tarea granular consta de predecir $n$ etiquetas binarias. Esto último puede también verse como $n$ problemas distintos de clasificación, o una tarea de \tbf{multiclasificación}. Algo a remarcar es que podemos construir un clasificador para la tarea binaria a través de un clasificador entrenado para la tarea granular tomando la disyunción lógica de sus salidas: hay discurso de odio sí y sólo sí hay al menos una característica ofendida. Retomamos esta idea más adelante al hablar de cómo evaluamos nuestras técnicas de clasificación para cada tarea.
 
 
 \section{Modelos de clasificación}
 \label{sec:contextualized_classifiers}
 
 
-
-
-
-Para las dos tareas, entrenamos varios clasificadores basados en \beto{} \cite{canete2020spanish}. Respecto a la información contextual, tenemos tres tipos de entrada por instancia: el comentario sin ningún tipo de contexto, con contexto simple (el tweet al que responde), y con contexto largo (el tweet al que responde + el texto del artículo periodístico). Usamos el token especial BERT \emph {[SEP]} para separar el contexto y el texto analizado. Este token es el que \emph {[SEP]} se usa para la tarea de predicción de la siguiente oración (tarea NSP) en el preentrenamiento al estilo BERT (ver la sección \ref{sec:02_transformers} para más información).
+Para las dos tareas mencionadas, entrenamos clasificadores neuronales basados en el modelo pre-entrenado \beto{} \cite{canete2020spanish}. Incorporamos la información contextual en cada comentario teniendo enn cuenta tres tipos de entrada por instancia: el comentario sin ningún tipo de contexto (notaremos \tbf{sin contexto}), el comentario con el tweet al que responde como contexto (\tbf{tweet}), y finalmente el comentario con el tweet al que responde y el texto del artículo periodístico (\tbf{tweet + artículo}). Para las dos versiones que consumen información contextual, separamos el texto y el contexto con el token especial \septok{}.
 
 %%
 %%
@@ -112,46 +109,52 @@ Para las dos tareas, entrenamos varios clasificadores basados en \beto{} \cite{c
 \begin{figure}
     \centering
     \includegraphics[width=1.10\textwidth]{img/06/bert_contextual_classifier.pdf}
-    \caption{Modelo de multiclasificación para la tarea granular. Los modelos son entrenados de 3 maneras distintas: sin contexto (sólo el comentario), con el contexto del tweet, y con el contexto del tweet y el texto del artículo.}
+    \caption{Modelo de multiclasificación para la tarea granular basado en \beto{}. Los modelos son entrenados de tres maneras distintas: sin contexto (sólo el comentario), con el contexto del tweet, y con el contexto del tweet y el texto del artículo. La salida consta de la probabilidad de que el comentario tenga contenido odioso para alguna de las características en cuestión o bien contenga una llamada a la acción}
     \label{fig:05_multi_bert_classifier}
 \end{figure}
 
-Para la tarea de clasificación binaria, la salida de los clasificadores es la salida estándar de clasificadores del tipo \bert{}: una capa softmax para las dos posibles clases (ver la sección \ref{sec:03_classification} o \ref{sec:04_classifiers} para más información). En cuanto a la tarea de detección granular, lo planteamos como la predicción de 9 variables distintas: llamado a la acción (CALLS) y las 8 características ofendidas: MUJER, RACISMO, CLASE, LGBTI, CRIMINAL, ASPECTO, DISCAPACIDAD, POLITICA. En lugar de entrenar un clasificador diferente para cada característica, entrenamos un BERT de múltiples salidas, compartiendo todos sus pesos con la excepción de 9 capas lineales diferentes para cada salida. La función de costo utilizada es:
+Para la tarea binaria, la salida de los clasificadores es un puntaje entre 0 y 1 representando la probabilidad de que el comentario tenga contenido odioso. En cuanto a la tarea de detección granular, abordamos esta tarea de manera similar a la \subtaskb{} del Capítulo \ref{chap:04_hate_speech}. Planteamos la detección granular como la predicción de nueve variables distintas: llamado a la acción (CALLS) y las ocho características ofendidas (MUJER, RACISMO, CLASE, LGBTI, CRIMINAL, ASPECTO, DISCAPACIDAD, POLITICA). En lugar de entrenar un clasificador diferente para cada característica, entrenamos un modelo de multiclasificación BERT que comparte todos sus pesos salvo las nueve capas lineales de salida. Si $y$ son las etiquetas e $\widehat{y}$ las predicciones del modelo, la función de costo empleada es:
 
 \begin{equation*}
-    J = \sum\limits_{c \in CHAR'} J_c
+    L(y, \widehat{y}) = \sum\limits_{\mathclap{c \in CHAR'}} J(y_c, \widehat{y}_c)
 \end{equation*}
 
-donde $CHAR'$ es el conjunto de todas las características protegidas y además la variable de llamada a la acción, y cada $ J_c $ es la función de entropía cruzada. Compartir los pesos entre todas las salidas tiene dos objetivos: primero, poder generar un modelo más compacto (de otra forma serían 9 BERT distintos) y segundo, para compartir información común entre las distintas características atacadas, ya que consideramos que guardan similaridades -- y muchas de ellas tienen cierta intersección, como hemos visto en el capítulo anterior. Para tener costos computacionales más amigables, limitamos nuestras secuencias a 128, 256 y 512 tokens para el modelo sin contexto, el modelo que consume el tweet, y el modelo de tweet + cuerpo respectivamente. La figura \ref{fig:05_multi_bert_classifier} muestra el modelo de clasificación para la tarea granular, junto a los 3 tipos de entrada descriptos.
+\noindent donde $CHAR'$ es el conjunto de todas las características protegidas junto a la variable de llamada a la acción (CALLS), y $ J$ es la función de entropía cruzada. Compartir los pesos entre todas las salidas tiene dos objetivos: primero, poder generar un modelo más compacto (de otra forma serían nueve BERT distintos que suman alrededor de \num{1000}M parámetros) y segundo, compartir información común entre las distintas características atacadas, ya que guardan similaridades y muchas de ellas tienen una importante intersección, como hemos visto en la Sección \ref{sec:analisis_dataset_por_caracteristica}.
 
-Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio sobre textos relacionados a nuestro. Esto se realiza corriendo la tarea de masked language model (ver sección \ref{sec:02_transformers}) sobre un dataset grande y no supervisado relacionado a nuestro dominio, o directamente sobre el dataset de la tarea si esto no está disponible \cite{gururangan-etal-2020-dont}. En la sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña más extensa de esta técnica, pero por lo pronto podemos entender que ajusta el modelo de lenguaje a los textos disponibles; en este caso, \beto{} fue entrenado en Wikipedia y textos formales, con esta técnica lo ajustaremos a nuestro dominio particular de comentarios en Twitter a notas periodísticas.
+Para tener costos computacionales más amigables, limitamos los largos de las secuencias a 128, 256 y 512 tokens para los modelos con entrada sin contexto, tweet, y tweet+cuerpo respectivamente. Preprocesamos ambos tweets --contexto y texto-- utilizando las técnicas descriptas en la Sección \ref{sec:03_preprocessing}: conversión de usernames a un token especial (\verb|usuario|), tratamiento de hashtags (separación e inserción de un hashtag especial), y conversión de emojis a su representación textual. La Figura \ref{fig:05_multi_bert_classifier} ilustra el modelo de clasificación para la tarea granular, junto a los tres tipos de entrada considerados.
+
+\subsection{Adaptación de dominio}
+
+Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio sobre textos relacionados a nuestro. Esta técnica consiste en continuar el pre-entrenamiento del modelo base sobre un dataset grande y no supervisado relacionado a nuestro dominio, o directamente sobre el dataset de la tarea si no tenemos acceso a estos datos \cite{gururangan-etal-2020-dont}. En la Sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña más extensa de esta técnica, pero por lo pronto podemos entender que ajusta el modelo de lenguaje a los textos disponibles. Para nuestro problema, \beto{} fue entrenado en Wikipedia y textos formales; con esta técnica lo ajustaremos a nuestro dominio particular de comentarios en Twitter a notas periodísticas.
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{ll}
+    \begin{tabular}{lr}
         \toprule
         Hiperparámetro & Valor         \\
         \midrule
-        Steps          & $10K$           \\
-        Batch size     & 2048            \\
-        max seq length & 128, 256 y 512  \\
-        $\beta_1$      & $0.9$           \\
-        $\beta_2$      & $0.98$          \\
-        $\epsilon$     & $10^{-6}$       \\
-        decay          & $0.01$          \\
-        Peak LR        & $4*10^{-4}$     \\
-        warmup ratio   & 0.1             \\
+        Pasos               & \num{10000}           \\
+        Tamaño de batch     & \num{2048}            \\
+        Tamaño de secuencia & 128, 256 y 512  \\
+        $\beta_1$           & $0.9$           \\
+        $\beta_2$           & $0.98$          \\
+        $\epsilon$          & $10^{-6}$       \\
+        decay               & $0.01$          \\
+        LR pico             & $0.0004$     \\
+        Pasos de warmup     & $0.1$             \\
         \bottomrule
     \end{tabular}
     \caption{Hiperparámetros para la adaptación de dominio de BERT}
     \label{tab:hs_ft_hyperparameter}
 \end{table}
 
-Para lo que nos concierne en esta sección, \citet{pavlopoulos2020toxicity} realizó una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} (a lo que denomina BERT-CCTK). Esta adaptación la realizó únicamente con los comentarios, sin utilizar ningún tipo de contexto. Proponemos a diferencia de este trabajo, 3 tipos de adaptaciones: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia.
 
-Realizamos el ajuste utilizando el sobrante de la recolección de datos del anterior capítulo: alrededor de 288k artículos y 5.1M comentarios\footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}. La tabla \ref{tab:hs_ft_hyperparameter} contiene los hiperparámetros utilizados. Estos ajustes los realizamos sobre una TPU v2-8 y una máquina de Google Colab Pro por alrededor de 10 hs (en su largo de cadena máximo).
+Para lo que nos concierne en esta sección, \citet{pavlopoulos2020toxicity} realizaron una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} (a lo que denomina BERT-CCTK). Esta adaptación la realizó únicamente con los comentarios, sin utilizar ningún tipo de contexto. Proponemos a diferencia de este trabajo, 3 tipos de adaptaciones: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia.
 
-Preprocesamos ambos tweets --contexto y texto-- utilizando las técnicas descriptas en la sección \ref{sec:03_preprocessing}: conversión de usernames a un token especial (\verb|usuario|), tratamiento de hashtags (separación e inserción de un hashtag especial), y conversión de emojis a su representación textual.
+
+Teniendo en cuenta que trabajo posterior a \citet{devlin2018bert} recomienda descartar la tarea NSP, realizamos nuestro ajuste de dominio sólo con la tarea de modelado de lenguaje enmascarado \cite{liu2019roberta}. Los datos utilizados fueron el sobrante de la recolección del anterior capítulo: alrededor de $288$ mil artículos con $5$ millones de comentarios  que no están incluídos en el conjunto de datos etiquetado \footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}.
+
+La Tabla \ref{tab:hs_ft_hyperparameter} contiene los hiperparámetros utilizados al correr la adaptación de dominio, correspondientes al optimizador Adam con warmup lineal. Estos ajustes los realizamos sobre una TPU v2-8 y una máquina de Google Colab Pro por alrededor de 10 hs (en su largo de cadena máximo).
 
 
 \subsection{Performance humana de la tarea}
@@ -163,19 +166,17 @@ Preprocesamos ambos tweets --contexto y texto-- utilizando las técnicas descrip
                    & \multicolumn{2}{c}{Entre anotadores} & \multicolumn{2}{c}{Gold} \\
         {}         &  F1 mean&  F1 median  & F1 Mean  &  F1 Median \\
         \hline
-        ODIO       &  0.653 &   0.675    & 0.829   &   0.851   \\
-        CALLS      &  0.434 &   0.495   &  0.704   &   0.842  \\
-        \hline
-        MUJER      &  0.490 &   0.468   &  0.741   &   0.759  \\
-        LGBTI      &  0.596 &   0.577   &  0.846   &   0.915  \\
-        RACISMO    &  0.653 &   0.644   &  0.871   &   0.879  \\
-        CLASE      &  0.443 &   0.444   &  0.722   &   0.732  \\
-        POLITICA   &  0.461 &   0.436   &  0.795   &   0.815  \\
-        DISCAPACIDAD& 0.550 &   0.600   &  0.813   &   0.842  \\
-        APARIENCIA &  0.649 &   0.743   &  0.831   &   0.915  \\
-        CRIMINAL   &  0.527 &   0.580   &  0.841   &   0.929  \\
-        \hline
-        Macro F1   &  0.534 &   0.554   &  0.796   &   0.848  \\
+        ODIO       &  $65.3$ &   $67.5$    & $82.9$   &   $85.1$   \\
+        CALLS      &  $43.4$ &   $49.5$   &  $70.4$   &   $84.2$  \\
+        MUJER      &  $49.0$ &   $46.8$   &  $74.1$   &   $75.9$  \\
+        LGBTI      &  $59.6$ &   $57.7$   &  $84.6$   &   $91.5$  \\
+        RACISMO    &  $65.3$ &   $64.4$   &  $87.1$   &   $87.9$  \\
+        CLASE      &  $44.3$ &   $44.4$   &  $72.2$   &   $73.2$  \\
+        POLITICA   &  $46.1$ &   $43.6$   &  $79.5$   &   $81.5$  \\
+        DISCAPACIDAD& $55.0$ &   $60.0$   &  $81.3$   &   $84.2$  \\
+        APARIENCIA &  $64.9$ &   $74.3$   &  $83.1$   &   $91.5$  \\
+        CRIMINAL   &  $52.7$ &   $58.0$   &  $84.1$   &   $92.9$  \\
+        Macro F1   &  $53.4$ &   $55.4$   &  $79.6$   &   $84.8$  \\
         \hline
     \end{tabular}
 
