@@ -1,43 +1,51 @@
-Analizaremos el error de los clasificadores propuestos de tres formas distintas: comparando las predicciones del mejor clasificador en términos de performance contra las etiquetas de nuestro dataset; comparando las predicciones del mejor clasificador contextualizado contra el mejor clasificador no contextualizado; y finalmente, comparando las predicciones entre los clasificadores entrenados sobre la tarea granular y los entrenados sobre la tarea fina.
+En esta sección realizamos un análisis de los errores de los clasificadores y comparamos sus distintas variantes. Para ello, analizamos las diferencias entre:
 
-Para analizar los errores de nuestros clasificadores, elegimos el que mejor performance tuvo en la tarea B: el clasificador que toma el tweet más el tweet de la noticia, ajustado a dominio. De una manera similar a la que realizamos en la sección \ref{sec:hateval_error_analysis}, entrenamos 10 clasificadores y analizamos el error sobre el ensamble de voto mayoritario para centrarnos en los errores más frecuentes. Para ver los casos más problemáticos, analizamos aquellas clases donde peor desempeño muestran los clasificadores: MUJER, LGBTI, y CLASE. Observando las matrices de confusión \todo{Mandar esto a un apéndice}, vemos que los resultados de los clasificadores son bajos en términos de recall. Observaremos entonces los casos de falsos negativos, que revisten el mayor problema.
+\begin{itemize}
+    \item Las predicciones del mejor clasificador en términos de performance contra las etiquetas doradas del dataset.
+    \item Las predicciones del mejor clasificador contextualizado contra las predicciones del mejor clasificador no contextualizado.
+    \item Las predicciones entre los clasificadores entrenados sobre contra las predicciones de los entrenados sobre la tarea binaria.
+\end{itemize}
+
+Para analizar los errores de los modelos, elegimos el clasificador de mejor performance sobre la tarea granular: el clasificador que consume el contexto más el tweet de la noticia, entrenado sobre un \beto{} ajustado a dominio (ver Tabla \ref{tab:task_b_results}). De una manera similar a lo que realizamos en la Sección \ref{sec:hateval_error_analysis}, entrenamos diez clasificadores y analizamos el error sobre el ensamble de voto mayoritario. Para ver los casos más problemáticos, analizamos aquellas características donde peor desempeño muestran los clasificadores: MUJER, LGBTI, y CLASE. Por lo observado en la Figura \ref{fig:precision_recall_granular_classifier}, los clasificadores tienen una sensibilidad muy baja para estas tres características, por lo cual centraremos nuestro análisis en los casos falsos negativos.
 
 
 \begin{table}[t]
     \centering
     \small
-    \begin{tabular}{p{0.03\textwidth} p{0.45\textwidth} p{0.50\textwidth}}
+    \begin{tabular}{p{0.03\textwidth} p{0.45\textwidth} p{0.40\textwidth}}
           &Contexto & Comentario \\
         \hline
         1 & Contó que era lesbiana, su papá le confesó que era gay y ahora su madre se enamoró de una mujer, lo que inspiró su segundo film & WTF. Mucho ESI los degeneró... \\
-        2 &                        & @usuario Esta familia tiene los genes alterados \\
+        \rule{0pt}{3ex}2 &                        & @usuario Esta familia tiene los genes alterados \\
         \hline
         3 & Oscar González Oro ya está instalado en el Uruguay: "Recuperé mi libertad" & Ahora quedate allá, y hablá mal d Macri d nuevo pa tener rating. Y opiná q los taxi boy uruguayos son mas educados q los escorts argentinos! Ano abierto! \\
         \hline
         4 & ¿Por qué un beso entre dos hombres los vuelve tan violentos?": la vida después de haber sido víctima de ataques  homofóbicos &  Será xq va contra la naturaleza de la raza... \\
         \hline
         5 & ``¿Por qué no vemos médicos trans?'': el reclamo de un prestigioso cardiólogo para que América sea más inclusiva & Es difícil ser médico con la cabeza quemada \\
-        6  &  & porque un enfermo no cura a otro enfermo \\
+        \rule{0pt}{3ex}6  &  & porque un enfermo no cura a otro enfermo \\
         \hline
         7 & ``Te amo''. La emotiva dedicatoria de Luis Novaresio a su pareja en su cumpleaños & \emoji{face-vomiting}\emoji{face-vomiting}\emoji{face-vomiting} \\
         \hline
         8 & Elizabeth Gómez Alcorta: ``Por la pandemia, vamos a tener una suba de los femicidios y travesticidios'' &  Travesticidios... Osea asesinatos de tipos con peluca y tetas \\
         \hline
         9 & Mariana Genesio Peña pasa su cuarentena total con guantes, barbijo y desnuda: ``Mi cuerpo es el planeta Tierra'' & Coronavirus nivel pelotudo en bolas	\\
-        10 &    & Con 3 piernas cualquiera es feliz!!!	\\
-        11 &    & pasa la cuarentena rascándose las bolas \\
+        \rule{0pt}{3ex}10 &    & Con 3 piernas cualquiera es feliz!!!	\\
+        \rule{0pt}{3ex}11 &    & pasa la cuarentena rascándose las bolas \\
         \hline
         12 & Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Cómo no saco su escopeta y aplicó la defensa propia?! \\
-        13 & & @usuario Salió de caño... cuac!	\\
+        \rule{0pt}{3ex}13 & & @usuario Salió de caño... cuac!	\\
         \hline
     \end{tabular}
-    \caption{Falsos negativos para la característica LGBTI. Ninguno de los 10 clasificadores que consumen contexto y texto indentificaron como discriminatorios a estos comentarios }
+    \caption{Falsos negativos para la característica LGBTI. Ninguno de los diez clasificadores que consumen contexto y texto indentificaron como discriminatorios a estos comentarios. }
     \label{tab:lgbti_error_analysis}
 \end{table}
 
-La tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios falsos negativos para la característica LGBTI junto a sus contextos. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio contra LGBTI, podemos esbozar algunas posibles razones. En primer lugar, ciertos mensajes altamente ofensivos son complejos de entender o con una alta variabilidad léxica: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (ejemplos 5 y 6). Esto puede hacerse de numerosas e ``ingeniosas'' maneras, y haciendo alusiones que difícilmente pueda un modelo de lenguaje entender (pensar todas las maneras que se puede hacer referencia a la genitalidad de una mujer trans, como las de los ejemplos 10 y 12).
 
-Otros contextos --como los ejemplos 3, 7, 9, 10 y 11-- omiten información acerca de la sexualidad o género sobre quienes versa la nota. Esta información faltante no permite a los clasificadores (y tampoco a un humano que carezca de esta información) entender completamente el caracter discriminatorio de los mensajes.
+
+La Tabla \ref{tab:lgbti_error_analysis} muestra una selección de comentarios discriminatorios para la característica LGBTI que no son detectados por los clasificadores. De estas instancias, y observando también aquellos casos donde sí puede detectar el discurso discriminatorio de esta categoría, podemos esbozar algunas posibles razones detrás de estos errores. En primer lugar, ciertos mensajes altamente ofensivos son complejos de entender: por ejemplo, los que tratan de ``enfermos'' o mencionan cuestiones de la genitalidad (ejemplos 5 y 6). Estas ofensas son realizadas por los usuarios de maneras tan sofisticadas que difícilmente un modelo de lenguaje pueda entender, como metáforas varias que hacen referencia a la genitalidad de una mujer trans (ejemplos 10 y 12) o bien refiriéndose al objetivo de la ofensa con un género distinto al autopercibido (ejemplos 8 y 9),
+
+Algunos comentarios y sus contextos --como los ejemplos 3, 7, 9, 10 y 11-- omiten información acerca de la sexualidad o género sobre quienes versa la noticia. Esta información faltante no permite a los clasificadores (ni tampoco a un humano que carezca de esta información) entender completamente el caracter discriminatorio de los mensajes.
 
 
 \begin{table}[t]
