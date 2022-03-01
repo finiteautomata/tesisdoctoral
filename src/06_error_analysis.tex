@@ -1,9 +1,9 @@
 En esta sección realizamos un análisis de los errores de los clasificadores y comparamos sus distintas variantes. Para ello, analizamos las diferencias entre:
 
 \begin{itemize}
-    \item Las predicciones del mejor clasificador en términos de performance contra las etiquetas doradas del dataset.
-    \item Las predicciones del mejor clasificador contextualizado contra las predicciones del mejor clasificador no contextualizado.
-    \item Las predicciones entre los clasificadores entrenados sobre contra las predicciones de los entrenados sobre la tarea binaria.
+    \item las predicciones del mejor clasificador en términos de performance contra las etiquetas doradas del dataset.
+    \item las predicciones del mejor clasificador contextualizado contra las predicciones del mejor clasificador no contextualizado.
+    \item las predicciones entre los clasificadores entrenados sobre contra las predicciones de los entrenados sobre la tarea binaria.
 \end{itemize}
 
 Para analizar los errores de los modelos, elegimos el clasificador de mejor performance sobre la tarea granular: el clasificador que consume el contexto más el tweet de la noticia, entrenado sobre un \beto{} ajustado a dominio (ver Tabla \ref{tab:task_b_results}). De una manera similar a lo que realizamos en la Sección \ref{sec:hateval_error_analysis}, entrenamos diez clasificadores y analizamos el error sobre el ensamble de voto mayoritario. Para ver los casos más problemáticos, analizamos aquellas características donde peor desempeño muestran los clasificadores: MUJER, LGBTI, y CLASE. Por lo observado en la Figura \ref{fig:precision_recall_granular_classifier}, los clasificadores tienen una sensibilidad muy baja para estas tres características, por lo cual centraremos nuestro análisis en los casos falsos negativos.
@@ -51,13 +51,13 @@ Algunos comentarios y sus contextos --como los ejemplos 3, 7, 9, 10 y 11-- omite
 \begin{table}[t]
     \centering
     \small
-    \begin{tabular}{p{0.03\textwidth} p{0.45\textwidth} p{0.50\textwidth}}
+    \begin{tabular}{p{0.03\textwidth} p{0.40\textwidth} p{0.40\textwidth}}
         & Contexto & Comentario \\
         \hline
         1 & Martha Rosenberg: ``En situación de pandemia, legalizar el aborto es más urgente que nunca'' & Quien es esta vieja?. No debería estar tejiendo? \\
         \hline
         2& Mara Gómez: la historia de la primera futbolista trans en el torneo argentino  &  Feminismo pierde de nuevo... ya le metieron un tipo... jaja punto para el patriarcado...	 \\
-        \hline|
+        \hline
         3& Tras una ráfaga de más de 20 disparos asesinaron a una mujer trans en Rosario & Las feministas en modo error 404 al no saber si celebrar o ofenderse  \\
         \hline
         4& El desesperado pedido de Actrices Argentinas ante la violencia de género en cuarentena: ``Es urgente'' & Que risa me dan las feministas!!! Ignorantes.	 \\
@@ -65,23 +65,24 @@ Algunos comentarios y sus contextos --como los ejemplos 3, 7, 9, 10 y 11-- omite
         5& Leche de cucaracha, la nueva bebida nutritiva: ¿quién se anima a probarla? & No me digas q la hija de CFK está embarazada y ya sale leche por esos senos	 \\
         \hline
         6& Los fans de Florencia Kirchner le piden casamiento por Instagram & Zoofilia \\
-        7&                       & Hdp tienen que tener estomago para querer casarse con terrible adefesio \\
+        \rule{0pt}{3ex}7&                       & Hdp tienen que tener estomago para querer casarse con terrible adefesio \\
         \hline
         8& Rosario: para sacar una licencia de conducir habrá que hacer un curso de perspectiva de género & Te quieren adoctrinar desde cualquier ámbito, y se están metiendo en todo para que empieces a hablar como el orto, como a ellas les gusta.	\\
-        9&   & El que choca más feministas le dan más años de licencia	\\
+        \rule{0pt}{3ex}9&   & El que choca más feministas le dan más años de licencia	\\
         \hline
         10& Por qué los países liderados por mujeres parecen haber respondido mejor a la crisis del coronavirus & Son mujeres inteligentes que se dejan asesorar de sus esposos \\
+        \hline
         11& Joe Biden presentó su nuevo equipo de comunicación compuesto enteramente por mujeres & Será equipe conche seque?	\\
          \hline
     \end{tabular}
-    \caption{Falsos negativos para la característica MUJER. Ninguno de los 10 clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios }
+    \caption{Falsos negativos para la característica MUJER. Ninguno de los diez clasificadores que consumen contexto y texto (ajustados a dominio) lograron identificar como discriminatorios a estos comentarios para ninguna otra característica. }
     \label{tab:women_error_analysis}
 \end{table}
 
 
 
 
-En el caso de la clase MUJER, podemos observar que de nuevo el principal problema es un bajo recall. Sin embargo, observando que hay muchos casos que pueden mezclarse con otras características (como APARIENCIA) buscamos aquellos ejemplos que no son detectados por otras características. La tabla \ref{tab:women_error_analysis} muestra una selección de estos falsos negativos. Algunos ejemplos están muy en el borde de ser simplemente ofensivos, o algunos mensajes irónicos complejos de descifrar (que las feministas celebren por la muerte de una mujer trans, o hablar de chocar mujeres en un curso de manejo). Esto es esperable dado el acuerdo relativamente bajo para la categoría MUJER en el etiquetado de este dataset reportado en la tabla \ref{tab:annotation_agreement}.
+En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no son detectados por otras características ya que, por lo observado en la Figura \ref{fig:precision_recall_granular_classifier}, muchos ejemplos están en la frontera de otras categorías y son detectados por ellas. La Tabla \ref{tab:women_error_analysis} muestra una selección de estos falsos negativos, donde podemos apreciar que algunos ejemplos están en el borde borde de ser simplemente ofensivos (ejemplo 1 y posiblemente 6 y 7) o contienen mensajes irónicos complejos de descifrar (ejemplo 3, que las feministas celebren por la muerte de una mujer trans, o ejemplo 9, hablar de chocar mujeres en un curso de manejo). Esto es esperable dado el acuerdo relativamente bajo para la categoría MUJER en el etiquetado de este dataset reportado en la tabla \ref{tab:annotation_agreement}.
 
 
 
@@ -136,7 +137,7 @@ En el caso de la clase MUJER, podemos observar que de nuevo el principal problem
 \end{table}
 
 
-En la tabla \ref{tab:context_vs_no_context_error} podemos observar una selección de ejemplos donde el clasificador contextualizado acierta y el no contextualizado se equivoca en su predicción, separados por falsos negativos (el modelo no contextualizado no logra detectarlos) y falsos positivos (el modelo no contextualizado predice equivocadamente que son discriminatorios). En el caso de LGBTI, la información contextual permite desambiguar casos como los 7 y 8, muy similares pero con un contexto sumamente distinto. Un problema que se puede apreciar es que el clasificador no contextualizado --al ser entrenado con datos contextualizados-- aprende correlaciones espurias como que las celebraciones son discriminatorias (ejemplo 16).
+En la Tabla \ref{tab:context_vs_no_context_error} podemos observar una selección de ejemplos donde el clasificador contextualizado acierta y el no contextualizado se equivoca en su predicción, separados por falsos negativos (el modelo no contextualizado no logra detectarlos) y falsos positivos (el modelo no contextualizado predice equivocadamente que son discriminatorios). En el caso de LGBTI, la información contextual permite desambiguar casos como los 7 y 8, muy similares pero con un contexto sumamente distinto. Un problema que se puede apreciar es que el clasificador no contextualizado --al ser entrenado con datos contextualizados-- aprende correlaciones espurias como que las celebraciones son discriminatorias (ejemplo 16).
 
 
 
