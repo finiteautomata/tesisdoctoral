@@ -91,7 +91,7 @@ En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no s
     \centering
     \footnotesize
     \tbf{CRIMINAL}
-    \begin{tabular}{p{0.03\textwidth} p{0.05\textwidth} p{0.45\textwidth} p{0.40\textwidth}}
+    \begin{tabular}{p{0.03\textwidth} p{0.04\textwidth} p{0.40\textwidth} p{0.40\textwidth}}
         \hline
         & Tipo & Contexto & Comentario \\
         \hline
@@ -137,6 +137,6 @@ En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no s
 \end{table}
 
 
-En la Tabla \ref{tab:context_vs_no_context_error} podemos observar una selección de ejemplos donde el clasificador contextualizado acierta en su predicción mientras que el que no consume contexto se equivoca, separados por falsos negativos (el modelo no contextualizado no logra detectarlos) y falsos positivos (el modelo no contextualizado predice equivocadamente que son discriminatorios). En el caso de LGBTI, la información contextual permite desambiguar casos como los 7 y 8, muy similares pero con un contexto sumamente distinto. Un problema que se puede apreciar es que el clasificador no contextualizado --al ser entrenado con datos etiquetados de manera contextualizada-- aprende correlaciones espurias como que las celebraciones son discriminatorias (ejemplo 16).
+En la Tabla \ref{tab:context_vs_no_context_error} podemos observar una selección de ejemplos donde el clasificador contextualizado acierta en su predicción mientras que el modelo sin contexto se equivoca, separados en falsos negativos (el modelo no contextualizado no logra detectarlos) y falsos positivos (el modelo no contextualizado predice equivocadamente que son discriminatorios). En el caso de LGBTI, la información contextual permite desambiguar casos como los 7 y 8, muy similares pero con un contexto sumamente distinto. Un problema que se puede apreciar es que el clasificador no contextualizado --al ser entrenado con datos etiquetados de manera contextualizada-- aprende correlaciones espurias como que las celebraciones son discriminatorias (ejemplo 16).
 
-La comparativa entre los clasificadores entrenados sobre la tarea binaria y la tarea granular es más difícil de interpretar. Si bien se observa que entre los falsos negativos del clasificador binario se encuentra una proporción más alta de tweets racistas, es difícil elucidar una razón detrás de esto. En la Tabla \ref{tab:fine_vs_plain_comparison} del Apéndice \ref{app:06} se encuentra una tabla con una muestra de ejemplos en los cuales el clasificador granular acertó y el binario falló.
+La comparativa entre los clasificadores entrenados sobre la tarea binaria y la tarea granular es más difícil de interpretar. Si bien se observa que entre los falsos negativos del clasificador binario se encuentra una proporción más alta de tweets racistas, es difícil elucidar una razón detrás de esto. En la Tabla \ref{tab:fine_vs_plain_comparison} del Apéndice \ref{app:06} se encuentra una muestra de ejemplos en los cuales el clasificador granular acertó y el binario falló.
