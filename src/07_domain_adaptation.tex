@@ -20,8 +20,7 @@ Comenzamos en la Sección \ref{sec:domain_adaptation_previous_work} haciendo un 
 
 La definición de qué es un \textbf{dominio} en NLP suele ser relativamente amplia y poco precisa. Una posible aproximación a este concepto es la de un conjunto de textos que guardan cierta similaridad respecto al tópico o género; al medio utilizado; el público al cual apuntan, entre otras cosas. Algunos ejemplos de dominios podrían ser los artículos de noticias, las novelas u otros libros de ficción, discursos políticos, comentarios de redes sociales, entre otros \cite{gururangan-etal-2020-dont}. Subdisciplinas del Procesamiento del Lenguaje Natural tienen su eje en tratar estas distintas categorías de documentos atendiendo sus particularidades: BioNLP, SocialNLP, entre otras nuevas denominaciones.
 
-\citet{goodfellow2016deep} definen la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado para una tarea T y una distribución de datos $P_1$, se lo quiere utilizar sobre la misma tarea T pero esta vez con una distribución de entrada $P_2$ bajo la asunción de que ambas distribuciones son relativamente similares. Un escenario posible es el de un clasificador de polaridad entrenado sobre comentarios acerca de reviews de libros, el cual queremos utilizar para analizar reviews de productos electrónicos. \citet{glorot2011domain} es uno de los primeros trabajos que aplica la idea de adaptación de dominio sobre modelos de Deep Learning en NLP. Los autores emplean \emph{stacked denoising auto-encoders} para aprender características no supervisadas de los textos; para atacar la diferencia de distribuciones de entrada, realizan pre-entrenamiento no supervisado para los dominios analizados. Desde una óptica diferente, \citet{eisenstein2013bad} describe puntualmente la adaptación de dominio para textos de redes sociales como ``adaptar las herramientas al texto'' (social), contraponiendo esto al concepto de \emph{normalización} de la entrada, que sería intentar ``adaptar el texto a las herramientas''. Concretamente, dentro de las tareas de extracción de opiniones en redes sociales, la adaptación resulta importante ya que expresiones en distintos ámbitos pueden tener sentidos distintos: decir ``leé el libro'' en una reseña de un libro Amazon puede ser algo positivo, mientras que en el comentario de una película puede ser considerado negativo \cite{pang2008opinion}.
-
+\citet{goodfellow2016deep} definen la adaptación de dominio como una situación similar a la de Transfer Learning: dado un modelo que fue entrenado para una tarea T y una distribución de datos $P_1$, se lo quiere utilizar sobre la misma tarea T pero esta vez con una distribución de entrada $P_2$ bajo la asunción de que ambas distribuciones son relativamente similares. Un escenario posible es el de un clasificador de polaridad entrenado sobre comentarios acerca de reviews de libros, el cual queremos utilizar para analizar reviews de productos electrónicos. \citet{glorot2011domain} es uno de los primeros trabajos que aplica la idea de adaptación de dominio sobre modelos de Deep Learning en NLP. Los autores emplean \emph{stacked denoising auto-encoders} para aprender características no supervisadas de los textos; para atacar la diferencia de distribuciones de entrada, realizan pre-entrenamiento no supervisado para los dominios analizados. Desde una óptica diferente, \citet{eisenstein2013bad} describe puntualmente la adaptación de dominio para textos de redes sociales como ``adaptar las herramientas al texto'' (social), contraponiendo esto al concepto de \emph{normalización} de la entrada, que sería intentar ``adaptar el texto a las herramientas''. Dentro de las tareas de extracción de opiniones, la adaptación resulta importante ya que expresiones en distintos ámbitos pueden tener sentidos distintos: decir ``leé el libro'' en una reseña de un libro Amazon puede ser algo positivo, mientras que en el comentario de una película puede ser considerado negativo \cite{pang2008opinion}.
 
 
 Dentro de la ola de modelos pre-entrenados que sacudió el mundo de NLP, la técnica de \ulmfit{} \cite{howard-ruder-2018-universal} (descripta en la Sección \ref{subsec:elmo}) contempla tres etapas: pre-entrenamiento, ajuste de dominio, y ajuste discriminativo. En la etapa intermedia, se adaptan los pesos de la red neuronal utilizando de manera no-supervisada el texto del dataset, realizando una continuación del pre-entrenamiento de modelado de lenguaje. Los modelos basados en Transformers como BERT \cite{devlin2018bert} y subsiguientes eliminaron esta etapa intermedia, dejando sólo la adaptación de los pesos sobre las etiquetas supervisadas. Recientemente, se ha observado que reintroducir esta adaptación no supervisada es algo beneficioso.
@@ -61,77 +60,73 @@ Usando como modelo base a \roberta{}, los autores reportan que los clasificadore
 Posteriormente al estallido de los modelos de lenguaje basados en Transformers, algunos trabajos se han dedicado a entrenar directamente estos modelos sobre un dominio de interés particular y no en textos genéricos como Wikipedia. Por ejemplo, \emph{SciBERT} \cite{beltagy-etal-2019-scibert}, \emph{MediBERT} \cite{rasmy2021med} y \emph{LegalBERT} \cite{chalkidis-etal-2020-legal} están entrenados sobre textos científicos, médicos y legales respectivamente. AlBERTo \cite{polignano2019alberto} es uno de los primeros modelos entrenados directamente sobre tweets, particularmente para italiano; el ya mencionado \bertweet{} \cite{dat2020bertweet} prosiguió esta línea de investigación, siendo construido mediante un pre-entrenamiento similar al de \roberta{} \cite{liu2019roberta} sobre cerca de 850M tweets en inglés, una parte de ellos relacionados a la pandemia del COVID-19. En español tenemos el modelo TwilBERT \cite{gonzalez2021twilbert}; sin embargo, tiene algunas limitaciones: en primer lugar, no queda claro cuánto tiempo de entrenamiento recibió ni si los datos fueron suficientes; en segundo, usaron un modo de entrenamiento basado en una variante de la tarea NSP (ver Subsección \ref{sec:02_bert}) cuando numerosos trabajos muestran que el tipo de entrenamiento basado en RoBERTa (sólo tarea MLM) mejora el desempeño en las tareas finales. Finalmente, su modelo no es accesible mediante el model hub de huggingface, limitando seriamente su acceso. La Tabla \ref{tab:bert_pretrained_models} lista algunos de estos modelos.
 
 
-Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-dont} son, en primer lugar y siguiendo la regla de Bender \cite{bender2011achieving}, realizar el estudio en un idioma distinto al inglés. En segundo lugar, un dominio que no está estudiado en dicho trabajo es el dominio de tareas en textos de redes sociales. Finalmente, es de interés realizar una comparación de la performance de modelos adaptados al dominio contra aquellos que son entrenados desde cero en ese dominio, dado el enorme costo computacional, energético y ambiental que implica el entrenamiento de estos modelos desde cero \cite{strubell2019energy}.
+Algunas oportunidades de mejora de lo estudiado en \citet{gururangan-etal-2020-dont} son, en primer lugar y siguiendo la regla de Bender \cite{bender2011achieving}, realizar el estudio en un idioma distinto al inglés. En segundo lugar, estudiar el dominio de tareas en textos de redes sociales, algo no realizado en dicho trabajo. Finalmente, es de interés realizar una comparación de la performance de modelos adaptados al dominio contra aquellos que son entrenados desde cero, dado el enorme costo computacional, energético y ambiental que implica esto último \cite{strubell2019energy}.
 
 
 
 \section{Modelo pre-entrenado sobre tweets}
-\label{sec:robertuito_pretrained_model}
+\label{sec:robertuito_pretrained}
 
-Pasamos a continuación a describir a \robertuito{}, un modelo de lenguaje pre-entrenado sobre tweets en español. Entrenamos tres versiones de \robertuito{}: una versión \emph{cased} que conserva las mayúsculas, una versión \emph{uncased} que convierte todo a minúsculas y una versión \deacc{}, que usa minúsculas y elimina los acentos en los tweets. El español normativo prescibe el uso de tildes en ciertos casos para señalar la acentuación de una palabra, algo que por lo general suele pasarse por alto en los textos sociales. Queremos analizar entonces si eliminarlos mejora el rendimiento de los modelos, algo que puede considerarse como una normalización levemente más fuerte que remover mayúsculas únicamente.
-
+En esta sección describimos el proceso de construcción de \robertuito{}. Entrenamos tres versiones de este modelo: una versión que preserva las mayúsculas del texto (nombrada \tbf{cased}); una versión que convierte todo a minúsculas (\tbf{uncased}); y una versión que convierte todo a minúsculas y elimina las tildes (\tbf{deacc}). El español normativo prescribe el uso de tildes en ciertos casos para señalar la acentuación de una palabra, algo que por lo general suele pasarse por alto en los textos escritos en redes sociales. Una hipótesis de trabajo es que eliminar esta información (tildes y mayúsculas) puede ayudar al rendimiento de los modelos en las tareas finales, al ser su uso tan inconsistente en el texto informal.
 
 
 \subsection{Recolección de tweets}
 
 \label{sec:robertuito_data_collection}
 
-A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}. El stream de API de acceso gratuito (también conocida como \emph{Spritzer}) es una muestra de alrededor del 1\% de los tweets, supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de la posible manipulación de esta muestra \cite{pfeffer2018tampering}. Muestras no representativas y sesgadas pueden afectar al modelo en tareas finales, algunos de estos errores siendo potencialmente dañinos como sesgos raciales o de género. Por ello, publicamos el conjunto de datos para ser inspeccionado, y queda como trabajo a futuro un análisis más detallado de sus instancias.
+A continuación describimos el proceso de recolección de tweets que utilizamos para entrenar \robertuito{}. El stream de API de acceso gratuito de Twitter (también conocida como \emph{Spritzer}) es una subconjunto generado en tiempo real de alrededor del 1\% de los tweets. Esta muestra es supuestamente aleatoria, aunque algunos estudios han mostrado algunas preocupaciones acerca de posibles formas de manipularla \cite{pfeffer2018tampering}. Muestras no representativas y sesgadas pueden afectar al modelo en tareas finales, algunos de estos errores pudiendo ser dañinos generando sesgos raciales o de género. Por ello, publicamos el conjunto de datos para ser inspeccionado, y queda como trabajo futuro un análisis más detallado de sus instancias.
 
-En primer lugar, descargamos una colección de Spritzer subida a Archive.org que data de Mayo de 2019 \footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indique que su idioma no sea español. Sobre los tweets en español, usamos la API de Twitter para descargar los tweets de los usuarios en cuestión. De este proceso recolectamos alrededor de 622 millones de tweets de cerca 432 mil usuarios.
+Descargamos primeramente una colección de Spritzer subida a Archive.org que data de Mayo de 2019 \footnote{\url{https://archive.org/details/archiveteam-twitter-stream-2019-05}}. Filtramos aquellos tweets cuya metadata indicase que su idioma no sea el español, y nos guardamos los usuarios que los generaron. Sobre este conjunto de usuarios, usamos la API de Twitter para descargar todos sus tweets. De este proceso recolectamos alrededor de 622 millones de posteos de cerca 432 mil usuarios.
 
-Finalmente, considerando que no queremos entrenar , nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores: reemplazamos los caracteres hasta un máximo de tres, convertimos los nombres de usuarios a un token especial \verb|@usuario|, convertimos los emoji a una representación textual, y partimos los hashtag en lo posible (ver sección XXX). Esto lo realizamos a priori para bajar la carga de trabajo a la hora del pre-entrenamiento.
+Finalmente, nos quedamos sólo con aquellos tweets que tengan 6 o más tokens, usando para esto el tokenizador entrenado en BETO \cite{canete2020spanish}, sin contar repeticiones de emojis y haciendo el preprocesado descripto en capítulos anteriores: reemplazamos los caracteres hasta un máximo de tres, convertimos los nombres de usuarios a un token especial \verb|@usuario|, convertimos los emojis a una representación textual, y partimos los hashtags en lo posible (ver Sección \ref{sec:03_preprocessing}). De este proceso obtuvimos 500 millones de tweets, ordenados en \num{1000} archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
 
-De este proceso quedan 500M tweets, los cuales ordenamos en 1000 archivos para facilitar la lectura en procesos posteriores. El repositorio de la recolección de tweets puede encontrarse en \url{https://github.com/finiteautomata/spritzer-tweets}.
-
-Entrenamos a los tokenizadores usando el algoritmo \emph{SentencePiece} \cite{kudo-richardson-2018-sentencepiece} en los tweets recopilados para cada una de las tres configuraciones. Guardamos 30K tokens para cada uno. Usamos \emph{tokenizers} library \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación Rust para muchos algoritmos de tokenización.
+Algo a destacar es que este proceso de recolección permitió que los datos contengan texto con \emph{code-switching}\footnote{Texto o comunicación verbal que fusiona dos idiomas, por ejemplo en spanglish u otras mezclas lingüísticas} o incluso tweets de otros idiomas, ya que solo requerimos que la publicación en la muestra original esté en español. Mientras que otros trabajos como \citet{dat2020bertweet} requirieron que cada tweet estuviera en inglés, permitimos que se incluyeran otros idiomas en los datos previos al entrenamiento. Una estimación aproximada de la distribución lingüística utilizando el módulo de detección de idioma de \emph{fasttext} \cite{joulin2017bag} indicó que el 92\% de los datos están en español, el 4\% en inglés, el 3\% en portugués y el resto en otros idiomas.
 
 
 \subsection{Arquitectura y entrenamiento}
 
 \begin{table}[t]
     \centering
-    \large
-    \begin{tabular}{l|l}
+    \begin{tabular}{l r}
         \hline
         Hiperparámetro    & Valor \\
         \hline
-        \#Heads           & 12             \\
-        \#Layers          & 12             \\
-        Hidden Size       & 768            \\
-        Intermediate Size & 3072           \\
-        Hidden activation & GeLU           \\
-        Vocab. size       & 30,000         \\
+        \#Cabezas         & \num{12}             \\
+        \#Capas           & \num{12}             \\
+        Tamaño oculto     & \num{768}            \\
+        Tamaño intermedio & \num{3072}           \\
+        Función de Activación & GeLU           \\
+        \#Vocabulario       & \num{30000}         \\
         \hline
-        MLM probability   & 0.15           \\
-        Max Seq length    & 128            \\
-        Batch Size        & 4,096          \\
-        Learning Rate     & $3.5 * 10^{-4}$\\
-        Decay             & $0.1$          \\
-        $\beta_1$         & 0.9            \\
-        $\beta_2$         & 0.98           \\
-        $\epsilon$        & $10^{-6}$      \\
-        Warmup steps      & 36,000 (6\%)   \\
+        \rule{0pt}{3ex}Probabilidad MLM   & \num{0.15}     \\
+        Tamaño de secuencia& 128            \\
+        Batch size         & \num{4096}          \\
+        Learning Rate      & $3.5 * 10^{-4}$\\
+        Decay              & $0.10$          \\
+        $\beta_1$          & $0.90$            \\
+        $\beta_2$          & $0.98$           \\
+        $\epsilon$         & $10^{-6}$      \\
+        Pasos de warmup    & \num{36,000} (6\%)   \\
         \hline
     \end{tabular}
     \caption{Hiperparámetros utilizados en el entrenamiento de \robertuito{}. Los valores de $\beta$ y $\epsilon$ refieren a los hiperparámetros de Adam}
     \label{tab:robertuito_architecture}
 \end{table}
 
-Se utilizó una arquitectura RoBERTa base para \robertuito{}, con 12 capas de auto atención, 12 cabezas de atención y tamaño intermedio 768, de la misma manera que \bertweet{}. Entrenamos sobre la tarea de MLM, en la misma línea de RoBERTa y BERTweet, sin tener en cuenta la tarea de predicción de la siguiente oración usada en BERT u otras tareas de orden de tweets como la usada en \citet{gonzalez2021twilbert}.
+Para cada una de las versiones de \robertuito{} (cased, uncased, deacc) entrenamos tokenizadores usando el algoritmo \emph{SentencePiece} \cite{kudo-richardson-2018-sentencepiece} en los tweets recopilados, disponiendo de un vocabulario de \num{30000} tokens en todos los casos. Usamos la librería \emph{tokenizers} \footnote{\url{https://github.com/huggingface/tokenizers}} que proporciona implementaciones rápidas en el lenguaje de programación \emph{Rust} para muchos algoritmos modernos de tokenización.
 
-Teniendo en cuenta los hiperparámetros de RoBERTa y BERTweet, decidimos utilizar un tamaño de batch size grande para nuestro entrenamiento. Si bien se recomienda un tamaño de 8k en RoBERTa, debido a las limitaciones de recursos, decidimos equilibrar el número de actualizaciones utilizando un tamaño de lote de 4k.
+Se utilizó una arquitectura \roberta{} base para el modelo, con 12 capas de auto atención, 12 cabezas de atención y tamaño intermedio 768, de la misma manera que \bertweet{}. Entrenamos \robertuito{} sobre la tarea de MLM, en la misma línea de \roberta{} y \bertweet{}, sin tener en cuenta la tarea de predicción de la siguiente oración usada en \bert{} u otras tareas de orden de tweets (como la usada en \citet{gonzalez2021twilbert}). Teniendo en cuenta los hiperparámetros de \roberta{} y \bertweet{}, decidimos utilizar un tamaño de batch size grande para nuestro entrenamiento. Si bien se recomienda un tamaño de \num{8192} en \citet{liu2019roberta} y \citet{dat2020bertweet}, debido a las limitaciones de recursos decidimos aumentar el número de actualizaciones utilizando un tamaño de lote de \num{4096}. La Tabla \ref{tab:robertuito_architecture}
 
-Para comprobar la convergencia, primero entrenamos un modelo uncased para 200k pasos de optimización. Al comprobar que convergió (y obtuvo buenos resultados en las tareas del benchmark), procedimos al entrenamiento completo de los tres modelos. Entrenamos nuestros modelos durante aproximadamente tres semanas en una TPU v3-8 y una máquina pre-emptible \emph{e2-standard-16} en GCP. Estas nos fueron provistas por el programa Google TPU Research Cloud. Nuestro código está basado en la biblioteca \emph{huggingface's transformers}\cite{wolf-etal-2020-transformers} y su implementación de \emph{RoBERTa}. Cada tweet está tokenizado y enmascarado dinámicamente con una probabilidad igual a $ 0.15 $. La tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
+Para comprobar la convergencia, primero entrenamos un modelo para \num{200000} pasos de optimización. Al comprobar que convergió (y obtuvo buenos resultados en las tareas del benchmark que describiremos a continuación), procedimos al entrenamiento completo de los tres modelos. El proceso de pre-entrenamiento tomó aproximadamente tres semanas en una TPU \emph{v3-8} y una máquina pre-emptible \emph{e2-standard-16} en Google Cloud Platform (GCP), ambos recursos provistos por el programa Google TPU Research Cloud. Nuestro código está basado en la biblioteca \emph{huggingface's transformers} \cite{wolf-etal-2020-transformers} y su implementación de \emph{RoBERTa}. La Tabla \ref{tab:training_results} muestra los resultados del entrenamiento en términos de pérdida de entropía cruzada y perplejidad.
 
-\begin{table}[t]
+\begin{table}[h]
     \centering
     \begin{tabular}{l l l l}
         Model   & Train loss & Eval loss   & Eval ppl \\
         \hline
-        \cased{}   & 1.864      & 1.753       & 5.772    \\
-        \uncased{} & 1.940      & 1.834       & 6.259    \\
-        \deacc{}   & 1.951      & 1.826       & 6.209    \\
+        \cased{}   & $1.864$      & $1.753$       & $5.772$    \\
+        \uncased{} & $1.940$      & $1.834$       & $6.259$    \\
+        \deacc{}   & $1.951$      & $1.826$       & $6.209$    \\
         \hline
     \end{tabular}
     \caption{Resultados del pre-entrenamiento para las tres versiones de \robertuito{}. La función de costo utilizada es la entropía cruzada de la tarea de MLM.}
@@ -141,28 +136,26 @@ Para comprobar la convergencia, primero entrenamos un modelo uncased para 200k p
 
 \subsection{Evaluación}
 
-Para analizar la performance de este modelo, usamos un conjunto de tareas como benchmark. Las tareas elegidas son todas las que analizamos en este trabajo hasta el momento:
+Para analizar la performance de este modelo, usamos un conjunto de tareas sobre textos generados en redes sociales en español, siguiendo lo hecho en \citet{gonzalez2021twilbert} y \citet{polignano2019alberto}. Las tareas elegidas son todas las que analizamos en esta tesis hasta el momento:
 
 \begin{enumerate}
-    \item Análisis de sentimientos (capítulo \ref{chap:03_social_text_classification})
-    \item Análisis de emociones (capítulo \ref{chap:03_social_text_classification})
-    \item Detección de Ironía (capítulo \ref{chap:03_social_text_classification})
-    \item Detección de discurso de odio (capítulo \ref{chap:04_hate_speech})
-    \item Detección contextualizada de discurso de odio (capítulo \ref{chap:06_contextualized_hate_speech})
+    \item Análisis de sentimientos (Capítulo \ref{chap:03_social_text_classification})
+    \item Análisis de emociones (Capítulo \ref{chap:03_social_text_classification})
+    \item Detección de ironía (Capítulo \ref{chap:03_social_text_classification})
+    \item Detección de discurso de odio (Capítulo \ref{chap:04_hate_speech})
+    \item Detección contextualizada de discurso de odio (Capítulo \ref{chap:06_contextualized_hate_speech})
 \end{enumerate}
 
 
-Para más detalles sobre los datasets y cuestiones puntuales de cada tarea, referimos a los capítulos correspondientes. Para cada una de estas tareas, comparamos la performance de \robertuito{} contra los siguientes modelos de lenguaje pre-entrenados:
+Para más detalles sobre los conjuntos de datos y cuestiones puntuales de cada tarea, referimos a los capítulos correspondientes. Comparamos el rendimiento de \robertuito{} contra los siguientes modelos de lenguaje pre-entrenados disponibles en español:
 
 \begin{itemize}
-    \item BETO \cite{canete2020spanish}, tanto en versión cased como uncased.
+    \item \beto{} \cite{canete2020spanish}, tanto en versión cased como uncased.
     \item \emph{RoBERTa-BNE} \cite{gutierrezfandino2021spanish}, un modelo RoBERTa entrenado sobre una base de datos de 500GB de todos los sitios \emph{.es}
-    \item \emph{BERTin}\footnote{\url{https://huggingface.co/bertin-project/bertin-roberta-base-spanish}}, otro modelo RoBERTa entrenado en el contexto de un evento de la comunidad Flax/Jax \footnote{\url{https://discuss.huggingface.co/t/open-to-the-community-community-week-using-jax-flax-for-nlp-cv/7104}}, en el cual los autores exploraron diferentes estrategias de sampleo para entrenar este modelo en relativamente poco tiempo sobre la sección en español del corpus mc4, creado para entrenar T5 \cite{raffel2020exploringt5}.
+    \item \emph{BERTin}\footnote{\url{https://huggingface.co/bertin-project/bertin-roberta-base-spanish}}, otro modelo RoBERTa entrenado en el contexto de un evento de la comunidad Flax/Jax \footnote{\url{https://discuss.huggingface.co/t/open-to-the-community-community-week-using-jax-flax-for-nlp-cv/7104}}, en el cual los autores exploraron diferentes estrategias de muestreo para entrenar este modelo en relativamente poco tiempo sobre la sección en español del corpus \emph{mc4}, creado para entrenar T5 \cite{raffel2020exploringt5}.
 \end{itemize}
 
-Para cada modelo y tarea corremos el experimento 10 veces y reportamos medias y desviaciones estándar. Utilizamos el mismo procedimiento de entrenamiento referidos en cada capítulo para hacer el fine-tuning discriminativo de cada modelo, sin efectuar ninguna optimización de los hiperparámetros.
-
-
+Cada uno de estos modelos comparte una arquitectura similar a \robertuito{} y una cantidad comparable de parámetros. Seguimos las prácticas estándares para el ajuste de los modelos, descriptas en anteriores capítulos y en \citet{devlin2018bert}. Para las tareas de clasificación, ajustamos los modelos para por 5 epochs con un learning rate triangular de $5 * 10^{-5}$ y un warmup de 10 \% de los pasos de entrenamiento. Seleccionamos el modelo que mejor resultado obtuvo al final de cada epoch según la métrica de cada tarea.
 
 \subsection{Resultados}
 

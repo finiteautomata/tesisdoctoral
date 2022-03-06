@@ -51,25 +51,24 @@ Centrándonos en los recursos y tareas en español, uno de los principales polos
 \begin{table}[t]
     \centering
     \begin{tabular}{ p{0.30\textwidth}  p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.1\textwidth}}
-        \hline
         Tarea                     &  Dataset                   & \#Mensajes     & Clases   &\\
+        \thline{2}
+        \mr{3}{Análisis de Sentimientos}  &  \mr{3}{TASS 2020} & \mr{3}{\num{14509}} & Neg      & 39.8\%\\
+                                          &                    &                & Neu      & 29.5\%\\
+                                          &                    &                & Pos      & 30.7\%\\
         \hline
-        \mr{3}{Análisis de Sentimientos}  &  \mr{3}{TASS 2020} & \mr{3}{$14,509$} & Neg      & (39.8\%)\\
-                                          &                    &                & Neu      & (29.5\%)\\
-                                          &                    &                & Pos      & (30.7\%)\\
+        \rule{0pt}{4ex}\mr{7}{Análisis de Emociones}&\mr{7}{EmoEvent}&\mr{7}{$\num{8409}$}  & Otra    & 49.0\%  \\
+                                          &                    &                & Alegría  & 21.6\%  \\
+                                          &                    &                & Tristeza & 12.0\%  \\
+                                          &                    &                & Ira      & 10.2\%  \\
+                                          &                    &                & Sorpresa & 4.1\%  \\
+                                          &                    &                & Disgusto & 1.9\%  \\
+                                          &                    &                & Miedo    & 1.1\%  \\
         \hline
-        \mr{7}{Análisis de Emociones}&\mr{7}{EmoEvent}&\mr{7}{$8,409$}  & Otra    & (49.08\%)  \\
-                                          &                    &                & Alegría  & (21.6\%)  \\
-                                          &                    &                & Tristeza & (12.0\%)  \\
-                                          &                    &                & Ira      & (10.2\%)  \\
-                                          &                    &                & Sorpresa & (4.1\%)  \\
-                                          &                    &                & Disgusto & (1.9\%)  \\
-                                          &                    &                & Miedo    & (1.1\%)  \\
-        \hline
-        \mr{2}{Detección de Ironía}  & \mr{2}{IroSVa 2019}     & \mr{2}{$9,000$}  & No irónico   & (66.7\%)\\
-                                          &                    &                & Irónico      & (33.3\%)\\
+        \rule{0pt}{4ex}\mr{2}{Detección de Ironía}  & \mr{2}{IroSVa 2019}     & \mr{2}{$\num{9000}$}  & No irónico   & 66.7\%\\
+                                          &                    &                & Irónico      & 33.3\%\\
         %Análisis de Emociones     &  TASS 2020/EmoEvent\cite{plaza-del-arco-etal-2020-emoevent} & 7 & 1,879 \\
-        \hline
+        \thline{2}
     \end{tabular}
     \caption{Tareas evaluadas en este capítulo, junto a datos estadísticos de los datasets utilizados}
     \label{tab:03_tasks}
