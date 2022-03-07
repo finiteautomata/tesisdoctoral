@@ -145,6 +145,7 @@ Como función de costo, empleamos la suma de las funciones de costo de cada cara
 Para tener costos computacionales más amigables, limitamos los largos de las secuencias a 128, 256 y 512 tokens para los modelos con entrada sin contexto, tweet, y tweet+cuerpo respectivamente. Preprocesamos ambos tweets --contexto y texto-- utilizando las técnicas descriptas en la Sección \ref{sec:03_preprocessing}: conversión de usernames a un token especial (\verb|usuario|), tratamiento de hashtags (separación e inserción de un hashtag especial), y conversión de emojis a su representación textual. La Figura \ref{fig:05_multi_bert_classifier} ilustra el modelo de clasificación para la tarea granular, junto a los tres tipos de entrada considerados. La configuración de hiperparámetros utilizados en el entrenamiento es la misma que la detallada en la Sección \ref{sec:03_classification}.
 
 \subsection{Adaptación de dominio}
+\label{sec:06_domain_adaptation}
 
 Una práctica cada vez más extendida en trabajos del área de clasificación de documentos es realizar una adaptación de dominio para mejorar la performance sobre la tarea final. La técnica de adaptación de dominio para modelos de lenguaje pre-entrenados consiste en continuar el pre-entrenamiento sobre un dataset grande y no supervisado relacionado a nuestro dominio o directamente sobre el dataset de la tarea si no tenemos acceso a otros datos \cite{gururangan-etal-2020-dont}. En la Sección \ref{sec:domain_adaptation_previous_work} del siguiente capítulo haremos una reseña más extensa de esta técnica, pero por lo pronto podemos entender que esta técnica ajusta el modelo de lenguaje a nuestros datos, ya que estos pueden tener diferencias considerables respecto de los empleados en el pre-entrenamiento. En nuestro caso puntual, mientras \beto{} fue entrenado en Wikipedia y textos formales, nuestro dominio consta de comentarios en Twitter a notas periodísticas, con expresiones muy distintas a las encontradas en medios más formales.
 
@@ -219,7 +220,7 @@ La Tabla \ref{tab:ia_f1_scores} contiene las medias y medianas del puntaje F1 ta
 
 
 \section{Resultados}
-
+\label{sec:06_results}
 \input{src/06_results.tex}
 
 \section{Comparación de clasificadores y análisis de error}

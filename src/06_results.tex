@@ -31,7 +31,7 @@ La Tabla \ref{tab:task_a_results} contiene los resultados para la tarea de clasi
         Métrica        &\mc{2}{Sin Contexto}& \mc{2}{Tweet}          &  \mc{2}{Tweet + Cuerpo}    \\
                        & $\neg$FT&    FT    & $\neg$FT   &    FT     & $\neg$ FT&    FT     \\
         \hline
-        Calls          & $64.6$ &    $65.1$   & $63.8$ &$\mbf{68.5}$  & $65.3$ &    $68.0$    \\
+        LLAMA          & $64.6$ &    $65.1$   & $63.8$ &$\mbf{68.5}$  & $65.3$ &    $68.0$    \\
         MUJER          & $37.3$ &    $38.9$   & $41.1$ &$\mbf{42.1}$  & $38.1$ &$\mbf{42.1}$ \\
         LGBTI          & $35.1$ &    $36.6$   & $45.1$ &$\mbf{48.2}$  & $42.7$ &    $44.5$    \\
         RACISMO        & $63.5$ &    $65.3$   & $68.8$ &$\mbf{72.0}$  & $69.1$ &    $71.1$    \\
@@ -50,7 +50,7 @@ La Tabla \ref{tab:task_a_results} contiene los resultados para la tarea de clasi
         % Hate F1        & 0.648 &    0.668   & 0.679 &\textbf{0.710}  & 0.679 &    0.697    \\
         \bottomrule
         \end{tabular}
-    \caption{Resultados de los experimentos de clasificación para la tarea \emph{granular} de detección de discurso de odio, expresados como la media de las distintas métricas sobre diez corridas independientes. Cada modelo es un BERT con tres posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la sección \ref{sec:contextualized_classifiers}}
+    \caption{Resultados de los experimentos de clasificación para la tarea \emph{granular} de detección de discurso de odio, expresados como la media de las distintas métricas sobre diez corridas independientes. Cada modelo es un BERT con tres posibles entradas: sólo el comentario (\emph{Sin contexto}), el tweet de la noticia a la cual responde el comentario (\emph{Tweet}), y el tweet más el cuerpo de la noticia (\emph{Tweet + Cuerpo}). Para cada una de estas posibilidades usamos dos versiones: una sobre BETO($\neg$FT) y otra sobre BETO ajustado al dominio (FT) de acuerdo a lo descripto en la Sección \ref{sec:contextualized_classifiers}}
     \label{tab:task_b_results}
 \end{table*}
 
