@@ -151,7 +151,7 @@ Para más detalles sobre los conjuntos de datos y cuestiones puntuales de cada t
 
 \begin{itemize}
     \item \beto{} \cite{canete2020spanish}, tanto en versión cased como uncased.
-    \item \emph{RoBERTa-BNE} \cite{gutierrezfandino2021spanish}, un modelo RoBERTa entrenado sobre una base de datos de 500GB de todos los sitios \emph{.es}
+    \item \emph{RoBERTa$_{ES}$} (o RoBERTa$_{BNE}$) \cite{gutierrezfandino2021spanish}, un modelo RoBERTa entrenado sobre una base de datos de 500GB de todos los sitios \emph{.es}
     \item \emph{BERTin}\footnote{\url{https://huggingface.co/bertin-project/bertin-roberta-base-spanish}}, otro modelo RoBERTa entrenado en el contexto de un evento de la comunidad Flax/Jax \footnote{\url{https://discuss.huggingface.co/t/open-to-the-community-community-week-using-jax-flax-for-nlp-cv/7104}}, en el cual los autores exploraron diferentes estrategias de muestreo para entrenar este modelo en relativamente poco tiempo sobre la sección en español del corpus \emph{mc4}, creado para entrenar T5 \cite{raffel2020exploringt5}.
 \end{itemize}
 
@@ -162,41 +162,39 @@ Cada uno de estos modelos comparte una arquitectura similar a \robertuito{} y un
 
 \begin{table}
     \centering
-    \footnotesize
-    \begin{tabular}{l ccccc c}
-        Modelo             & CONTEXT             &  HATE             &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
+    \begin{tabular}{l ccccc }
+        Modelo                & CONTEX             &  ODIO                 &  SENTIM        &  EMOCIÓN             &  IRONÍA               \\
         \hline
-        beto$_U$       & $0.591 \pm 0.006$ &  $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.644 \\
-        bertin             & $0.557 \pm 0.008$ &  $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.645 \\
-        beto$_C$         & $0.582 \pm 0.007$ &  $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.649 \\
-        roberta-bne        & $0.577 \pm 0.004$ &  $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.654 \\
-        \hline
-        robertuito$_C$   & $0.590 \pm 0.005$ &  $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.664 \\
-        robertuito$_D$   & $0.593 \pm 0.006$ &  $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.675 \\
-        robertuito$_U$ & $0.593 \pm 0.004$ &  $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.678 \\
+        \robertuito{}$_U$     & $\mbf{59.3 \pm 0.4}$ &  $\mbf{80.1 \pm 1.0}$ & $\mbf{70.7 \pm 0.4}$ & $\mbf{55.1 \pm 1.1}$ & $73.6 \pm 0.8$  \\
+        \robertuito{}$_D$     & $\mbf{59.3 \pm 0.6}$ &  $79.8 \pm 0.8$       & $70.2 \pm 0.4$       & $54.3 \pm 1.5$       & $\mbf{74.0 \pm 0.6}$  \\
+        \robertuito{}$_C$     & $59.0 \pm 0.5$       &  $79.0 \pm 1.2$       & $70.1 \pm 1.2$       & $51.9 \pm 3.2$       & $71.9 \pm 2.3$  \\
+        \roberta{}$_{ES}$     & $57.7 \pm 0.4$       &  $76.6 \pm 1.5$       & $66.9 \pm 0.6$       & $53.3 \pm 1.1$       & $72.3 \pm 1.7$  \\
+        BERTin                & $55.7 \pm 0.8$       &  $76.7 \pm 0.5$       & $66.5 \pm 0.3$       & $51.8 \pm 1.2$       & $71.6 \pm 0.8$  \\
+        \beto{}$_U$              & $59.1 \pm 0.6$       &  $75.7 \pm 1.2$       & $64.9 \pm 0.5$       & $52.1 \pm 0.6$       & $70.2 \pm 0.8$  \\
+        \beto{}$_C$              & $58.2 \pm 0.7$       &  $76.8 \pm 1.2$       & $66.5 \pm 0.4$       & $52.1 \pm 1.2$       & $70.6 \pm 0.7$  \\
         \hline
     \end{tabular}
-    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CONTEXT es contextualized hate speech, HATE es hate speech detection sobre el dataset de HatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. El score es el promedio de todas las tareas.}
+    \caption{Resultados de los experimentos de clasificación sobre el benchmark de tareas sociales. CONTEX es la tarea de detección contextualizada de discurso de odio, ODIO es detección de discurso de odio, SENTIM, EMOCIÓN E IRONÍA son análisis de sentimiento, emociones e ironía. Resultado expresado en porcentaje de la métrica correspondiente a cada tarea y como la media $\pm$ desviación de diez corridas de los experimentos. U, C, y D significan \emph{uncased, cased y deacc} respectivamente. Más grande es mejor.}
     \label{tab:robertuito_evaluation_results}
 \end{table}
 
 
-La tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los modelos seleccionados para las cinco tareas de clasificación propuestas. Los resultados se muestran como la media de quince ejecuciones de los experimentos, junto con la desviación estándar, junto a un \textbf{score} promediando las puntuaciones de cada tarea de forma similar a lo hecho en GLUE \cite{wang-etal-2018-glue}. Podemos observar que en la mayoría de los casos, todas las configuraciones de \robertuito{} funcionan significativamente por encima de otros modelos, en particular para las tareas de Discurso de odio y Sentimiento. El único caso donde esto no ocurre es en la tarea de detección de discurso de odio contextualizado, donde si bien hay una mejora, es marginal y no significativa.
+La Tabla \ref{tab:robertuito_evaluation_results} muestra los resultados de la evaluación de los modelos seleccionados para las cinco tareas de clasificación propuestas, expresados como la media $\pm$ desviación de diez ejecuciones de los experimentos. Podemos observar que en la mayoría de los casos, las tres configuraciones de \robertuito{} obtienen resultados por encima de los otros modelos, en particular para las tareas de discurso de odio y análisis de sentimiento. El único caso donde esto no ocurre es en la tarea de detección de discurso de odio contextualizado, donde si bien hay una mejora, es marginal y no significativa.
 
-Respecto a la comparación entre los tres modelos, analizamos las diferencias entre estos mediante una prueba de la diferencia de medias. Para ello, realizamos un test de Kruskal-Wallis \cite{kruskal1952use} para las performances de cada tarea. Existen diferencias significativas entre el desempeño de los tres modelos de \robertuito{} ($ H (3) = 6.88, p < 0.05 $ para Discurso de odio, $ H (3) = 9.90 , p < 0.01 $ para Análisis de sentimiento, $ H (3) = 11.85, p <0.01 $ para Análisis de emociones, $ H (3) = 11.54, p <0.01 $ para Detección de ironía), no así para la detección de odio contextualizado ($H(3)=3.59, p > 0.15$).
+Analizamos las diferencias entre los tres modelos de \robertuito{} mediante un test de Kruskal-Wallis \cite{kruskal1952use} para las performances de cada tarea. Los resultados muestran diferencias significativas entre el desempeño de los tres modelos de \robertuito{} para todas las tareas analizadas ($ H(3)=6.88, p<0.05$ para Discurso de odio, $H(3)=9.90, p<0.01$ para Análisis de sentimiento, $H(3)=11.85, p<0.01 $ para Análisis de emociones, $H(3)=11.54, p<0.01 $ para Detección de ironía), con la excepción de la tarea de discurso de odio contextualizado ($H(3)=3.59, p > 0.15$).
 
-Para verificar las diferencias significativas entre las performances de los tres modelos para las 4 tareas mencionadas, realizamos un análisis post-hoc con un test de Dunn (con corrección de Benjamini-Hochberg). \todo{Mandar tablas a un apéndice} Exceptuando la tarea de análisis de sentimientos, la versión \emph{cased} muestra siempre diferencias significativas contra las versiones \emph{uncased} o \emph{deacc}. Sin embargo, no se encuentran diferencias significativas entre las versiones \emph{uncased} y \emph{deacc}.
+Para verificar las diferencias significativas entre las performances de los tres modelos para las 4 tareas mencionadas, realizamos un análisis post-hoc con un test de Dunn (con corrección de Benjamini-Hochberg). Exceptuando la tarea de análisis de sentimientos, la versión \emph{cased} muestra siempre diferencias significativas contra las versiones \emph{uncased} o \emph{deacc}. Sin embargo, no se encuentran diferencias significativas entre las versiones \emph{uncased} y \emph{deacc}.
 
 Este resultado puede leerse de dos maneras: primero, que una normalización más fuerte (remover las tildes) del texto de entrada en español no produce una mejora significativa en el rendimiento de los modelos; también, que mantener las tildes en el texto de entrada no es beneficioso ni perjudicial para el rendimiento del modelo.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{img/robertuito/length_tokens.pdf}
-    \caption{Distribución de la cantidad de tokens por instancia para los tokenizadores de cada modelo. Las barras están agrupadas por tarea y muestran la media de la distribución junto a su intervalo de confianza a 95\%.}
+    \caption{Distribución de la cantidad de tokens por instancia para los tokenizadores de cada modelo. Las barras están agrupadas por tarea y muestran la media de la distribución junto a su intervalo de confianza a 95\%. Más chico es mejor.}
     \label{fig:length_tokens}
 \end{figure}
 
-La figura \ref{fig:length_tokens} muestra la distribución del número de tokens en el texto de entrada agrupados por tarea. Podemos observar que los modelos de \robertuito{} tienen representaciones más compactas que BETO  y \emph {RoBERTa-BNE} ; sin embargo, \emph{bertin} parece tener representaciones iguales o más compactas que él, a pesar de su menor rendimiento en general. Además, entre los modelos de \robertuito{}, podemos observar que la versión \deacc{} tiene una longitud media ligeramente menor en comparación con la versión \uncased{}.
+La Figura \ref{fig:length_tokens} muestra la distribución del número de tokens en el texto de entrada agrupados por tarea. Podemos observar que los modelos de \robertuito{} tienen representaciones más compactas que \beto{} y \emph {RoBERTa-BNE}. \emph{BERTin}, a pesar de su menor rendimiento en general, tiene un tamaño medio comparable al de nuestro modelo. Entre los modelos de \robertuito{}, podemos observar que la versión \deacc{} tiene una longitud media ligeramente menor en comparación con la versión \uncased{}. En suma, esto indicaría que los modelos de \robertuito{} logran codificar de manera más eficiente los tweets de los distintos conjuntos de datos considerados.
 
 
 \section{Adaptación de modelos pre-entrenados}
