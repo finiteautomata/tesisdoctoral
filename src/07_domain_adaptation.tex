@@ -234,9 +234,6 @@ Para entrenar estos modelos, usamos una TPU v2-8, donde cada paso de optimizaci�
 
 En la Figura \ref{fig:robertuito_vs_domain_barplot_results} se ilustra el desempeño sobre el benchmark de tareas para los modelos de lenguaje \beto{} y \robertuito{}, así como también para las versiones con ajuste de dominio de \beto{}. Para ambos casos, aumentar el pre-entrenamiento pareciera coincidir con una mejor performance, aunque dentro de los modelos \emph{uncased}, el que fue optimizado por \num{5000} pasos pareciera haber empeorado su rendimiento general. Esta tendencia, sin embargo, no se cumple en el caso de la tarea de detección contextualizada de discurso de odio. Una posible razón detrás de esto es que la tarea planteada tiene diferencias con el dominio sobre el cual ajustamos: utilizamos pares de tweets, uno de ellos (el contexto) proveniente de un medio periodístico. También puede argumentarse que el dominio de tweets en general es demasiado amplio \cite{eisenstein2013bad}: para el caso de nuestra tarea, el pre-entrenamiento sobre datos generados de la distribución general de tweets no pareciera ser beneficioso.
 
-\todo{Mandar esta observación a la discusión}
-%En el caso de los modelos \emph{uncased}, esta mejora es un poco menos clara: por ejemplo, podemos observar que a los 5,000 pasos de optimización la performance sufre una caída con respecto a otras tareas. Esto puede deberse a problemas en la recolección de datos en los cuales entrenamos \robertuito{}, que se magnifican al realizar pocas actualizaciones. Sin embargo, salvando este caso puntual, observamos mejoras en todas las tareas, otra vez salvando el caso de la detección de odio contextualizada.
-
 
 
 \begin{table}[ht]
