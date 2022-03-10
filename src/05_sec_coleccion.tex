@@ -8,11 +8,11 @@
     \begin{tabular}{ l l r }
         Nombre     &  username          & \#Followers \\
         \hline
-        La Nación  &  @LANACION         & 3.6M            \\
-        Clarín     &  @clarincom        & 3.2M        \\
-        Infobae    &  @infobae          & 3.0M   \\
-        Perfil     &  @perfilcom        & 0.8M    \\
-        Crónica    &  @cronica          & 0.8M     \\
+        La Nación  &  @LANACION         & \num{3.6}M            \\
+        Clarín     &  @clarincom        & \num{3.2}M        \\
+        Infobae    &  @infobae          & \num{3.0}M   \\
+        Perfil     &  @perfilcom        & \num{0.8}M    \\
+        Crónica    &  @cronica          & \num{0.8}M     \\
         \hline
     \end{tabular}
     \caption{Cuentas de medios utilizadas para la recolección de datos, junto a sus nombres de usuarios y la cantidad de seguidores en Twitter (al momento de la recolección)}
@@ -64,14 +64,15 @@ Por último, nos quedamos con aquellos tweets de los medios periodísticos que t
     \centering
     \begin{tabular}{l rr}
     Medio      & \#Artículos & \#Comentarios \\
+    \thline{2}
+    @infobae   &  \num{45652}   &  \num{822462} \\
+    @clarincom &  \num{29050}   &  \num{672401} \\
+    @perfilcom &   \num{8764}   &   \num{61203}  \\
+    @LANACION  &  \num{16040}   &  \num{506091} \\
+    @cronica   &  \num{17250}   &   \num{70872} \\
     \hline
-    @infobae   &  $45,652$   &  $822,462$ \\
-    @clarincom &  $29,050$   &  $672,401$ \\
-    @perfilcom &   $8,764$   &   $61,203$  \\
-    @LANACION  &  $16,040$   &  $506,091$ \\
-    @cronica   &  $17,250$   &   $70,872$ \\
-    \hline
-    Total      & $116,756$  & $2,133,029$ \\
+    Total      & \num{116756}   & \num{2133029} \\
+    \thline{2}
     \end{tabular}
     \caption{Elementos recolectados por cada medio, medidos en cantidad de artículos (tweets de los medios + artículos correspondientes) y cantidad de comentarios (respuestas en Twitter a los primeros)}
     \label{tab:articulos_recoletados_por_medio}

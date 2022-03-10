@@ -80,7 +80,7 @@ Las instancias del dataset poseen las siguientes etiquetas:
 
 
 
-La Tabla \ref{tab:hateval_dataset} muestra los números para cada partición, cada idioma, y cada una de las etiquetas. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español que para el inglés. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los tweets. La tabla \ref{tab:hateval_dataset_examples} posee algunos ejemplos para cada una de las características en cuestión para la porción en español, que es la de nuestro interés.
+La Tabla \ref{tab:hateval_dataset} muestra los números para cada partición, cada idioma, y cada una de las etiquetas. Podemos observar entre los dos idiomas que, si bien la proporción de discurso de odio se mantiene muy similar (58\% vs 42\% aproximadamente), la proporción de discurso de odio individualizado (TR) y agresivo (AG) es notoriamente más alto para el español que para el inglés. Esto puede deberse, entre otras cosas, a distintas estrategias de recolección de los tweets. La Tabla \ref{tab:hateval_dataset_examples} posee algunos ejemplos para cada una de las características en cuestión para la porción en español, que es la de nuestro interés.
 
 \section{Tareas de clasificación}
 
@@ -177,7 +177,7 @@ Al momento de realizar inferencia, realizamos las evaluaciones de los modelos re
 \newcommand{\esrow}[1]{\multirow{#1}{*}{es}}
 \newcommand{\enrow}[1]{\multirow{#1}{*}{en}}
 
-\begin{table}[ht!]
+\begin{table}[t]
     \centering
     \begin{tabular}{l c c c c c}
         Modelo       & Idioma      & Precision    & Recall       & F1            & Macro F1 \\
@@ -201,7 +201,7 @@ La Tabla \ref{tab:hateval_task_a} muestra los resultados de la evaluación para 
 Para ambos idiomas, los modelos basados en Transformers \cite{vaswani2017attention} obtienen la mejor performance, con considerables mejoras respecto a los modelos basados en ELMo y a los SVMs \footnote{Un modelo que no evaluamos en el presente trabajo es la versión en español de RoBERTa, recientemente entrenada. En el capítulo 7 evaluaremos su rendimiento en esta tarea}. Particularmente, en el caso del inglés, \bertweet{} \cite{dat2020bertweet} obtiene la mejor Macro F1, algo esperable considerando que está particularmente diseñado para Twitter.
 
 
-\begin{table}[ht!]
+\begin{table}[t!]
     \centering
     \begin{tabular}{lll ccc cc}
         Modelo            &        & Idioma      &  HS F1       & TR F1        &  AG F1      &  Macro F1    &   EMR           \\
@@ -230,7 +230,7 @@ Para ambos idiomas, los modelos basados en Transformers \cite{vaswani2017attenti
 \end{table}
 
 
-La tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por la Macro F1 de las 3 variables mencionadas y el Exact Match Ratio. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: \emph{multi} refiere a clasificación múltiple, \emph{hier} a clasificación múltiple con la función de costo jerárquica, y \emph{combi} a la conversión del problema en una clasificación de cinco clases.
+La Tabla \ref{tab:hateval_task_b} muestra los resultados de la \subtaskb{}, reportado por las F1 de cada variable predicha (HS, TR, AG), así como por la Macro F1 de las 3 variables mencionadas y el Exact Match Ratio. Los resultados están expresados como la media de 10 corridas independientes del experimento para cada configuración distinta. Consideramos las 3 versiones: \emph{multi} refiere a clasificación múltiple, \emph{hier} a clasificación múltiple con la función de costo jerárquica, y \emph{combi} a la conversión del problema en una clasificación de cinco clases.
 
 Podemos observar que para español, la mejor performance en términos de EMR (la métrica más estricta) es el clasificador entrenado con la función de costo definida en \ref{eq:hierarchical_loss} (con el hiperparámetro $\gamma = 0.1$); sin embargo, la diferencia entre las performances no es significativa al correr un test de Kruskal-Wallis ($H(9) = 3.492, p = 0.174$). En términos de Macro F1, la mejor performance es de \beto{} con la salida múltiple y sin la función de costo jerárquica (\emph{multi}) pero de nuevo esta diferencia no es significativa ($H(9) = 3.656, p=0.16$).
 
@@ -238,7 +238,7 @@ Respecto al inglés, los mejores resultados pueden observarse en el modelo entre
 
 
 
-\begin{table}[t]
+\begin{table}[b]
     \centering
     \begin{tabular}{l  l l  c c c c}
         Modelo              & Idioma        &  Tarea  &     Precision  &   Recall        &          F1    &  Macro F1       \\

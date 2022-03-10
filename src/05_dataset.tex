@@ -100,7 +100,7 @@ En algunos trabajos previos, la recolección y selección constan conjuntamente 
 
 \section{Resultados}
 
-\begin{table}
+\begin{table}[t]
     \centering
     % \begin{tabular}{lrr}
     %     \toprule
@@ -109,22 +109,24 @@ En algunos trabajos previos, la recolección y selección constan conjuntamente 
     %     Hateful Tweets &   8715  \\
     %     Ratio          &   0.153 \\
     % \end{tabular}
-    \begin{tabular}{lrr}
-        \toprule
-        Característica &  Número &  Llamadas a acción \\
-        \midrule
-        RACISMO        &   \num{2469} & \num{ 674} \\
-        APARIENCIA     &   \num{1803} & \num{  34} \\
-        CRIMINAL       &   \num{1642} & \num{ 722} \\
-        POLITICA       &   \num{1428} & \num{ 136} \\
-        MUJER          &   \num{1332} & \num{  18} \\
-        CLASE          &   \num{ 823} & \num{ 135} \\
-        LGBTI          &   \num{ 818} & \num{  11} \\
-        DISCAPACIDAD   &   \num{ 580} & \num{   4} \\
-        TOTAL          &   \num{8715} & \num{1451} \\
-        \bottomrule
+    \
+    \begin{tabular}{lrrr}
+        \thline{2}
+        Característica &  Cantidad      &  Llamadas & $\alpha$ \\
+        \hline
+        RACISMO        &   \num{2469} & \num{ 674}         & \num{0.93}\\
+        APARIENCIA     &   \num{1803} & \num{  34}         & \num{0.87}\\
+        CRIMINAL       &   \num{1642} & \num{ 722}         & \num{0.93}\\
+        POLITICA       &   \num{1428} & \num{ 136}         & \num{0.81}\\
+        MUJER          &   \num{1332} & \num{  18}         & \num{0.78}\\
+        CLASE          &   \num{ 823} & \num{ 135}         & \num{0.71}\\
+        LGBTI          &   \num{ 818} & \num{  11}         & \num{0.92}\\
+        DISCAPACIDAD   &   \num{ 580} & \num{   4}         & \num{0.85}\\
+        \hline
+        TOTAL          &   \num{8715} & \num{1451}         & \num{0.58}\\
+        \thline{2}
     \end{tabular}
-    \caption{Datos desagregados por característica de los comentarios discriminatorios del conjunto de datos resultante. Se listan además la cantidad de llamados a la acción dentro de cada una. Notar que el total no corresponde con la suma de las columnas ya que un mismo comentario puede estar asignado a más de una característica.}
+    \caption{Datos por característica de los comentarios discriminatorios del conjunto de datos resultantantes, junto a la tasa de acuerdo medida por $\alpha$ de Krippendorff. El acuerdo sobre \emph{discurso de odio} es reportado sobre todos los etiquetadores que hayan analizado cada comentario. Para el resto de las características, el acuerdo es calculado sólo sobre aquellas anotaciones que marcaron discurso de odio.}
     \label{tab:dataset_figures}
 
 \end{table}
@@ -136,32 +138,30 @@ El conjunto resultante consta de \num{1238} artículos etiquetados, y \num{56869
 La Tabla \ref{tab:dataset_figures} contiene los números de los comentarios anotados y desagregados por las distintas características consideradas y los llamados a la acción. La categoría con más comentarios es RACISMO, seguido por APARIENCIA y CRIMINAL. Dentro de los tweets que llaman a algún tipo de acción, se coloca en primer lugar los dirigidos hacia la categoría CRIMINAL, muchos en la forma de llamados a matar a criminales y delincuentes. La categoría RACISMO acapara también muchos llamados a la acción, mayormente contra población china a la que se culpa de la pandemia del COVID-19 y conteniendo llamados a tomar distintas sanciones contra sus integrantes.
 
 
-\begin{table}
-    \centering
-    \begin{tabular}{lc}
-        \toprule
-        Categoría   & $\alpha$  \\
-        \midrule
-        Discurso de odio     &  \num{0.58} \\
-        Llamados a la acción &  \num{0.64} \\
-        \hline
-        MUJER                &  \num{0.78} \\
-        LGBTI                &  \num{0.92} \\
-        RACISMO              &  \num{0.93} \\
-        CLASE                &  \num{0.71} \\
-        POLITICA             &  \num{0.81} \\
-        DISCAPACIDAD         &  \num{0.85} \\
-        APARIENCIA           &  \num{0.87} \\
-        CRIMINAL             &  \num{0.93} \\
-        \bottomrule
-    \end{tabular}
-    \caption{Tabla de acuerdo para la etiqueta de discurso de odio y diferentes características medido por $\alpha$ de Krippendorff. El acuerdo sobre \emph{discurso de odio} es reportado sobre todos los etiquetadores que hayan analizado cada comentario. Para el resto de las características, el acuerdo es calculado sólo sobre aquellas anotaciones que marcaron discurso de odio.}
-    \label{tab:annotation_agreement}
-\end{table}
+% \begin{table}[t]
+%     \centering
+%     \small
+%     \begin{tabular}{lc}
+%         \toprule
+%         Categoría   & $\alpha$  \\
+%         \midrule
+%         Discurso de odio     &  \num{0.58} \\
+%         Llamados a la acción &  \num{0.64} \\
+%         MUJER                &  \num{0.78} \\
+%         LGBTI                &  \num{0.92} \\
+%         RACISMO              &  \num{0.93} \\
+%         CLASE                &  \num{0.71} \\
+%         POLITICA             &  \num{0.81} \\
+%         DISCAPACIDAD         &  \num{0.85} \\
+%         APARIENCIA           &  \num{0.87} \\
+%         CRIMINAL             &  \num{0.93} \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{}
+%     \label{tab:annotation_agreement}
+% \end{table}
 
-La Tabla \ref{tab:annotation_agreement} reporta el acuerdo entre anotadores usando la métrica \emph{alfa de Krippendorff} \cite{krippendorff2018content}. Esta métrica mide el acuerdo entre diversos anotadores, donde $1$ es acuerdo total, y 0 o valores negativos indican ningún tipo de acuerdo. Puede entenderse como una generalización de la métrica \emph{kappa de Fleiss} para el caso en que los anotadores no etiqueten todas las instancias. Utilizamos para su cálculo la implementación en Python de la librería \emph{krippendorff} \footnote{\url{https://github.com/pln-fing-udelar/fast-krippendorff}}.
-
-Reportamos en primer lugar el acuerdo para HS sobre todas las etiquetas. En el caso de las etiquetas del segundo nivel del modelo jerárquico (características y llamado a la acción) calculamos el acuerdo sólo sobre aquellas que hayan marcado que el comentario contiene discurso de odio. Esto es equivalente en términos del cálculo propuesto en \citet{krippendorff2018content} a calcular el acuerdo con una etiqueta faltante en el segundo nivel para aquellos anotadores que hayan marcado que no hay HS.
+En la misma tabla se reporta el acuerdo entre anotadores usando la métrica \emph{alfa de Krippendorff} \cite{krippendorff2018content}. Esta métrica mide el acuerdo entre diversos anotadores, donde $1$ es acuerdo total, y 0 o valores negativos indican ningún tipo de acuerdo. Puede entenderse como una generalización de la métrica \emph{kappa de Fleiss} para el caso en que los anotadores no etiqueten todas las instancias. Utilizamos para su cálculo la implementación en Python de la librería \emph{krippendorff} \footnote{\url{https://github.com/pln-fing-udelar/fast-krippendorff}}. Reportamos en primer lugar el acuerdo para HS sobre todas las etiquetas. En el caso de las etiquetas del segundo nivel del modelo jerárquico (características y llamado a la acción) calculamos el acuerdo sólo sobre aquellas que hayan marcado que el comentario contiene discurso de odio. Esto es equivalente en términos del cálculo propuesto en \citet{krippendorff2018content} a calcular el acuerdo con una etiqueta faltante en el segundo nivel para aquellos anotadores que hayan marcado que no hay HS.
 
 Si bien el acuerdo sobre cada característica tiende a ser alto, debe leerse como el acuerdo sobre la razón detrás del discurso de odio. La mayor penalización queda reservada a la etiqueta de discurso de odio que tiene $\alpha = 0.58$, algo que podría marcarse como un acuerdo razonable teniendo en cuenta valores observados en la literatura \cite{poletto2021resources}.
 
@@ -189,7 +189,7 @@ Si bien el acuerdo sobre cada característica tiende a ser alto, debe leerse com
         \label{subfig:heatmap_characteristics_article}
     \end{subfigure}
 
-    \caption{Matrices de co-ocurrencias de características ofendidas. La figura \ref{subfig:heatmap_characteristics_comment} muestra la co-ocurrencia dentro de un mismo comentario, y la figura \ref{subfig:heatmap_characteristics_article} muestra la co-ocurrencia dentro de los comentarios de un mismo artículo. Más luminoso indica más co-ocurrencia}
+    \caption{Matrices de co-ocurrencias de características ofendidas. La Figura \ref{subfig:heatmap_characteristics_comment} muestra la co-ocurrencia dentro de un mismo comentario, y la Figura \ref{subfig:heatmap_characteristics_article} muestra la co-ocurrencia dentro de los comentarios de un mismo artículo. Más luminoso indica más co-ocurrencia}
     \label{fig:heatmap_characteristics}
 \end{figure}
 
@@ -269,4 +269,4 @@ Con este conjunto de datos como insumo, pasaremos ahora a analizar un punto que 
 \section{Notas}
 
 
-En el Apéndice \ref{app:02} se encuentra el manual de etiquetado como así información adicional sobre la construcción del conjunto de datos. La herramienta de etiquetado puede encontrarse en \url{https://github.com/finiteautomata/news-labelling}.
+En el Apéndice \ref{app:05} se encuentra el manual de etiquetado como así información adicional sobre la construcción del conjunto de datos. La herramienta de etiquetado puede encontrarse en \url{https://github.com/finiteautomata/news-labelling}.
