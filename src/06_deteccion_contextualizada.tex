@@ -1,6 +1,6 @@
 \label{chap:06_contextualized_hate_speech}
 
-En este capítulo analizamos el impacto de añadir contexto en la tarea de detección de discurso de odio en redes sociales. Como hemos marcado en los capítulos anteriores, la utilización del contexto ha recibido poca atención en la literatura, limitando la tarea a analizar comentarios aislados de cualquier tópico relacionado o hilo conversacional. Para este estudio, utilizamos el conjunto de datos construído en el Capítulo \ref{chap:05_dataset_creation}, cuyos datos constan de comentarios de artículos periodísticos en Twitter.
+En este capítulo analizamos el impacto de añadir contexto en la tarea de detección de discurso de odio en redes sociales. Como hemos marcado en los capítulos anteriores, la utilización del contexto ha recibido poca atención en la literatura, limitando la tarea a analizar comentarios aislados de cualquier tópico relacionado o hilo conversacional. Para este estudio, utilizamos el conjunto de datos construido en el Capítulo \ref{chap:05_dataset_creation}, cuyos datos constan de comentarios de artículos periodísticos en Twitter.
 
 El formato de los datos empleados nos brinda información adicional a cada comentario tanto por el tweet del medio periodístico al que contestan como así también por el contenido del artículo. Para evaluar si la adición de contexto resulta en una mejora en la detección de discurso de odio, realizamos experimentos de clasificación con modelos que consumen tres tipos de entrada: el comentario sin contexto, el comentario junto al tweet del medio periodístico, y el comentario junto al tweet y el cuerpo del artículo asociado.
 
@@ -40,7 +40,7 @@ Un punto criticable de este trabajo es que utiliza el nombre de usuario como ent
 \end{figure*}
 
 
-En la Sección \ref{sec:dataset_previous} hemos descripto el conjunto de datos construído por \citet{pavlopoulos2020toxicity}, dedicado a la detección de toxicidad y que incorpora información conversacional sobre comentarios de Wikipedia Talk Pages. Nos detenemos un momento para analizar sus experimentos de clasificación ya que guardan importantes similaridades con lo hecho en este capítulo. En ese trabajo se obtuvieron dos conjuntos de entrenamiento: uno en el cual los etiquetadores tenían información del contexto, y otro conjunto en el que no. El conjunto de test, por otro lado, fue anotado teniendo en cuenta el contexto bajo la asunción de que el etiquetado es de mejor calidad al tener más información contextual. Sobre la base de estos datos, los autores plantearon dos preguntas:
+En la Sección \ref{sec:dataset_previous} hemos descripto el conjunto de datos construido por \citet{pavlopoulos2020toxicity}, dedicado a la detección de toxicidad y que incorpora información conversacional sobre comentarios de Wikipedia Talk Pages. Nos detenemos un momento para analizar sus experimentos de clasificación ya que guardan importantes similaridades con lo hecho en este capítulo. En ese trabajo se obtuvieron dos conjuntos de entrenamiento: uno en el cual los etiquetadores tenían información del contexto, y otro conjunto en el que no. El conjunto de test, por otro lado, fue anotado teniendo en cuenta el contexto bajo la asunción de que el etiquetado es de mejor calidad al tener más información contextual. Sobre la base de estos datos, los autores plantearon dos preguntas:
 
 \begin{itemize}
     \item ¿Mejora el rendimiento de los clasificadores que son entrenados con el conjunto de datos etiquetado con contexto?
@@ -171,7 +171,7 @@ Una práctica cada vez más extendida en trabajos del área de clasificación de
 \end{table}
 
 
-\citet{pavlopoulos2020toxicity} realizaron una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} sin utilizar ningún tipo de contexto. Proponemos, a diferencia de este trabajo, tres tipos de adaptaciones de acuerdo al contexto considerado: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia. Los datos usados para este ajuste fueron el sobrante de la recolección del anterior capítulo: alrededor de $288$ mil artículos con $5$ millones de comentarios que no están incluídos en el conjunto de datos etiquetado \footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}.
+\citet{pavlopoulos2020toxicity} realizaron una adaptación de dominio sobre los comentarios del corpus de \emph{Civil Comments} sin utilizar ningún tipo de contexto. Proponemos, a diferencia de este trabajo, tres tipos de adaptaciones de acuerdo al contexto considerado: una adaptación sin contexto, una adaptación con el contexto del tweet, y una adaptación con el contexto del tweet y el cuerpo de la noticia. Los datos usados para este ajuste fueron el sobrante de la recolección del anterior capítulo: alrededor de $288$ mil artículos con $5$ millones de comentarios que no están incluidos en el conjunto de datos etiquetado \footnote{Utilizamos algunos datos extra recolectados a posteriori de lo mencionado en el capítulo anterior}.
 
 
 
