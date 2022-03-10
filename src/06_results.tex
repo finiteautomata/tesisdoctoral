@@ -69,34 +69,31 @@ La Tabla \ref{tab:task_b_results} muestra los resultados de los experimentos de 
 La Figura \ref{fig:barplot_task_b_results} muestra los resultados por característica ordenados de mayor a menor según la diferencia de rendimiento entre los clasificadores ajustados a dominio que consumen contexto y aquellos que no lo hacen. Para todas las características se observa una mejora estadísticamente significativa al correr un test Mann-Whitney U ($p \leq 0.005$, p valores ajustados por múltiples comparaciones con Benjamini-Hochberg \cite{benjamini1995controlling}). Las diferencias más sustanciales se dan en el caso de CRIMINAL ($+17$ puntos F1 de diferencia), LGBTI ($+12$ puntos), CLASE ($+8$ puntos), y RACISMO (casi $+7$). Del otro lado, las características con menos mejora son APARIENCIA y POLITICA, algo esperable dado que el fenómeno tiene características poco dependientes del contexto como observamos en algunos ejemplos de la Sección \ref{sec:analisis_dataset_por_caracteristica} y por la misma definición y ejemplos considerados (ver Apéndice \ref{app:05}). Finalmente, y como resumen de estas tablas, se observa que los modelos con contexto simple son los que mejor performance tienen, en general y para cada característica, con la excepción de POLITICA.
 
 
-\begin{figure}[ht!]
+\begin{figure}[t]
     \centering
     \small
-    \begin{subfigure}[b]{\textwidth}
+    % \begin{subfigure}[b]{0.5\textwidth}
+    %     \centering
+    %     \caption{Precisión}
+    %     \includegraphics[width=0.99\textwidth]{img/06/precision_barplot.pdf}
+    % \end{subfigure}
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \caption{Precisión}
-        \includegraphics[width=0.75\textwidth]{img/06/precision_barplot.pdf}
-
-    \end{subfigure}
-    \begin{subfigure}[b]{\textwidth}
-        \centering
+        \includegraphics[width=\textwidth]{img/06/exact_recall_barplot.pdf}
         \caption{Sensibilidad exacta}
-        \includegraphics[width=0.75\textwidth]{img/06/exact_recall_barplot.pdf}
-
         \label{subfig:exact_recall}
     \end{subfigure}
-    \begin{subfigure}[b]{\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
+        \includegraphics[width=\textwidth]{img/06/hate_recall_barplot.pdf}
         \caption{Sensibilidad total}
-        \includegraphics[width=0.75\textwidth]{img/06/hate_recall_barplot.pdf}
-
         \label{subfig:total_recall}
     \end{subfigure}
     \caption{Precisión y sensibilidad para cada característica de la tarea granular. Las diferentes barras marcan el tipo de contexto que recibe el clasificador. Sensibilidad exacta (Figura \ref{subfig:exact_recall}) cuenta la sensibilidad sobre la salida exacta de cada categoría, mientras que la sensibilidad total cuenta como recuperado un tweet si al menos alguna característica del clasificador lo marca como discurso de odio.}
     \label{fig:precision_recall_granular_classifier}
 \end{figure}
 
-Una forma distinta de evaluar el rendimiento de los clasificadores granulares es de acuerdo a su sensibilidad o capacidad de recuperación de comentarios discriminatorios, aún cuando esto ocurra por el motivo incorrecto. La Figura \ref{fig:precision_recall} ilustra esta comparación analizando la sensibilidad de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, el clasificador debe predecir MUJER); y total, donde consideramos un tweet recuperado si alguna característica es marcada por el clasificador independientemente de si es la correcta. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor tasa de comentarios ofensivos recuperados. Análogamente, la categoría CLASE obtiene una mejora sustancial en su sensibilidad, algo compatible con el hecho de su solapamiento con otras características como RACISMO, POLITICA y CRIMINAL observado en la Figura \ref{fig:heatmap_characteristics}. También puede observarse que, en líneas generales, el contexto favorece una mejora de la precisión para cada característica y también un mayor recall exacto. Para el caso de la sensibilidad total, el desempeño de los clasificadores se empareja entre las versiones contextualizadas y no contextualizadas para cada característica con la excepción notoria de LGBTI y CRIMINAL.
+Una forma distinta de evaluar el rendimiento de los clasificadores granulares es de acuerdo a su sensibilidad o capacidad de recuperación de comentarios discriminatorios, aún cuando esto ocurra por el motivo incorrecto. La Figura \ref{fig:precision_recall_granular_classifier} ilustra esta comparación analizando la sensibilidad de dos maneras: exacta, donde consideramos recuperado un tweet sólo si el clasificador acierta a la característica analizada (es decir, si la característica es MUJER, el clasificador debe predecir MUJER); y total, donde consideramos un tweet recuperado si alguna característica es marcada por el clasificador independientemente de si es la correcta. Podemos ver que la categoría MUJER pasa de ser la de menor sensibilidad a dejar a la categoría LGBTI como la que tiene menor tasa de comentarios ofensivos recuperados. Análogamente, la categoría CLASE obtiene una mejora sustancial en su sensibilidad, algo compatible con el hecho de su solapamiento con otras características como RACISMO, POLITICA y CRIMINAL observado en la Figura \ref{fig:heatmap_characteristics}. También puede observarse que, en líneas generales, el contexto favorece una mejora de la precisión para cada característica y también un mayor recall exacto. Para el caso de la sensibilidad total, el desempeño de los clasificadores se empareja entre las versiones contextualizadas y no contextualizadas para cada característica con la excepción notoria de LGBTI y CRIMINAL.
 
 \begin{table}[hb!]
     \centering

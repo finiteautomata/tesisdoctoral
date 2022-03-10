@@ -82,7 +82,7 @@ Algunos comentarios y sus contextos --como los ejemplos 3, 7, 9, 10 y 11-- omite
 
 
 
-En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no son detectados por otras características ya que, por lo observado en la Figura \ref{fig:precision_recall_granular_classifier}, muchos ejemplos están en la frontera de otras categorías y son detectados por ellas. La Tabla \ref{tab:women_error_analysis} muestra una selección de estos falsos negativos, donde podemos apreciar que algunos ejemplos están en el borde borde de ser simplemente ofensivos (ejemplo 1 y posiblemente 6 y 7) o contienen mensajes irónicos complejos de descifrar (ejemplo 3, que las feministas celebren por la muerte de una mujer trans, o ejemplo 9, hablar de chocar mujeres en un curso de manejo). Esto es esperable dado el acuerdo relativamente bajo para la categoría MUJER en el etiquetado de este dataset reportado en la Tabla \ref{tab:annotation_agreement}.
+En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no son detectados por otras características ya que, por lo observado en la Figura \ref{fig:precision_recall_granular_classifier}, muchos ejemplos están en la frontera de otras categorías y son detectados por ellas. La Tabla \ref{tab:women_error_analysis} muestra una selección de estos falsos negativos, donde podemos apreciar que algunos ejemplos están en el borde borde de ser simplemente ofensivos (ejemplo 1 y posiblemente 6 y 7) o contienen mensajes irónicos complejos de descifrar (ejemplo 3, que las feministas celebren por la muerte de una mujer trans, o ejemplo 9, hablar de chocar mujeres en un curso de manejo). Esto es esperable dado el acuerdo relativamente bajo para la categoría MUJER en el etiquetado de este dataset reportado en la Tabla \ref{tab:dataset_figures}.
 
 
 
@@ -128,8 +128,6 @@ En el caso de MUJER, restringimos nuestro análisis a aquellos ejemplos que no s
                    %& Leche de cucaracha, la nueva bebida nutritiva: ¿quién se anima a probarla? & Uds pueden producir litros, son todes cucarachas y ratas!!!  \\
                    \rule{0pt}{3ex}14 &            & Martha Rosenberg: ``En situación de pandemia, legalizar el aborto es más urgente que nunca'' & La verdad que sí...así se dejan de reproducir!!!  \\
                    \hline
-        15 &            & Confusión por la foto de Alberto Fernández con activistas veganos en medio de las negociaciones con China por el acuerdo porcino & Quilombo en puerta con China, son un desastre \\
-        16 &            & La aberrante arenga machista que dio el preparador físico de Güemes de Santiago del Estero & Un capo. \\
         \hline
     \end{tabular}
     \caption{Ejemplos donde el clasificador contextualizado acierta y el no contextualizado falla. FN marca que el clasificador no contextualizado no detecta el comentario como discriminatorio (ni para la característica marcada ni para otras) mientras que el contextualizado sí lo hace; FP es al revés, que el clasificador no contextualizado marca erróneamente el comentario como discriminatorio  }
