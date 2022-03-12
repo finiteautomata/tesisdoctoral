@@ -1,7 +1,7 @@
 
 \section{Algunos detalles técnicos}
 
-Una pequeña observación técnica es el que el código de entrenamiento es una adaptación de los ejemplos de huggingface/transformers, ya que la inmensa cantidad de datos que manejamos(cerca de 500gb) no es manejada adecuadamente por la librería huggingface/datasets. Dejamos a quien esté interesado esta aclaración para adaptarla cuando este problema sea resuelto.
+Una pequeña observación técnica es el que el código de entrenamiento es una adaptación de los ejemplos de la librería \emph{huggingface/transformers}, ya que la inmensa cantidad de datos que manejamos(cerca de 500gb) no es manejada adecuadamente por esta librería. Dejamos a quien esté interesado esta aclaración para adaptarla cuando este problema sea resuelto.
 
 \section{Tabla completa de resultados}
 
@@ -11,32 +11,116 @@ En la Tabla \ref{tab:full_domain_adaptation_evaluation_results} tenemos los resu
 
 Podemos observar que, observando el score general, el mejor modelo adaptado a dominio para las versiones \emph{uncased} es beto$_{U10K}$, y para las versiones \emph{cased} es \beto{}$_{C5K}$; si bien en este último caso tiene una performance muy similar al de 20K pasos (de hecho, omitiendo la tarea de discurso de odio contextualizado gana por mínimo margen el de 20K).
 
-\begin{sidewaystable}
+\begin{table}
     \centering
-    \large
     \begin{tabular}{llllllr}
         \toprule
         Modelo             & CHATE                   &  HATE              &  SENTIMENT        &  EMOTION          &  IRONY            &     score \\
         \midrule
-        beto$_{U5K}$   & $0.557 \pm 0.007$ & $0.756 \pm 0.012$ & $0.654 \pm 0.005$ & $0.509 \pm 0.014$ & $0.684 \pm 0.007$ &  0.632 \\
-        beto$_U$        & $0.591 \pm 0.006$ & $0.757 \pm 0.012$ & $0.649 \pm 0.005$ & $0.521 \pm 0.006$ & $0.702 \pm 0.008$ &  0.644 \\
-        bertin          & $0.557 \pm 0.008$ & $0.767 \pm 0.005$ & $0.665 \pm 0.003$ & $0.518 \pm 0.012$ & $0.716 \pm 0.008$ &  0.645 \\
-        beto-cased      & $0.582 \pm 0.007$ & $0.768 \pm 0.012$ & $0.665 \pm 0.004$ & $0.521 \pm 0.012$ & $0.706 \pm 0.007$ &  0.648 \\
-        roberta-bne     & $0.577 \pm 0.004$ & $0.766 \pm 0.015$ & $0.669 \pm 0.006$ & $0.533 \pm 0.011$ & $0.723 \pm 0.017$ &  0.653 \\
-        beto$_{C2.5K}$  & $0.580 \pm 0.005$ & $0.771 \pm 0.007$ & $0.677 \pm 0.006$ & $0.525 \pm 0.010$ & $0.717 \pm 0.008$ &  0.654 \\
-        beto$_{C10K}$   & $0.574 \pm 0.008$ & $0.782 \pm 0.009$ & $0.680 \pm 0.006$ & $0.524 \pm 0.006$ & $0.720 \pm 0.007$ &  0.656 \\
-        beto$_{C20K}$   & $0.572 \pm 0.006$ & $0.777 \pm 0.009$ & $0.686 \pm 0.005$ & $0.517 \pm 0.009$ & $0.730 \pm 0.004$ &  0.656 \\
-        beto$_{C5K}$    & $0.576 \pm 0.002$ & $0.781 \pm 0.010$ & $0.677 \pm 0.004$ & $0.525 \pm 0.016$ & $0.724 \pm 0.009$ &  0.657 \\
-        beto$_{U20K}$   & $0.588 \pm 0.007$ & $0.768 \pm 0.012$ & $0.684 \pm 0.005$ & $0.533 \pm 0.016$ & $0.712 \pm 0.009$ &  0.657 \\
-        beto$_{U2.5K}$  & $0.588 \pm 0.004$ & $0.784 \pm 0.011$ & $0.676 \pm 0.005$ & $0.533 \pm 0.008$ & $0.715 \pm 0.007$ &  0.659 \\
-        beto$_{U10K}$   & $0.588 \pm 0.003$ & $0.775 \pm 0.015$ & $0.680 \pm 0.004$ & $0.553 \pm 0.009$ & $0.717 \pm 0.005$ &  0.663 \\
-        robertuito$_C$  & $0.590 \pm 0.005$ & $0.790 \pm 0.012$ & $0.701 \pm 0.012$ & $0.519 \pm 0.032$ & $0.719 \pm 0.023$ &  0.664 \\
-        robertuito$_{D}$& $0.593 \pm 0.006$ & $0.798 \pm 0.008$ & $0.702 \pm 0.004$ & $0.543 \pm 0.015$ & $0.740 \pm 0.006$ &  0.675 \\
-        robertuito$_U$  & $0.593 \pm 0.004$ & $0.801 \pm 0.010$ & $0.707 \pm 0.004$ & $0.551 \pm 0.011$ & $0.736 \pm 0.008$ &  0.678 \\
+        robertuito$_U$  & $59.3 \pm 0.4$ & $80.1 \pm 1.0$ & $70.7 \pm 0.4$ & $55.1 \pm 1.1$ & $73.6 \pm 0.8$ &  $67.8$ \\
+        robertuito$_{D}$& $59.3 \pm 0.6$ & $79.8 \pm 0.8$ & $70.2 \pm 0.4$ & $54.3 \pm 1.5$ & $74.0 \pm 0.6$ &  $67.5$ \\
+        robertuito$_C$  & $59.0 \pm 0.5$ & $79.0 \pm 1.2$ & $70.1 \pm 1.2$ & $51.9 \pm 3.2$ & $71.9 \pm 2.3$ &  $66.4$ \\
+        beto$_{U10K}$   & $58.8 \pm 0.3$ & $77.5 \pm 1.5$ & $68.0 \pm 0.4$ & $55.3 \pm 0.9$ & $71.7 \pm 0.5$ &  $66.3$ \\
+        beto$_{U20K}$   & $58.8 \pm 0.7$ & $76.8 \pm 1.2$ & $68.4 \pm 0.5$ & $53.3 \pm 1.6$ & $71.2 \pm 0.9$ &  $65.7$ \\
+        beto$_{C5K}$    & $57.6 \pm 0.2$ & $78.1 \pm 1.0$ & $67.7 \pm 0.4$ & $52.5 \pm 1.6$ & $72.4 \pm 0.9$ &  $65.7$ \\
+        beto$_{C20K}$   & $57.2 \pm 0.6$ & $77.7 \pm 0.9$ & $68.6 \pm 0.5$ & $51.7 \pm 0.9$ & $73.0 \pm 0.4$ &  $65.6$ \\
+        beto$_{C10K}$   & $57.4 \pm 0.8$ & $78.2 \pm 0.9$ & $68.0 \pm 0.6$ & $52.4 \pm 0.6$ & $72.0 \pm 0.7$ &  $65.6$ \\
+        beto$_{C2.5K}$  & $58.0 \pm 0.5$ & $77.1 \pm 0.7$ & $67.7 \pm 0.6$ & $52.5 \pm 1.0$ & $71.7 \pm 0.8$ &  $65.4$ \\
+        RoBERTa$_{ES}$  & $57.7 \pm 0.4$ & $76.6 \pm 1.5$ & $66.9 \pm 0.6$ & $53.3 \pm 1.1$ & $72.3 \pm 1.7$ &  $65.3$ \\
+        beto$_C$        & $58.2 \pm 0.7$ & $76.8 \pm 1.2$ & $66.5 \pm 0.4$ & $52.1 \pm 1.2$ & $70.6 \pm 0.7$ &  $64.8$ \\
+        bertin          & $55.7 \pm 0.8$ & $76.7 \pm 0.5$ & $66.5 \pm 0.3$ & $51.8 \pm 1.2$ & $71.6 \pm 0.8$ &  $64.5$ \\
+        beto$_U$        & $59.1 \pm 0.6$ & $75.7 \pm 1.2$ & $64.9 \pm 0.5$ & $52.1 \pm 0.6$ & $70.2 \pm 0.8$ &  $64.4$ \\
+        beto$_{U5K}$    & $55.7 \pm 0.7$ & $75.6 \pm 1.2$ & $65.4 \pm 0.5$ & $50.9 \pm 1.4$ & $68.4 \pm 0.7$ &  $63.2$ \\
+        beto$_{U2.5K}$  & $58.8 \pm 0.4$ & $78.4 \pm 1.1$ & $67.6 \pm 0.5$ & $53.3 \pm 0.8$ & $71.5 \pm 0.7$ &  $65.9$ \\
+
         \bottomrule
     \end{tabular}
-    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. Gap es.. delta es...}
+    \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CHATE es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio social. Score es la media de cada fila.}
 
     \label{tab:full_domain_adaptation_evaluation_results}
 
-\end{sidewaystable}
+\end{table}
+
+\section{Evaluación multilingual}
+
+\begin{table*}[ht!]
+    \centering
+    \footnotesize
+    \begin{tabular}{c lll r}
+        Idioma                          & Tareas               & Tipo de tareas                          & Dataset               & Tamaño  \\
+        \hline
+        \multirow{4}{*}{Español}          & Análisis de Sentimientos  & \multirow{4}{*}{Text Classification}  & TASS 2020 Task A      & \num{14500}      \\
+                                          & Análisis de emociones    &                                       & TASS 2020 Task B      & \num{8400}       \\
+                                          & Discurso de odio         &                                       & HatEval               & \num{6600}       \\
+                                          & Irony Detection     &                                       & IrosVA 2019           & \num{9000}       \\
+        \hline \rule{0pt}{1.2em}
+        \multirow{3}{*}{Inglés}          & Análisis de Sentimientos  & \multirow{3}{*}{Text Classification}  & SemEval 2017 Task 4   & \num{61900}       \\
+                                          & Análisis de emociones    &                                       & TASS 2020 Task B      & \num{7303}        \\
+                                          & Discurso de odio         &                                       & HatEval               & \num{13000}       \\
+        \hline \rule{0pt}{1.2em}
+        \multirow{3}{*}{Español-Inglés}  & Análisis de Sentimientos  & Text Classification                   & \multirow{3}{*}{LinCE}& \num{18789}      \\
+                                          & POS tagging         & Text Labelling                        &                       & \num{42911}       \\
+                                          & NER                 & Text Labelling                        &                       & \num{67233}       \\
+        \hline
+
+    \end{tabular}
+    \caption{Tareas de evaluación para \robertuito{}. Las tareas se agrupan por configuración: tareas solo en español, tareas solo en inglés y tareas de código mixto español-inglés. }
+    \label{tab:evaluation_settings}
+\end{table*}
+
+
+Evaluamos \robertuito{} en español, como ya hemos visto en el Capítulo \ref{chap:07_domain_adaptation}. Adicionalmente, debido al proceso de recolección de datos, nuestro conjunto de pre-entrenamiento contiene tweets en otros idiomas, potencialmente en una mezcla de ellos. Teniendo eso en cuenta, evaluamos el modelo en otras dos configuraciones: inglés y code-switching inglés-español. La Tabla \ref{tab:evaluation_settings} resume todas las tareas en las que evaluamos \robertuito{}.
+
+Para \textbf{inglés}, probamos \robertuito{} en tres tareas: análisis de emociones, detección de discursos de odio y análisis de sentimientos. Para el análisis de emociones y el discurso de odio usamos las secciones en inglés de los conjuntos de datos antes mencionados (\emph{EmoEvent} y \emph{HatEval}), mientras que para el análisis de sentimientos usamos el dataset \emph{SemEval 2017 Task-4} \cite{rosenthal-2017-semeval}, que comparte las mismas etiquetas que el conjunto de datos correspondiente español (negativo, neutro, positivo). En este caso, comparamos las habilidades de \robertuito{} en inglés con modelos monolingües, \bert{}, \roberta{} y \bertweet{}; y también contra modelos multilingües como \emph{XLM-R} \cite{conneau-2020-xlm} y \emph{mBERT}. Si bien todos estos modelos comparten una arquitectura base, los diferentes tamaños de vocabulario y la cantidad de parámetros hacen que la comparación no sea tan directa.
+
+\newcommand{\lince}[0]{LinCE}
+
+Finalmente, evaluamos las habilidades de code-switching de nuestro modelo en el \emph{Linguistic Code-Switching Evaluation Benchmark} (\lince{}) \cite{aguilar-etal-2020-lince}. \lince{} comprende cinco tareas para datos de código conmutado en varios pares de idiomas (español-inglés, hindi-inglés, árabe estándar moderno-árabe egipcio, árabe-inglés, entre otros), muchas de las cuales formaron parte de tareas compartidas anteriores. Evaluamos \robertuito{} en tres tareas diferentes del benchmark: POS tagging \cite{alghamdi-etal-2016-part}, reconocimiento de entidad nombrada (NER) y análisis de sentimientos \cite{patwa2020sentimix}. Como el proceso de recopilación de datos se centró en los usuarios de habla hispana, algunos de los cuales también hablan inglés y spanglish \footnote{La mezcla morfosintáctica de español e inglés}, probamos \robertuito{} en la subsección español-inglés del benchmark.
+
+Este benchmark tiene un sistema de evaluación centralizado, no liberando etiquetas doradas para el subconjunto de pruebas. Evaluamos nuestros modelos en los conjuntos de datos de desarrollo y comparamos nuestros resultados con los proporcionados por \citet{winata-etal-2021-multilingual}, que logra el mejor rendimiento para el etiquetado NER y POS. Como modelos competidores de \robertuito{} para la evaluación español-inglés, tenemos \mbert{}, \xlm{} (tanto en arquitectura base como grande) y los modelos monolingües \bert{} y \beto{}.
+
+
+\subsection{Resultados}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        Modelo         & Odio     &    Sentim &  Emoción  \\
+        \hline
+        \bertweet{}    & $\mbf{55.3}$ &  $\mbf{70.3}$ &  $42.8$  \\
+        \robertuito{}  & $54.2$       &  $68.4$ &  $44.1$  \\
+        \roberta{}     & $45.8$       &  $69.5$ &  $\mbf{46.3}$  \\
+        \bert{}        & $48.9$       &  $68.9$ &  $42.8$  \\
+        \mbert{}$^*$   & $43.3$       &  $66.6$ &  $40.4$  \\
+        \xlmbase{}$^*$ & $45.7$       &  $68.0$ &  $35.7$  \\
+        \hline
+    \end{tabular}
+    \caption{Resultados de la evaluación de las tres tareas de clasificación en inglés. Los resultados se expresan como la puntuación media de Macro F1 de 10 ejecuciones de los experimentos de clasificación. $^*$ marca modelos multilinguales}
+    \label{tab:robertuito_english_results}
+\end{table}
+
+La Tabla \ref{tab:robertuito_english_results} muestra los resultados de la evaluación de los modelos seleccionados para las tres tareas en inglés. Podemos observar que \robertuito{} supera tanto a \mbert{} como a \xlm{}, que son los otros modelos multilinguales evaluados para las tareas. En comparación con los modelos monolinguales en inglés, los resultados de \robertuito{} son similares a los de \roberta{} y ligeramente superiores a \bert{}. Como era de esperar, \bertweet{} obtiene los mejores resultados.
+
+
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{lcccc}
+        \hline
+        Model                    & Sentiment       & NER                 & POS  \\
+        \hline
+        \robertuito{}            & $\mbf{60.6}$    & $68.5$           & $97.2$     \\
+        \xlmlarge{}              & --              & $\mbf{69.5}$     & $\mbf{97.2}$    \\
+        \xlmbase{}               & --              & $64.9$           & $97.0$     \\
+        C2S \mbert{}    & $59.1$          & $64.6$           & $96.9$     \\
+        \mbert{}                 & $56.4$          & $64.0$           & $97.1$     \\
+        \bert{}                  & $58.4$          & $61.1$           & $96.9$     \\
+        \beto{}                  & $56.5$          & --               & --     \\
+        \hline
+    \end{tabular}
+    \caption{Resultados de la evaluación para las tareas de código mixto de la sección español-inglés del benchmark \lince{}. Los resultados se toman de la clasificación oficial del benchmark. El rendimiento de Análisis de Sentimientos se mide con Macro F1, NER con Micro F1 y la POS tagging con accuracy. C2S es un acrónimo de Char2Subword BERT}
+    \label{tab:lince_benchmark}
+\end{table}
+
+
+La Tabla \ref{tab:lince_benchmark} muestra los resultados de la clasificación del \lince{} benchmark \footnote{\url{https://ritual.uh.edu/lince/leaderboard}} para las tres tareas seleccionadas: análisis de sentimientos, NER y POS tagging. Para la primer tarea obtiene los mejores resultados en términos de Micro F1. Para las otras dos tareas, obtiene la segunda posición, donde un modelo \xlmlarge{} \cite{winata-etal-2021-multilingual} tiene los mejores resultados. Entre los modelos comparados, \robertuito{} tiene 108 millones de parámetros, mientras que \xlmlarge{} suma alrededor de cinco veces este número, lo que hace que nuestro modelo sea el más eficiente en términos de tamaño para esta subsección del benchmark.
