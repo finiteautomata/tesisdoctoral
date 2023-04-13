@@ -3,7 +3,7 @@
 \newcommand{\cased}[0]{\textbf{cased}}
 \newcommand{\uncased}[0]{\textbf{uncased}}
 
-En este capítulo analizamos cómo mejorar la detección de discurso de odio desde una perspectiva más general, centrándonos en aplicar técnicas de \textbf{adaptación de dominio} a los algoritmos de clasificación que han sido considerados hasta el momento. Como hemos mencionado en la Sección \ref{sec:03_preprocessing}, cuando hablamos de adaptación de dominio nos referimos al el conjunto de técnicas y recursos destinados a tratar de que los algoritmos tengan un correcto desempeño en un subconjunto de tareas relacionadas entre sí \cite{goodfellow2016deep}. En el caso concreto de las tareas cuyas instancias constan de analizar texto de usuarios en redes sociales u otros medios, \citet{eisenstein2013bad} describió a la adaptación de dominio en términos de la necesidad de construir herramientas propias para este tipo de texto, muy distinto al lenguaje formal proveniente de otras fuentes.
+En este capítulo analizamos cómo mejorar la detección de discurso de odio desde una perspectiva más general, centrándonos en aplicar técnicas de \textbf{adaptación de dominio} a los algoritmos de clasificación que han sido considerados hasta el momento. Como hemos mencionado en la Sección \ref{sec:03_preprocessing}, cuando hablamos de adaptación de dominio nos referimos al conjunto de técnicas y recursos destinados a tratar de que los algoritmos tengan un correcto desempeño en un subconjunto de tareas relacionadas entre sí \cite{goodfellow2016deep}. En el caso concreto de las tareas cuyas instancias constan de analizar texto de usuarios en redes sociales u otros medios, \citet{eisenstein2013bad} describió a la adaptación de dominio en términos de la necesidad de construir herramientas propias para este tipo de texto, muy distinto al lenguaje formal proveniente de otras fuentes.
 
 Las técnicas de representación modernas --desde los embeddings hasta los modelos de lenguaje-- suelen ser entrenadas sobre conjuntos de datos que se suponen lo suficientemente generales. Fuentes usuales son Wikipedia, que comprende textos de carácter enciclopédico, o Common Crawl, que es una recopilación de datos de distintos sitios web. El uso del lenguaje en estas fuentes suele guardar una considerable discordancia con el de muchas tareas de interés en NLP, como son aquellas basadas en textos provenientes de ciertos nichos donde el uso del lenguaje es muy específico. Ejemplos de esto son los documentos médicos, trabajos científicos, entre otros. A cada uno de estos grupos de textos con cierta relación se los denomina --de manera poco precisa-- \textbf{dominios}. Entre estos, el contenido informal de las redes sociales tiene variedades lingüísticas muy particulares, con mucha jerga, expresiones coloquiales, errores ortográficos y demás que diferencian el uso del lenguaje de los textos fuentes mencionados.
 
@@ -40,15 +40,15 @@ Usando como modelo base a \roberta{}, los autores reportan que los clasificadore
 \begin{table}
     \centering
     \begin{tabular}{llll}
-        Nombre                                 & Idioma            & Dominio                          & Familia     \\
+        Nombre       & Idioma   & Dominio                     & Familia    \\
         \hline
-        SciBERT         & inglés            & Papers                           & BERT        \\
-        ClinicalBERT    & inglés            & noticias médicas                 & BERT        \\
-        MediBERT        & inglés            & registros médicos                & BERT         \\
-        LegalBERT       & inglés            & legislación, contratos           & BERT        \\
-        BERTweet        & inglés            & tweets, algunos sobre COVID      & RoBERTa     \\
-        AlBERTo         & italiano          & tweets                           & RoBERTa     \\
-        TwilBERT        & español           & tweets                           & $\sim$BERT        \\
+        SciBERT      & inglés   & Papers                      & BERT       \\
+        ClinicalBERT & inglés   & noticias médicas            & BERT       \\
+        MediBERT     & inglés   & registros médicos           & BERT       \\
+        LegalBERT    & inglés   & legislación, contratos      & BERT       \\
+        BERTweet     & inglés   & tweets, algunos sobre COVID & RoBERTa    \\
+        AlBERTo      & italiano & tweets                      & RoBERTa    \\
+        TwilBERT     & español  & tweets                      & $\sim$BERT \\
         \hline
     \end{tabular}
 
@@ -89,24 +89,24 @@ Algo a destacar es que este proceso de recolección permitió que los datos cont
     \centering
     \begin{tabular}{l r}
         \hline
-        Hiperparámetro    & Valor \\
+        Hiperparámetro                  & Valor              \\
         \hline
-        \#Cabezas         & \num{12}             \\
-        \#Capas           & \num{12}             \\
-        Tamaño oculto     & \num{768}            \\
-        Tamaño intermedio & \num{3072}           \\
-        Función de Activación & GeLU           \\
-        \#Vocabulario       & \num{30000}         \\
+        \#Cabezas                       & \num{12}           \\
+        \#Capas                         & \num{12}           \\
+        Tamaño oculto                   & \num{768}          \\
+        Tamaño intermedio               & \num{3072}         \\
+        Función de Activación           & GeLU               \\
+        \#Vocabulario                   & \num{30000}        \\
         \hline
-        \rule{0pt}{3ex}Probabilidad MLM   & \num{0.15}     \\
-        Tamaño de secuencia& 128            \\
-        Batch size         & \num{4096}          \\
-        Learning Rate      & $3.5 * 10^{-4}$\\
-        Decay              & $0.10$          \\
-        $\beta_1$          & $0.90$            \\
-        $\beta_2$          & $0.98$           \\
-        $\epsilon$         & $10^{-6}$      \\
-        Pasos de warmup    & \num{36,000} (6\%)   \\
+        \rule{0pt}{3ex}Probabilidad MLM & \num{0.15}         \\
+        Tamaño de secuencia             & 128                \\
+        Batch size                      & \num{4096}         \\
+        Learning Rate                   & $3.5 * 10^{-4}$    \\
+        Decay                           & $0.10$             \\
+        $\beta_1$                       & $0.90$             \\
+        $\beta_2$                       & $0.98$             \\
+        $\epsilon$                      & $10^{-6}$          \\
+        Pasos de warmup                 & \num{36,000} (6\%) \\
         \hline
     \end{tabular}
     \caption{Hiperparámetros utilizados en el entrenamiento de \robertuito{}. Los valores de $\beta$ y $\epsilon$ refieren a los hiperparámetros de Adam}
@@ -122,11 +122,11 @@ Para comprobar la convergencia, primero entrenamos un modelo para \num{200000} p
 \begin{table}[h]
     \centering
     \begin{tabular}{l l l l}
-        Model   & Train loss & Eval loss   & Eval ppl \\
+        Model      & Train loss & Eval loss & Eval ppl \\
         \hline
-        \cased{}   & $1.864$      & $1.753$       & $5.772$    \\
-        \uncased{} & $1.940$      & $1.834$       & $6.259$    \\
-        \deacc{}   & $1.951$      & $1.826$       & $6.209$    \\
+        \cased{}   & $1.864$    & $1.753$   & $5.772$  \\
+        \uncased{} & $1.940$    & $1.834$   & $6.259$  \\
+        \deacc{}   & $1.951$    & $1.826$   & $6.209$  \\
         \hline
     \end{tabular}
     \caption{Resultados del pre-entrenamiento para las tres versiones de \robertuito{}. La función de costo utilizada es la entropía cruzada de la tarea de MLM.}
@@ -163,15 +163,15 @@ Cada uno de estos modelos comparte una arquitectura similar a \robertuito{} y un
 \begin{table}
     \centering
     \begin{tabular}{l ccccc }
-        Modelo                & CONTEX             &  ODIO                 &  SENTIM        &  EMOCIÓN             &  IRONÍA               \\
+        Modelo            & CONTEX               & ODIO                 & SENTIM               & EMOCIÓN              & IRONÍA               \\
         \hline
-        \robertuito{}$_U$     & $\mbf{59.3 \pm 0.4}$ &  $\mbf{80.1 \pm 1.0}$ & $\mbf{70.7 \pm 0.4}$ & $\mbf{55.1 \pm 1.1}$ & $73.6 \pm 0.8$  \\
-        \robertuito{}$_D$     & $\mbf{59.3 \pm 0.6}$ &  $79.8 \pm 0.8$       & $70.2 \pm 0.4$       & $54.3 \pm 1.5$       & $\mbf{74.0 \pm 0.6}$  \\
-        \robertuito{}$_C$     & $59.0 \pm 0.5$       &  $79.0 \pm 1.2$       & $70.1 \pm 1.2$       & $51.9 \pm 3.2$       & $71.9 \pm 2.3$  \\
-        \roberta{}$_{ES}$     & $57.7 \pm 0.4$       &  $76.6 \pm 1.5$       & $66.9 \pm 0.6$       & $53.3 \pm 1.1$       & $72.3 \pm 1.7$  \\
-        BERTin                & $55.7 \pm 0.8$       &  $76.7 \pm 0.5$       & $66.5 \pm 0.3$       & $51.8 \pm 1.2$       & $71.6 \pm 0.8$  \\
-        \beto{}$_U$              & $59.1 \pm 0.6$       &  $75.7 \pm 1.2$       & $64.9 \pm 0.5$       & $52.1 \pm 0.6$       & $70.2 \pm 0.8$  \\
-        \beto{}$_C$              & $58.2 \pm 0.7$       &  $76.8 \pm 1.2$       & $66.5 \pm 0.4$       & $52.1 \pm 1.2$       & $70.6 \pm 0.7$  \\
+        \robertuito{}$_U$ & $\mbf{59.3 \pm 0.4}$ & $\mbf{80.1 \pm 1.0}$ & $\mbf{70.7 \pm 0.4}$ & $\mbf{55.1 \pm 1.1}$ & $73.6 \pm 0.8$       \\
+        \robertuito{}$_D$ & $\mbf{59.3 \pm 0.6}$ & $79.8 \pm 0.8$       & $70.2 \pm 0.4$       & $54.3 \pm 1.5$       & $\mbf{74.0 \pm 0.6}$ \\
+        \robertuito{}$_C$ & $59.0 \pm 0.5$       & $79.0 \pm 1.2$       & $70.1 \pm 1.2$       & $51.9 \pm 3.2$       & $71.9 \pm 2.3$       \\
+        \roberta{}$_{ES}$ & $57.7 \pm 0.4$       & $76.6 \pm 1.5$       & $66.9 \pm 0.6$       & $53.3 \pm 1.1$       & $72.3 \pm 1.7$       \\
+        BERTin            & $55.7 \pm 0.8$       & $76.7 \pm 0.5$       & $66.5 \pm 0.3$       & $51.8 \pm 1.2$       & $71.6 \pm 0.8$       \\
+        \beto{}$_U$       & $59.1 \pm 0.6$       & $75.7 \pm 1.2$       & $64.9 \pm 0.5$       & $52.1 \pm 0.6$       & $70.2 \pm 0.8$       \\
+        \beto{}$_C$       & $58.2 \pm 0.7$       & $76.8 \pm 1.2$       & $66.5 \pm 0.4$       & $52.1 \pm 1.2$       & $70.6 \pm 0.7$       \\
         \hline
     \end{tabular}
     \caption{Resultados de los experimentos de clasificación sobre el benchmark de tareas sociales. CONTEX es la tarea de detección contextualizada de discurso de odio, ODIO es detección de discurso de odio, SENTIM, EMOCIÓN E IRONÍA son análisis de sentimiento, emociones e ironía. Resultado expresado en porcentaje de la métrica correspondiente a cada tarea y como la media $\pm$ desviación de diez corridas de los experimentos. U, C, y D significan \emph{uncased, cased y deacc} respectivamente. Más grande es mejor.}
@@ -240,19 +240,19 @@ En la Figura \ref{fig:robertuito_vs_domain_barplot_results} se ilustra el desemp
     \centering
     \begin{tabular}{l ccccc}
         \toprule
-        Modelo              & CONTEX             &  ODIO                 &  SENTIM        &  EMOCIÓN             &  IRONÍA               \\
+        Modelo                          & CONTEX         & ODIO           & SENTIM         & EMOCIÓN        & IRONÍA         \\
         \midrule
-        \robertuito{}$_U$   & $59.3 \pm 0.4$ & $80.1 \pm 1.0$ & $70.7 \pm 0.4$ & $55.1 \pm 1.1$& $73.6 \pm 0.8$ \\
-        \robertuito{}$_D$   & $59.3 \pm 0.6$ & $79.8 \pm 0.8$ & $70.2 \pm 0.4$ & $54.3 \pm 1.5$& $74.0 \pm 0.6$ \\
-        \robertuito{}$_C$   & $59.0 \pm 0.5$ & $79.0 \pm 1.2$ & $70.1 \pm 1.2$ & $51.9 \pm 3.2$& $71.9 \pm 2.3$ \\
+        \robertuito{}$_U$               & $59.3 \pm 0.4$ & $80.1 \pm 1.0$ & $70.7 \pm 0.4$ & $55.1 \pm 1.1$ & $73.6 \pm 0.8$ \\
+        \robertuito{}$_D$               & $59.3 \pm 0.6$ & $79.8 \pm 0.8$ & $70.2 \pm 0.4$ & $54.3 \pm 1.5$ & $74.0 \pm 0.6$ \\
+        \robertuito{}$_C$               & $59.0 \pm 0.5$ & $79.0 \pm 1.2$ & $70.1 \pm 1.2$ & $51.9 \pm 3.2$ & $71.9 \pm 2.3$ \\
         \hline
-        \rule{0pt}{3ex}\beto{}$_{U}$+FT    & $58.8 \pm 0.3$ & $77.5 \pm 1.5$ & $68.0 \pm 0.4$ & $55.3 \pm 0.9$& $71.7 \pm 0.5$ \\
-        \beto{}$_{C}$+FT    & $57.2 \pm 0.6$ & $77.7 \pm 0.9$ & $68.6 \pm 0.5$ & $51.7 \pm 0.9$& $73.0 \pm 0.4$ \\
+        \rule{0pt}{3ex}\beto{}$_{U}$+FT & $58.8 \pm 0.3$ & $77.5 \pm 1.5$ & $68.0 \pm 0.4$ & $55.3 \pm 0.9$ & $71.7 \pm 0.5$ \\
+        \beto{}$_{C}$+FT                & $57.2 \pm 0.6$ & $77.7 \pm 0.9$ & $68.6 \pm 0.5$ & $51.7 \pm 0.9$ & $73.0 \pm 0.4$ \\
         \hline
-        \rule{0pt}{3ex}\beto{}$_U$         & $59.1 \pm 0.6$ & $75.7 \pm 1.2$ & $64.9 \pm 0.5$ & $52.1 \pm 0.6$& $70.2 \pm 0.8$ \\
-        \beto{}$_C$         & $58.2 \pm 0.7$ & $76.8 \pm 1.2$ & $66.5 \pm 0.4$ & $52.1 \pm 1.2$& $70.6 \pm 0.7$ \\
-%       bertin              & $55.7 \pm 0.8$ & $76.7 \pm 0.5$ & $66.5 \pm 0.3$ & $51.8 \pm 1.2$& $71.6 \pm 0.8$702 \\
-%       roberta-bne         & $57.7 \pm 0.4$ & $76.6 \pm 1.5$ & $66.9 \pm 0.6$ & $53.3 \pm 1.1$& $72.3 \pm 1.7$565 \\
+        \rule{0pt}{3ex}\beto{}$_U$      & $59.1 \pm 0.6$ & $75.7 \pm 1.2$ & $64.9 \pm 0.5$ & $52.1 \pm 0.6$ & $70.2 \pm 0.8$ \\
+        \beto{}$_C$                     & $58.2 \pm 0.7$ & $76.8 \pm 1.2$ & $66.5 \pm 0.4$ & $52.1 \pm 1.2$ & $70.6 \pm 0.7$ \\
+        %       bertin              & $55.7 \pm 0.8$ & $76.7 \pm 0.5$ & $66.5 \pm 0.3$ & $51.8 \pm 1.2$& $71.6 \pm 0.8$702 \\
+        %       roberta-bne         & $57.7 \pm 0.4$ & $76.6 \pm 1.5$ & $66.9 \pm 0.6$ & $53.3 \pm 1.1$& $72.3 \pm 1.7$565 \\
         \hline
     \end{tabular}
     \caption{Resultados de la evaluación de modelos pre-entrenados y modelos ajustados en dominio para el benchmark de tareas sociales: CONTEXT es contextualized hate speech, HATE es hate speech detection sobre el dataset de hatEval, SENTIMENT, EMOTION e IRONY son análisis de sentimiento, emociones e ironía sobre los corpus de TASS. Todos los scores son Macro F1s. beto-cased-ft y beto-uncased-ft son modelos adaptados al dominio sociall. Score es la media de cada fila. }
@@ -268,23 +268,23 @@ La Tabla \ref{tab:domain_adaptation_evaluation_results} muestra los resultados, 
 \begin{table}
     \centering
     \begin{tabular}{l cc cc cc}
-                        & \mc{6}{Modelos} \\
-                        & \mc{2}{BETO}              & \mc{2}{\robertuito{}$_U$}       & \mc{2}{\robertuito{}$_C$} \\
-        Métrica         &  $\neg$FT&   FT           &  $\neg$FT      & FT             & $\neg$FT &   FT \\
+                        & \mc{6}{Modelos}                                                                                                    \\
+                        & \mc{2}{BETO}    & \mc{2}{\robertuito{}$_U$} & \mc{2}{\robertuito{}$_C$}                                            \\
+        Métrica         & $\neg$FT        & FT                        & $\neg$FT                  & FT            & $\neg$FT & FT            \\
         \thline{2}
-        LLAMA           &  $63.80$ &  $68.47$       &  $67.19$       & $69.74$        &  $66.63$ &   $\mbf{70.12}$ \\
-        MUJER           &  $41.07$ &  $42.06$       &  $42.99$       & $\mbf{44.29}$  &  $41.08$ &   $43.68$ \\
-        LGBTI           &  $45.13$ &  $48.23$       &  $48.45$       & $47.94$        &  $45.56$ &   $\mbf{51.36}$ \\
-        RACISMO         &  $68.79$ &  $\mbf{72.05}$ &  $67.70$       & $69.78$        &  $66.60$ &   $68.94$ \\
-        CLASE           &  $49.13$ &  $\mbf{51.15}$ &  $46.96$       & $47.06$        &  $47.01$ &   $48.65$ \\
-        POLITICA        &  $57.90$ &  $62.48$       &  $63.00$       & $62.87$        &  $62.19$ &   $\mbf{63.16}$ \\
-        DISCAPACIDAD    &  $58.49$ &  $\mbf{60.89}$ &  $57.43$       & $60.64$        &  $58.00$ &   $59.01$ \\
-        APARIENCIA      &  $74.13$ &  $76.63$       &  $73.83$       & $74.74$        &  $74.71$ &   $\mbf{76.68}$ \\
-        CRIMINAL        &  $65.03$ &  $\mbf{69.94}$ &  $62.61$       & $66.63$        &  $61.28$ &   $65.65$ \\
+        LLAMA           & $63.80$         & $68.47$                   & $67.19$                   & $69.74$       & $66.63$  & $\mbf{70.12}$ \\
+        MUJER           & $41.07$         & $42.06$                   & $42.99$                   & $\mbf{44.29}$ & $41.08$  & $43.68$       \\
+        LGBTI           & $45.13$         & $48.23$                   & $48.45$                   & $47.94$       & $45.56$  & $\mbf{51.36}$ \\
+        RACISMO         & $68.79$         & $\mbf{72.05}$             & $67.70$                   & $69.78$       & $66.60$  & $68.94$       \\
+        CLASE           & $49.13$         & $\mbf{51.15}$             & $46.96$                   & $47.06$       & $47.01$  & $48.65$       \\
+        POLITICA        & $57.90$         & $62.48$                   & $63.00$                   & $62.87$       & $62.19$  & $\mbf{63.16}$ \\
+        DISCAPACIDAD    & $58.49$         & $\mbf{60.89}$             & $57.43$                   & $60.64$       & $58.00$  & $59.01$       \\
+        APARIENCIA      & $74.13$         & $76.63$                   & $73.83$                   & $74.74$       & $74.71$  & $\mbf{76.68}$ \\
+        CRIMINAL        & $65.03$         & $\mbf{69.94}$             & $62.61$                   & $66.63$       & $61.28$  & $65.65$       \\
         \hline
-        Macro F1        &  $58.16$ &  $\mbf{61.32}$ &  $58.91$       & $60.41$        &  $58.12$ &    $60.80$ \\
-        Macro Precision &  $64.16$ &  $\mbf{70.21}$ &  $60.11$       & $61.63$        &  $60.15$ &    $62.30$ \\
-        Macro Recall    &  $53.97$ &  $55.09$       &  $58.38$       & $59.62$        &  $56.91$ &   $\mbf{59.80}$ \\
+        Macro F1        & $58.16$         & $\mbf{61.32}$             & $58.91$                   & $60.41$       & $58.12$  & $60.80$       \\
+        Macro Precision & $64.16$         & $\mbf{70.21}$             & $60.11$                   & $61.63$       & $60.15$  & $62.30$       \\
+        Macro Recall    & $53.97$         & $55.09$                   & $58.38$                   & $59.62$       & $56.91$  & $\mbf{59.80}$ \\
         \thline{2}
     \end{tabular}
     \caption{Resultados de los experimentos de clasificación para la tarea \emph{granular} de detección de discurso de odio, expresados en porcentajes de F1 para las características. Cada modelo consume el comentario analizado y el tweet de la noticia. Consideramos tres modelos: \beto{}, \robertuito{}$_U$ (uncased) y \robertuito{}$_C$ (cased). Para cada uno, tenemos dos versiones: una sin ajustar al dominio ($\neg$FT) y ajustada a dominio (FT) de acuerdo a lo descripto en la Sección \ref{sec:contextualized_classifiers}. En negrita, los mejores resultados.}
